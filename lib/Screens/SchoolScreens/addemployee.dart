@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:grouped_buttons/grouped_buttons.dart';
 // import 'package:image_picker_ui/image_picker_handler.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'dart:async';
 import 'package:image_cropper/image_cropper.dart';
@@ -10,11 +10,12 @@ import 'package:image_picker/image_picker.dart';
 
 
 class AddEmployee extends StatefulWidget {
-AddEmployee({Key key}) : super(key: key);
+   final String schoolCode;
+AddEmployee({Key key, this.schoolCode}) : super(key: key);
 
 
   @override
-  _AddEmployeeState createState() => _AddEmployeeState();
+  _AddEmployeeState createState() => _AddEmployeeState(schoolCode);
 }
 // class Item {
 //   const Item(this.name);
@@ -23,6 +24,8 @@ AddEmployee({Key key}) : super(key: key);
 //}
 
 class _AddEmployeeState extends State<AddEmployee>  {
+  final String schoolCode;
+  _AddEmployeeState(this.schoolCode);
 //  _formKey and _autoValidate
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _autoValidate = false;
@@ -44,6 +47,7 @@ class _AddEmployeeState extends State<AddEmployee>  {
   final picker = ImagePicker();
   File _selectedFile;
   bool _inProcess = false;
+  final databaseReference = Firestore.instance;
 
   // File _image;
   // final picker = ImagePicker();
@@ -522,12 +526,49 @@ class _AddEmployeeState extends State<AddEmployee>  {
   if (_formKey.currentState.validate()) {
 //    If all data are correct then save data to out variables
     _formKey.currentState.save();
+     createRecord();
+     showDialog(
+        context: context,
+        builder: (BuildContext context){
+           return AlertDialog(
+             title: new Text("Added"),
+             content: new Text("The details for $_firstname have been added"),
+             actions: <Widget>[
+               new FlatButton(
+                 onPressed: (){
+                   Navigator.of(context).pop();
+                 }, 
+                 child: new Text("Close")
+                 )
+             ]
+             );
+        }
+        );
   } else {
 //    If all data are not valid then start auto validation.
     setState(() {
       _autoValidate = true;
     });
   }
+}
+  void createRecord() async {
+  print(schoolCode);
+  await databaseReference
+      .collection("School")
+      .document(schoolCode)
+      .collection("Employee")
+      .document(_mobile)
+      .setData({
+        'first name': _firstname,
+        'last name': _lastname,
+        'qualification': _qual,
+        'gender': _gender,
+        'designation': _desig,
+        'email': _email,
+        'mobile':_mobile,
+        'dob':_dob,
+        'address':_address
+      }).whenComplete(() => print('Employee added'));
 }
 //  @override
 //   userImage(File _image) {
