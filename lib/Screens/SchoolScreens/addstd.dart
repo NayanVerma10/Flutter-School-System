@@ -676,6 +676,7 @@ class _AddStdState extends State<AddStd> {
                                         child: new Text("Close"),
                                         onPressed: () {
                                           Navigator.of(context).pop();
+                                          _formKey.currentState.reset();
                                         },
                                       ),
                                     ],

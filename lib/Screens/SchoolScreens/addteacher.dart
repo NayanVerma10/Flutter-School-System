@@ -512,6 +512,7 @@ class _AddTeacherState extends State<AddTeacher> {
                 child: new Text("Close"),
                 onPressed: () {
                   Navigator.of(context).pop();
+                  _formKey.currentState.reset();
                 },
               ),
             ],
