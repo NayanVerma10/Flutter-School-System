@@ -305,81 +305,7 @@ class _AddStdState extends State<AddStd> {
                     autovalidate: _autoValidate,
                     child: Column(children: <Widget>[
                       Row(children: <Widget>[
-                        DropdownButton<Item>(
-                          focusColor: Colors.grey[300],
-                          hint: Text(
-                            "Select class",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          value: selectedclass,
-                          onChanged: (Item value) {
-                            setState(() {
-                              selectedclass = value;
-                            });
-                          },
-                          items: classs.map((Item classs) {
-                            return DropdownMenuItem<Item>(
-                              value: classs,
-                              child: Row(
-                                children: <Widget>[
-                                  SizedBox(width: 10),
-                                  Text(
-                                    classs.name,
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                        SizedBox(width: 15),
-
-                        DropdownButton<Item>(
-                          focusColor: Colors.grey[300],
-                          hint: Text(
-                            "Select section",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          value: selectedsection,
-                          onChanged: (Item value) {
-                            setState(() {
-                              selectedsection = value;
-                            });
-                          },
-                          items: section.map((Item section) {
-                            return DropdownMenuItem<Item>(
-                              value: section,
-                              child: Row(
-                                children: <Widget>[
-                                  SizedBox(
-                                      width:
-                                          10), // change to 10 when uncomenting add section
-                                  Text(
-                                    section.name,
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                        //  SizedBox(width: 20,),
-                        FlatButton.icon(
-                            onPressed: () {
-                              section.add(Item('E'));
-                              print('added');
-                            },
-                            icon: Icon(Icons.add, color: Colors.black),
-                            label: Text(
-                              'Add section',
-                              style: TextStyle(color: Colors.black),
-                            ))
-                      ]),
-                      
+                        
                       new TextFormField(
                         decoration: const InputDecoration(
                             labelText: 'First Name',
@@ -519,6 +445,82 @@ class _AddStdState extends State<AddStd> {
                           _rollno = val;
                         },
                       ),
+                      DropdownButton<Item>(
+                          focusColor: Colors.grey[300],
+                          hint: Text(
+                            "Select class",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          value: selectedclass,
+                          onChanged: (Item value) {
+                            setState(() {
+                              selectedclass = value;
+                            });
+                          },
+                          items: classs.map((Item classs) {
+                            return DropdownMenuItem<Item>(
+                              value: classs,
+                              child: Row(
+                                children: <Widget>[
+                                  SizedBox(width: 10),
+                                  Text(
+                                    classs.name,
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                        SizedBox(width: 15),
+
+                        DropdownButton<Item>(
+                          focusColor: Colors.grey[300],
+                          hint: Text(
+                            "Select section",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          value: selectedsection,
+                          onChanged: (Item value) {
+                            setState(() {
+                              selectedsection = value;
+                            });
+                          },
+                          items: section.map((Item section) {
+                            return DropdownMenuItem<Item>(
+                              value: section,
+                              child: Row(
+                                children: <Widget>[
+                                  SizedBox(
+                                      width:
+                                          10), // change to 10 when uncomenting add section
+                                  Text(
+                                    section.name,
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                        //  SizedBox(width: 20,),
+                        FlatButton.icon(
+                            onPressed: () {
+                              section.add(Item('E'));
+                              print('added');
+                            },
+                            icon: Icon(Icons.add, color: Colors.black),
+                            label: Text(
+                              'Add section',
+                              style: TextStyle(color: Colors.black),
+                            ))
+                      ]),
+                      
+
                       SizedBox(height: 15),
                       new TextFormField(
                         decoration: const InputDecoration(
