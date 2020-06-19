@@ -54,7 +54,7 @@ class Classes extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                    context,
-                 MaterialPageRoute(builder: (context) => AddEmployee()),
+                 MaterialPageRoute(builder: (context) => AddEmployee(schoolCode: schoolCode,)),
                    );
               }
             ),
@@ -76,9 +76,9 @@ class Classes extends StatelessWidget {
               label: 'Add Student',
               labelStyle: TextStyle(fontSize: 15.0,color: Colors.black, fontWeight: FontWeight.bold),
               onTap: () {
-                Navigator.push(
+                   Navigator.push(
                    context,
-                 MaterialPageRoute(builder: (context) => AddStd(schoolCode: schoolCode,)),
+                   MaterialPageRoute(builder: (context) => AddStd(schoolCode: schoolCode,)),
                    );
               },
             ),
