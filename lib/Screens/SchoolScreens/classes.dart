@@ -54,7 +54,7 @@ class Classes extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                    context,
-                 MaterialPageRoute(builder: (context) => AddEmployee(schoolCode: schoolCode,)),
+                 MaterialPageRoute(builder: (context) => AddEmployee()),
                    );
               }
             ),
