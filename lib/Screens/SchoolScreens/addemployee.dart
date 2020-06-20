@@ -537,6 +537,7 @@ class _AddEmployeeState extends State<AddEmployee>  {
                new FlatButton(
                  onPressed: (){
                    Navigator.of(context).pop();
+                   _formKey.currentState.reset();
                  }, 
                  child: new Text("Close")
                  )
