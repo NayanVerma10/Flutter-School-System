@@ -15,32 +15,25 @@ class _SchoolRegistrationStat extends State<SchoolRegistration> {
   bool _isEmailUnique=false;
   bool _isMobileUnique=false;
   bool _isSchoolCodeUnique=false;
-
   String x3, name, id, x2, x1, gpa, board;
   getStudentName(name) {
     this.name = name;
   }
-
   getStudentBoard(board) {
     this.board = board;
   }
-
   getStudentx3(x3) {
     this.x3 = x3;
   }
-
   getStudentId(id) {
     this.id = id;
   }
-
   getStudentx2(x2) {
     this.x2 = x2;
   }
-
   getStudentno(x1) {
     this.x1 = x1;
   }
-
   getStudentgpa(gpa) {
     this.gpa = gpa;
   }
