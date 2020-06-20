@@ -18,7 +18,7 @@ String name;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title:Text("Employee Data"),
+        title:Text("Employee data"),
       backgroundColor: Colors.black,
       ),
       body: ListPage(),
