@@ -6,12 +6,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
 
 class Pagin1 extends StatefulWidget {
+  final String schoolCode;
+  Pagin1(this.schoolCode);
   @override
-  _Pagin1State createState() => _Pagin1State();
+  _Pagin1State createState() => _Pagin1State(schoolCode);
 }
 
 class _Pagin1State extends State<Pagin1> {
 String name;
+String schoolCode;
+_Pagin1State(this.schoolCode);
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +25,7 @@ String name;
         title:Text("Employee data"),
       backgroundColor: Colors.black,
       ),
-      body: ListPage(),
+      body: ListPage(schoolCode),
     );
   }
 }
@@ -46,15 +50,19 @@ documentReference.get().then((datasnapshot)
 
 
 class ListPage extends StatefulWidget {
+  final schoolCode;
+  ListPage(this.schoolCode);
   @override
-  _ListPageState createState() => _ListPageState();
+  _ListPageState createState() => _ListPageState(schoolCode);
 }
 class _ListPageState extends State<ListPage> {
+  String schoolCode;
+  _ListPageState(this.schoolCode);
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorkey=new GlobalKey<RefreshIndicatorState>();
   Future getPosts() async
   {
     var firestore=Firestore.instance;
-    QuerySnapshot qn= await firestore.collection("School").document("69").collection("Employee").getDocuments();
+    QuerySnapshot qn= await firestore.collection("School").document(schoolCode).collection("Employee").getDocuments();
     return qn.documents;
   }
 Future<Null> _refreshLocalGallery() async{
@@ -70,7 +78,7 @@ funcButton(DocumentSnapshot post)
 {
     Navigator.push(  
          context,
-         MaterialPageRoute(builder: (context) => ProfilePage(post : post,)),
+         MaterialPageRoute(builder: (context) => ProfilePage(post : post,schoolCode:schoolCode)),
          );       
 }
 
@@ -181,14 +189,18 @@ ListView _buildListView(BuildContext context)
 
 
 class ProfilePage extends StatefulWidget {
+  final String schoolCode;
   @override
  final DocumentSnapshot post;
- ProfilePage({this.post});
-  MapScreenState createState() => MapScreenState();
+ ProfilePage({this.post,this.schoolCode});
+  MapScreenState createState() => MapScreenState(schoolCode);
 }
 
 class MapScreenState extends State<ProfilePage>
     with SingleTickerProviderStateMixin {
+
+  String schoolCode;
+  MapScreenState(this.schoolCode);
   bool _status = true;
   final FocusNode myFocusNode = FocusNode();
  TextEditingController controller1;
@@ -864,7 +876,7 @@ Row(children: <Widget>[
 ,);
 }
 Future updateuserdata(String rt2) async{
-final CollectionReference brew=Firestore.instance.collection('School').document('69').collection('Employee');
+final CollectionReference brew=Firestore.instance.collection('School').document(schoolCode).collection('Employee');
  return await brew.document(rt2).setData({
   'email':namecontroller.text,
   'mobile':namecontroller2.text,
@@ -877,7 +889,7 @@ final CollectionReference brew=Firestore.instance.collection('School').document(
 }
 void updateData(String rt2)
 {
-final CollectionReference brew=Firestore.instance.collection('School').document('69').collection('Employee');
+final CollectionReference brew=Firestore.instance.collection('School').document(schoolCode).collection('Employee');
 brew.document(rt2).setData({
   'email':controller4.text,
 });

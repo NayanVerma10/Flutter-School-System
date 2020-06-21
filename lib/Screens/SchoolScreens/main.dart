@@ -97,7 +97,7 @@ class _MyAppState extends State<MyApp> {
                 Classes(schoolCode),
                 Management(),
                 Academics(),
-                Staff(),
+                Staff(schoolCode),
                 Profile()
               ],
             ),
