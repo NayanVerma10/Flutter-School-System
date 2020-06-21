@@ -94,7 +94,7 @@ class _MyAppState extends State<MyApp> {
             body: TabBarView(
               children: [
                 //What each tab will contain
-                Classes(schoolCode),
+                Studnets(schoolCode),
                 Management(),
                 Academics(),
                 Staff(schoolCode),
