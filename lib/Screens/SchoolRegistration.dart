@@ -11,29 +11,35 @@ class SchoolRegistration extends StatefulWidget {
 }
 
 class _SchoolRegistrationStat extends State<SchoolRegistration> {
- bool _rememberMe = false;
-  bool _isEmailUnique=false;
-  bool _isMobileUnique=false;
-  bool _isSchoolCodeUnique=false;
+  bool _rememberMe = false;
+  bool _isEmailUnique = false;
+  bool _isMobileUnique = false;
+  bool _isSchoolCodeUnique = false;
   String x3, name, id, x2, x1, gpa, board;
   getStudentName(name) {
     this.name = name;
   }
+
   getStudentBoard(board) {
     this.board = board;
   }
+
   getStudentx3(x3) {
     this.x3 = x3;
   }
+
   getStudentId(id) {
     this.id = id;
   }
+
   getStudentx2(x2) {
     this.x2 = x2;
   }
+
   getStudentno(x1) {
     this.x1 = x1;
   }
+
   getStudentgpa(gpa) {
     this.gpa = gpa;
   }
@@ -43,31 +49,29 @@ class _SchoolRegistrationStat extends State<SchoolRegistration> {
         .collection('School')
         .where('schoolemail', isEqualTo: id)
         .getDocuments()
-        .then((value) => {
-              if(value.documents.isEmpty) 
-                _isEmailUnique=true
-            });        
+        .then((value) => {if (value.documents.isEmpty) _isEmailUnique = true});
     return true;
   }
-Future<bool> verifyphone() async {
+
+  Future<bool> verifyphone() async {
     await Firestore.instance
         .collection('School')
         .where('schoolno', isEqualTo: x1)
         .getDocuments()
-        .then((value) => {
-              if(value.documents.isEmpty) _isMobileUnique=true
-            });        
+        .then((value) => {if (value.documents.isEmpty) _isMobileUnique = true});
     return true;
   }
+
   Future<bool> verifyschoolcode() async {
     await Firestore.instance
         .collection('School')
         .document(gpa)
         .get()
-        .then((value) => {if(!value.exists) _isSchoolCodeUnique=true  });
-        
+        .then((value) => {if (!value.exists) _isSchoolCodeUnique = true});
+
     return true;
   }
+
   createData() {
     print("created");
 
@@ -390,7 +394,6 @@ print("$name updated");
     );
   }
 
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -399,7 +402,7 @@ print("$name updated");
         title: Text("School Registration"),
       ),
       body: Builder(
-              builder: (context) => AnnotatedRegion<SystemUiOverlayStyle>(
+        builder: (context) => AnnotatedRegion<SystemUiOverlayStyle>(
           value: SystemUiOverlayStyle.light,
           child: GestureDetector(
             onTap: () => FocusScope.of(context).unfocus(),
@@ -479,41 +482,41 @@ print("$name updated");
                             child: RaisedButton(
                               color: Colors.black,
                               elevation: 5.0,
-                              onPressed: () async{
+                              onPressed: () async {
                                 // It returns true if the form is valid, otherwise returns false
                                 print("button pressed");
                                 await verifyphone();
                                 await verifyemail();
                                 await verifyschoolcode();
-                                if (x2 == x3 && _isMobileUnique && _isEmailUnique && _isSchoolCodeUnique) {
+                                if (x2 == x3 &&
+                                    _isMobileUnique &&
+                                    _isEmailUnique &&
+                                    _isSchoolCodeUnique) {
                                   createData();
                                   final snackBar = SnackBar(
-                                      content:
-                                          Text('Data processed successfully!!'));
+                                      content: Text(
+                                          'Data processed successfully!!'));
                                   Scaffold.of(context).showSnackBar(snackBar);
                                   Navigator.pop(context);
-                                } else if (x2!=x3){
+                                } else if (x2 != x3) {
                                   final snackBar = SnackBar(
                                       content:
                                           Text('Sorry password don\'t match!'));
                                   Scaffold.of(context).showSnackBar(snackBar);
-                                } else if(!_isSchoolCodeUnique){
+                                } else if (!_isSchoolCodeUnique) {
                                   final snackBar = SnackBar(
-                                      content:
-                                          Text('Sorry School Code aready exists!'));
+                                      content: Text(
+                                          'Sorry School Code aready exists!'));
+                                  Scaffold.of(context).showSnackBar(snackBar);
+                                } else {
+                                  final snackBar = SnackBar(
+                                      content: Text(
+                                          'Email or Mobile number already exists!'));
                                   Scaffold.of(context).showSnackBar(snackBar);
                                 }
-                                else{
-                                  final snackBar = SnackBar(
-                                      content:
-                                          Text('Email or Mobile number already exists!'));
-                                  Scaffold.of(context).showSnackBar(snackBar);
-                                  
-                                }
-                                _isEmailUnique=false;
-                                _isMobileUnique=false;
-                                _isSchoolCodeUnique=false;
-                                  
+                                _isEmailUnique = false;
+                                _isMobileUnique = false;
+                                _isSchoolCodeUnique = false;
                               },
                               padding: EdgeInsets.all(15.0),
                               shape: RoundedRectangleBorder(

@@ -1,3 +1,4 @@
+import 'package:Schools/Screens/SchoolScreens/StudentProfile.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -62,15 +63,18 @@ class _StudnetsState extends State<Studnets> {
               users.add(User(
                 email: element.data['email'],
                 id: element.documentID,
-                name: element.data['first name']+' '+element.data['last name'],
+                name: element.data['first name'] +
+                    ' ' +
+                    element.data['last name'],
                 studentsClass: element.data['class'],
                 studnetsSection: element.data['section'],
               ));
-            })).then( (value){
-              setState(() {
-                filteredUsers=users;
-              });
-            });
+            }))
+        .then((value) {
+      setState(() {
+        filteredUsers = users;
+      });
+    });
   }
 
   @override
@@ -87,14 +91,19 @@ class _StudnetsState extends State<Studnets> {
               _debouncer.run(() {
                 setState(() {
                   filteredUsers = users
-                      .where((u) => (
-                          u.name.toLowerCase().contains(string.toLowerCase()) ||
-                          u.email.toLowerCase().contains(string.toLowerCase()) ||
+                      .where((u) => (u.name
+                              .toLowerCase()
+                              .contains(string.toLowerCase()) ||
+                          u.email
+                              .toLowerCase()
+                              .contains(string.toLowerCase()) ||
                           u.id.toLowerCase().contains(string.toLowerCase()) ||
-                          u.studentsClass.toLowerCase().contains(string.toLowerCase()) ||
-                          u.studnetsSection.toLowerCase().contains(string.toLowerCase())
-                          )
-                        )
+                          u.studentsClass
+                              .toLowerCase()
+                              .contains(string.toLowerCase()) ||
+                          u.studnetsSection
+                              .toLowerCase()
+                              .contains(string.toLowerCase())))
                       .toList();
                 });
               });
@@ -109,18 +118,35 @@ class _StudnetsState extends State<Studnets> {
                   margin: EdgeInsets.symmetric(vertical: 10),
                   elevation: 5,
                   child: Padding(
-                    padding: EdgeInsets.all(3.0),
-                    child: ListTile(
-                      leading: Icon(Iconss.user_graduate,color: Colors.black,),
-                      title: Text(filteredUsers[index].name.toUpperCase(),style: TextStyle(fontWeight: FontWeight.bold),),
-                      subtitle: Text(filteredUsers[index].email+'\n'+filteredUsers[index].id),
-                      isThreeLine: true,
-                      trailing: Text(filteredUsers[index].studentsClass+' - '+filteredUsers[index].studnetsSection+' \t'),
-                      dense: true,
-                      onTap: (){},
-
-                    )
-                  ),
+                      padding: EdgeInsets.all(3.0),
+                      child: ListTile(
+                        leading: Icon(
+                          Iconss.user_graduate,
+                          color: Colors.black,
+                        ),
+                        title: Text(
+                          filteredUsers[index].name.toUpperCase(),
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text(filteredUsers[index].email +
+                            '\n' +
+                            filteredUsers[index].id),
+                        isThreeLine: true,
+                        trailing: Text(filteredUsers[index].studentsClass +
+                            ' - ' +
+                            filteredUsers[index].studnetsSection +
+                            ' \t'),
+                        dense: true,
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => StudentProfile(
+                                        schoolCode: schoolCode,
+                                        studentId: filteredUsers[index].id,
+                                      )));
+                        },
+                      )),
                 );
               },
             ),
@@ -130,4 +156,3 @@ class _StudnetsState extends State<Studnets> {
     );
   }
 }
-
