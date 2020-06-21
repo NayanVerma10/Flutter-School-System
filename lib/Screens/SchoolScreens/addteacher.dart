@@ -15,16 +15,16 @@ class AddTeacher extends StatefulWidget {
   @override
   _AddTeacherState createState() => _AddTeacherState(schoolCode);
 }
-// class Item {
-//   const Item(this.name);
-//   final String name;
 
-//}
+class Item {
+  const Item(this.name);
+  final String name;
+}
 
 class _AddTeacherState extends State<AddTeacher> {
-//  _formKey and _autoValidate
   final String schoolCode;
   _AddTeacherState(this.schoolCode);
+//  _formKey and _autoValidate
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _autoValidate = false;
   String _firstname;
@@ -36,17 +36,51 @@ class _AddTeacherState extends State<AddTeacher> {
   String _gender;
   String _desig;
   String _qual;
+  String _clstchr;
+  String section;
 
   // File _image;
   AnimationController _controller;
   // ImagePickerHandler imagePicker;
-
   final databaseReference = Firestore.instance;
 
   File _image;
   final picker = ImagePicker();
   File _selectedFile;
   bool _inProcess = false;
+  int value = 1;
+
+  _addItem() {
+    setState(() {
+      value = value + 1;
+    });
+  }
+
+  Item selectedclass;
+  Item selectedclass1;
+  Item selectedclass2;
+  Item selectedclass3;
+  Item selectedclass4;
+  Item selectedclass5;
+
+  List<Item> classs = <Item>[
+    const Item('I'),
+    const Item('II'),
+    const Item('III'),
+    const Item('IV'),
+    const Item('V'),
+    const Item('VI'),
+    const Item('VII'),
+    const Item('VIII'),
+    const Item('IX'),
+    const Item('X'),
+    const Item('XI'),
+    const Item('XII'),
+  ];
+  List<Item> classentries = [];
+  List<String> sectionentries = [];
+  List<String> subjectentries = [];
+  List<Object> entries = [];
 
   // File _image;
   // final picker = ImagePicker();
@@ -171,7 +205,7 @@ class _AddTeacherState extends State<AddTeacher> {
             child: Container(
                 child: Column(
           children: <Widget>[
-            SizedBox(height: 20),
+            // SizedBox(height: 20),
 
             Padding(
               padding: EdgeInsets.only(top: 20.0),
@@ -248,7 +282,7 @@ class _AddTeacherState extends State<AddTeacher> {
             //    )
             //     ]
             //      ) ,
-            SizedBox(height: 10),
+            // SizedBox(height: 10),
             Container(
                 margin: new EdgeInsets.all(15.0),
                 child: new Form(
@@ -342,6 +376,144 @@ class _AddTeacherState extends State<AddTeacher> {
                       //    addRadioButton(1, 'Female'),
                       //       ],
                       //    ),
+                      SizedBox(height: 10),
+                      Row(
+                        children: <Widget>[
+                          Text('Class teacher?',
+                              style: TextStyle(
+                                  fontSize: 17,
+                                  color: Colors.grey[600],
+                                  fontWeight: FontWeight.bold))
+                        ],
+                      ),
+
+                      RadioButtonGroup(
+                        activeColor: Colors.black,
+                        orientation: GroupedButtonsOrientation.HORIZONTAL,
+                        labels: [
+                          "Yes",
+                          "No",
+                        ],
+                        labelStyle: TextStyle(
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.bold,
+                            fontSize: 17),
+                        itemBuilder: (Radio rb, Text txt, int i) {
+                          return Row(
+                            children: <Widget>[
+                              rb,
+                              txt,
+                            ],
+                          );
+                        },
+                        // disabled: [
+                        //     "Option 1"
+                        //      ],
+                        onChange: (String label, int index) =>
+                            print("label: $label index: $index"),
+                        onSelected: (String label) =>
+                            {print(label), _clstchr = label},
+                      ),
+
+                      Row(children: <Widget>[
+                        Column(children: <Widget>[
+                          SizedBox(height: 20),
+                          Container(
+                            height: 45,
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 5),
+                            decoration: BoxDecoration(
+                                color: Colors.grey[350],
+                                borderRadius: BorderRadius.circular(10)),
+                            //  child: new IgnorePointer(
+                            //      ignoring: _clstchr=='Yes'? false:true ,
+                            child: DropdownButton<Item>(
+                              // disabledHint: Text(_clstchr),
+                              focusColor: Colors.grey[300],
+                              hint: Text(
+                                "Select class of class teacher",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              value: selectedclass,
+
+                              onChanged: (Item value) {
+                                setState(() {
+                                  selectedclass = value;
+                                });
+                              },
+                              items: classs.map((Item classs) {
+                                return DropdownMenuItem<Item>(
+                                  value: classs,
+                                  child: Row(
+                                    children: <Widget>[
+                                      SizedBox(width: 10),
+                                      Text(
+                                        classs.name,
+                                        style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          )
+                          //SizedBox(width: 15),
+
+                          //  SizedBox(width: 20,),
+                          // FlatButton.icon(onPressed: (){
+                          //   section.add(Item('E'));
+                          //   print('added');
+                          // },
+                          //  icon: Icon(Icons.add,color: Colors.black),
+                          //  label: Text('Add section',
+                          //  style: TextStyle(
+                          //    color: Colors.black
+                          //  ),
+                          //  ))
+                          //  )
+                        ]),
+                        SizedBox(width: 30),
+                        Flexible(
+                          child: new TextFormField(
+                            decoration: const InputDecoration(
+                                labelText: 'Section',
+                                hoverColor: Colors.black,
+                                focusColor: Colors.black),
+                            keyboardType: TextInputType.text,
+                            cursorColor: Colors.black,
+                            style: TextStyle(
+                                height: 1.5, fontWeight: FontWeight.bold),
+                            validator: validateText,
+                            onChanged: (String val) {
+                              section = val;
+                            },
+                          ),
+                        )
+                      ]),
+
+                      ListView.builder(
+                        itemCount: this.value,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) => _buildRow(index),
+                      ),
+
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            FlatButton(
+                              child: Icon(Icons.add, color: Colors.white),
+                              color: Colors.black87,
+                              padding: EdgeInsets.all(0),
+                              shape: CircleBorder(),
+                              disabledColor: Colors.grey,
+                              onPressed: _addItem,
+                            ),
+                          ]),
 
                       TextFormField(
                         decoration: const InputDecoration(
@@ -471,7 +643,7 @@ class _AddTeacherState extends State<AddTeacher> {
 
   String validateText(String value) {
     if (value.length == 0)
-      return 'Enter valid roll number';
+      return 'Enter valid value';
     else
       return null;
   }
@@ -495,40 +667,55 @@ class _AddTeacherState extends State<AddTeacher> {
   }
 
   void _validateInputs() {
+    for (int i = 0; i < value; i++) {
+      Map<String, String> obj = {
+        'Class': classentries[i].name,
+        'Section': sectionentries[i],
+        "Subject": subjectentries[i]
+      };
+      entries.add(obj);
+    }
+    print(entries);
     if (_formKey.currentState.validate()) {
 //    If all data are correct then save data to out variables
       _formKey.currentState.save();
-      createRecord();
+      createRecord(entries);
       showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          // return object of type Dialog
-          return AlertDialog(
-            title: new Text("Added"),
-            content: new Text("The details for $_firstname have been added"),
-            actions: <Widget>[
-              // usually buttons at the bottom of the dialog
-              new FlatButton(
-                child: new Text("Close"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  _formKey.currentState.reset();
-                },
-              ),
-            ],
-          );
-        },
-      );
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+                title: new Text("Added"),
+                content:
+                    new Text("The details for $_firstname have been added"),
+                actions: <Widget>[
+                  new FlatButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: new Text("Close"))
+                ]);
+          });
     } else {
 //    If all data are not valid then start auto validation.
       setState(() {
         _autoValidate = true;
       });
     }
+
+    entries = [];
   }
 
-  void createRecord() async {
+  void createRecord(entries) async {
     print(schoolCode);
+    bool isClassTeacher;
+    if (_clstchr == 'Yes')
+      isClassTeacher = true;
+    else
+      isClassTeacher = false;
+
+    Map<String,dynamic> classteacher={"isclassteacher":isClassTeacher,"class":selectedclass.name,"section":section};
+
+
     await databaseReference
         .collection("School")
         .document(schoolCode)
@@ -537,19 +724,124 @@ class _AddTeacherState extends State<AddTeacher> {
         .setData({
       'first name': _firstname,
       'last name': _lastname,
+      'qualification': _qual,
+      'gender': _gender,
+      'designation': _desig,
+      'classteacher':classteacher,
       'email': _email,
       'mobile': _mobile,
       'dob': _dob,
       'address': _address,
-      'gender': _gender,
-      'designation': _desig,
-      'qualification': _qual,
-    }).whenComplete(() => print('Teacher Added'));
+      'classes': entries
+    }).whenComplete(() => print('Teacher added'));
   }
+
 //  @override
 //   userImage(File _image) {
 //     setState(() {
 //       this._image = _image;
 //     });
 //   }
+  _buildRow(int index) {
+    //String stext="Subject"+ (index+1).toString();
+    //String ctext="Subject"+ (index+1).toString();
+    int v = index + 1;
+    Item newclass;
+    String newsection;
+    String newsubject;
+    classentries.add(newclass);
+    sectionentries.add(newsection);
+    subjectentries.add(newsubject);
+    return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Flexible(
+              child: Column(
+            children: <Widget>[
+              SizedBox(height: 20),
+              Container(
+                height: 45,
+                padding: EdgeInsets.symmetric(horizontal: 2, vertical: 5),
+                decoration: BoxDecoration(
+                    color: Colors.grey[350],
+                    borderRadius: BorderRadius.circular(10)),
+                child: DropdownButton<Item>(
+                  focusColor: Colors.black,
+                  //dropdownColor: Colors.grey,
+
+                  hint: Text(
+                    "Select class $v",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  value: classentries[index],
+                  onChanged: (Item value) {
+                    setState(() {
+                      classentries[index] = value;
+                    });
+                  },
+                  items: classs.map((Item classs) {
+                    return DropdownMenuItem<Item>(
+                      value: classs,
+                      child: Row(
+                        children: <Widget>[
+                          SizedBox(width: 10),
+                          Text(
+                            classs.name,
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
+          )),
+
+          // SizedBox(width:5),
+          Flexible(
+              child: Container(
+            width: 70,
+            child: TextFormField(
+              expands: false,
+              decoration: InputDecoration(
+                  labelText: 'Section',
+                  hoverColor: Colors.black,
+                  fillColor: Colors.black,
+                  focusColor: Colors.black),
+              keyboardType: TextInputType.text,
+              validator: validateText,
+              cursorColor: Colors.black,
+              style: TextStyle(height: 1.5, fontWeight: FontWeight.bold),
+              onChanged: (String val) {
+                sectionentries[index] = val;
+              },
+            ),
+          )),
+          //SizedBox(width:5),
+          Flexible(
+              child: Container(
+                  width: 120,
+                  child: TextFormField(
+                    expands: false,
+                    decoration: InputDecoration(
+                        labelText: 'Subject',
+                        hoverColor: Colors.black,
+                        fillColor: Colors.black,
+                        focusColor: Colors.black),
+                    keyboardType: TextInputType.text,
+                    validator: validateText,
+                    cursorColor: Colors.black,
+                    style: TextStyle(height: 1.5, fontWeight: FontWeight.bold),
+                    onChanged: (String val) {
+                      subjectentries[index] = val;
+                    },
+                  ))),
+          // classubj.addAll(entries);
+        ]);
+
+    // );
+  }
 }
