@@ -90,11 +90,9 @@ funcButton(DocumentSnapshot post)
   new RefreshIndicator(
     key:_refreshIndicatorkey,
   onRefresh: _refreshLocalGallery,
- 
       child: ListView.builder(
         itemCount: snapshot.data.length,  
         itemBuilder: (_,index){
-    
           return ListTile(
               //hoverColor: Colors.blue,
              //isThreeLine: true  
