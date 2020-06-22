@@ -135,7 +135,7 @@ class _SystemPadding extends StatelessWidget {
   Widget build(BuildContext context) {
     var mediaQuery = MediaQuery.of(context);
     return new AnimatedContainer(
-        padding: mediaQuery.viewInsets,
+        padding: mediaQuery.viewInsets/200,
         duration: const Duration(milliseconds: 300),
         child: child);
   }
