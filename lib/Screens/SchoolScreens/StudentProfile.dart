@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../Icons/iconss_icons.dart';
 
 class StudentProfile extends StatefulWidget {
   final String schoolCode;
@@ -15,30 +16,127 @@ class _StudentProfileState extends State<StudentProfile> {
   String studentId;
   _StudentProfileState(this.schoolCode, this.studentId);
 
-  Map<String, dynamic> student;
+  Widget _buildList(BuildContext context,String key, value) {
+    if (value.runtimeType == String)
+      return ListTile(
+        title: Text(key.toUpperCase(),style: TextStyle(fontWeight: FontWeight.bold,)),
+        subtitle: Text(value),
+        onTap: () {
+          _showDialog(context, key, value);
+        },
+      );
+    else if (value.runtimeType == List) {
+      return ListTile(
+        title: Text(key.toUpperCase(),style: TextStyle(fontWeight: FontWeight.bold,)),
+        subtitle: Text(value.toString()),
+      );
+    }
+  }
 
-  @override
-  void initState() {
-    super.initState();
-    Firestore.instance
-        .collection('School')
-        .document(schoolCode)
-        .collection('Student')
-        .document(studentId)
-        .get()
-        .then((value) {student=value.data;}).then((value){print(student);});
-        
+  _showDialog(BuildContext context, String key, String value) async {
+    String newValue;
+    await showDialog<String>(
+      context: context,
+      child: new _SystemPadding(
+        child: new AlertDialog(
+          contentPadding: const EdgeInsets.all(16.0),
+          content: new Row(
+            children: <Widget>[
+              new Expanded(
+                child: new TextField(
+                  autofocus: true,
+                  decoration: new InputDecoration(
+                      labelStyle: TextStyle(fontWeight: FontWeight.bold,),
+                      labelText: key.toUpperCase(), hintText: 'eg. '+value),
+                  onChanged: (value) {
+                    newValue = value;
+                  },
+                ),
+              )
+            ],
+          ),
+          actions: <Widget>[
+            new FlatButton(
+                child: const Text('CANCEL'),
+                onPressed: () {
+                  Navigator.pop(context);
+                }),
+            new FlatButton(
+                child: const Text('OPEN'),
+                onPressed: () async {
+                  Firestore.instance
+                      .collection('School')
+                      .document(schoolCode)
+                      .collection('Student')
+                      .document(studentId)
+                      .setData({key: newValue}, merge: true);
+                  Navigator.pop(context);
+                })
+          ],
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(' dsa'),
-      ),
-      body: Container(
-        child: Text(student['first name']),
-      )
-    );
+        appBar: AppBar(
+          title: Text('Studnet'),
+        ),
+        body: StreamBuilder(
+          stream: Firestore.instance
+              .collection('School')
+              .document(schoolCode)
+              .collection('Student')
+              .document(studentId)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return Center(child: CircularProgressIndicator());
+            }
+
+            DocumentSnapshot document = snapshot.data;
+            Map<String, dynamic> studentData = document.data;
+            var keys = studentData.keys.toList();
+
+            return Container(
+              margin: EdgeInsets.symmetric(vertical: 50, horizontal: 20),
+              child: Column(
+                children: <Widget>[
+                  Icon(
+                    Iconss.user_graduate,
+                    size: 100,
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      itemExtent: 80.0,
+                      itemCount: keys.length,
+                      itemBuilder: (context, index) {
+                        return _buildList(
+                            context, keys[index], studentData[keys[index]]);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ));
+  }
+}
+
+class _SystemPadding extends StatelessWidget {
+  final Widget child;
+
+  _SystemPadding({Key key, this.child}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    var mediaQuery = MediaQuery.of(context);
+    return new AnimatedContainer(
+        padding: mediaQuery.viewInsets,
+        duration: const Duration(milliseconds: 300),
+        child: child);
   }
 }

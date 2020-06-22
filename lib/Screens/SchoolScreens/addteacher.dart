@@ -64,6 +64,8 @@ class _AddTeacherState extends State<AddTeacher> {
   Item selectedclass5;
 
   List<Item> classs = <Item>[
+    const Item('LKG'),
+    const Item('UKG'),
     const Item('I'),
     const Item('II'),
     const Item('III'),

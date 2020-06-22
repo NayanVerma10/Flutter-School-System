@@ -51,9 +51,8 @@ class _StudnetsState extends State<Studnets> {
   List<User> filteredUsers = List();
 
   _StudnetsState(this.schoolCode);
-  @override
-  void initState() {
-    super.initState();
+
+  void loadData(){
     Firestore.instance
         .collection('School')
         .document(schoolCode)
@@ -76,9 +75,15 @@ class _StudnetsState extends State<Studnets> {
       });
     });
   }
+  @override
+  void initState() {
+    super.initState();
+    loadData();
+  }
 
   @override
   Widget build(BuildContext context) {
+    if(users.isNotEmpty)
     return Scaffold(
       body: Column(
         children: <Widget>[
@@ -115,8 +120,8 @@ class _StudnetsState extends State<Studnets> {
               itemCount: filteredUsers.length,
               itemBuilder: (BuildContext context, int index) {
                 return Card(
-                  margin: EdgeInsets.symmetric(vertical: 10),
-                  elevation: 5,
+                  margin: EdgeInsets.symmetric(vertical: 5),
+                  elevation: 0,
                   child: Padding(
                       padding: EdgeInsets.all(3.0),
                       child: ListTile(
@@ -136,7 +141,7 @@ class _StudnetsState extends State<Studnets> {
                             ' - ' +
                             filteredUsers[index].studnetsSection +
                             ' \t'),
-                        dense: true,
+                        dense: false,
                         onTap: () {
                           Navigator.push(
                               context,
@@ -154,5 +159,7 @@ class _StudnetsState extends State<Studnets> {
         ],
       ),
     );
+    else
+    return Center(widthFactor: 100, child: CircularProgressIndicator());
   }
 }

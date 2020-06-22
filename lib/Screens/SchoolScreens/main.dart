@@ -35,7 +35,10 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'SCHOOL NAME',
-      // theme: ThemeData.light(),
+      theme: ThemeData(
+        primaryColor: Colors.black,
+        accentColor: Colors.black
+      ),
       debugShowCheckedModeBanner: false,
       home: DefaultTabController(
         length: 5, // Number of Tabs you want

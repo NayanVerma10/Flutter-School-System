@@ -122,6 +122,8 @@ class _AddStdState extends State<AddStd> {
   Item selectedclass;
   Item selectedsection;
   List<Item> classs = <Item>[
+    const Item('LKG'),
+    const Item('UKG'),
     const Item('I'),
     const Item('II'),
     const Item('III'),
