@@ -62,7 +62,7 @@ class _StudentProfileState extends State<StudentProfile> {
                   Navigator.pop(context);
                 }),
             new FlatButton(
-                child: const Text('OPEN'),
+                child: const Text('Save'),
                 onPressed: () async {
                   Firestore.instance
                       .collection('School')
