@@ -45,6 +45,17 @@ _ClassDetailsState(this.className);
         backgroundColor: Colors.black,          
              ),
       body: tabs[_currentIndex],
+       floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.chat,
+        color: Colors.white,
+        ),
+        backgroundColor: Colors.black,
+        onPressed:null
+//          (){
+//            Navigator.push(context,
+//                       MaterialPageRoute(builder: (context) => Discussions()));
+//         },
+      ),
         bottomNavigationBar:BottomNavigationBar(
           currentIndex: _currentIndex,
           backgroundColor: Colors.black,
