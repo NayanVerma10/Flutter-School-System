@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'TeachersRegistration.dart';
+import './TeacherScreens/main.dart';
 
 class TeachersLogin extends StatefulWidget {
   @override
@@ -22,7 +23,7 @@ class _TeachersLoginState extends State<TeachersLogin> {
         .collection('School')
         .document(schoolCode)
         .collection('Teachers')
-        .where('email', isEqualTo: givenemailmobile)
+        .where('email', isEqualTo: givenemailmobile.toLowerCase())
         .getDocuments()
         .then((value) => {
               value.documents.forEach((element) {
@@ -137,7 +138,7 @@ class _TeachersLoginState extends State<TeachersLogin> {
                                 'Logged in',
                               )));
                               print(teachersId);
-                              //main(teachersId);
+                              main(schoolCode,teachersId);
                               //Navigator.push(context, MaterialPageRoute(builder: (context)=>SchoolRegistration()));
                               verified = false;
                             } else {

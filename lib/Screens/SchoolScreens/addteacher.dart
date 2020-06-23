@@ -730,7 +730,7 @@ class _AddTeacherState extends State<AddTeacher> {
       'gender': _gender,
       'designation': _desig,
       'classteacher':classteacher,
-      'email': _email,
+      'email': _email.toLowerCase(),
       'mobile': _mobile,
       'dob': _dob,
       'address': _address,

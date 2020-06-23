@@ -55,6 +55,13 @@ flutter:
     - family:  Iconsss
       fonts:
         - asset: fonts/Iconsss.ttf
+    - family:  Iconssss
+      fonts:
+        - asset: fonts/Iconssss.ttf     
+    - family:  MyFlutterApp
+      fonts:
+        - asset: fonts/MyFlutterApp.ttf
+
 
 
   # The following line ensures that the Material Icons font is

@@ -20,7 +20,7 @@ class _SchoolLoginState extends State<SchoolLogin> {
   Future<bool> verifyemail() async {
     await Firestore.instance
         .collection('School')
-        .where('schoolemail', isEqualTo: givenemailmobile)
+        .where('schoolemail', isEqualTo: givenemailmobile.toLowerCase())
         .getDocuments()
         .then((value) => {
               value.documents.forEach((element) {
