@@ -9,15 +9,15 @@ import './tutorials.dart';
 import '../Icons/iconsss_icons.dart';
 
 class ClassDetails extends StatefulWidget {
-  final String className;
-  ClassDetails({Key key, this.className}) : super(key: key);
+  final String className,schoolCode,teachersId,classNumber,section,subject;
+  ClassDetails({Key key, this.className,this.schoolCode,this.teachersId,this.classNumber,this.section,this.subject}) : super(key: key);
   @override
-  _ClassDetailsState createState() => _ClassDetailsState(className);
+  _ClassDetailsState createState() => _ClassDetailsState(className,schoolCode,teachersId,classNumber,section,subject);
 }
 
 class _ClassDetailsState extends State<ClassDetails> {
-  final String className;
-  _ClassDetailsState(this.className);
+  final String className,schoolCode,teachersId,classNumber,section,subject;
+  _ClassDetailsState(this.className,this.schoolCode,this.teachersId,this.classNumber,this.section,this.subject);
 
   int _currentIndex = 0;
 
@@ -27,7 +27,7 @@ class _ClassDetailsState extends State<ClassDetails> {
       Students(),
       Tutorials(),
       Assignments(),
-      Behavior(),
+      Behavior(className,schoolCode,teachersId,classNumber,section,subject),
       Attendance()
     ];
 
