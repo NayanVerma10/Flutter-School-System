@@ -1,27 +1,27 @@
 import 'package:firebase_helpers/firebase_helpers.dart';
 
-class EventModel extends DatabaseItem{
+class AnnouncementModel extends DatabaseItem{
   final String id;
   final String title;
   final String description;
-  final DateTime eventDate;
+  final DateTime date;
 
-  EventModel({this.id,this.title, this.description, this.eventDate}):super(id);
+  AnnouncementModel({this.id,this.title, this.description, this.date}):super(id);
 
-  factory EventModel.fromMap(Map data) {
-    return EventModel(
+  factory AnnouncementModel.fromMap(Map data) {
+    return AnnouncementModel(
       title: data['title'],
       description: data['description'],
-      eventDate: data['event_date'],
+      date: data['date'],
     );
   }
 
-  factory EventModel.fromDS(String id, Map<String,dynamic> data) {
-    return EventModel(
+  factory AnnouncementModel.fromDS(String id, Map<String,dynamic> data) {
+    return AnnouncementModel(
       id: id,
       title: data['title'],
       description: data['description'],
-      eventDate: data['event_date'].toDate(),
+      date: data['date'].toDate(),
     );
   }
 
@@ -29,7 +29,7 @@ class EventModel extends DatabaseItem{
     return {
       "title":title,
       "description": description,
-      "event_date":eventDate,
+      "date":date,
       "id":id,
     };
   }

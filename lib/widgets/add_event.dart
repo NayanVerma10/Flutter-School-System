@@ -1,22 +1,17 @@
 import 'package:Schools/models/event.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_helpers/firebase_helpers.dart';
+import 'package:Schools/Screens/service.dart';
 
 class AddEventPage extends StatefulWidget {
   final EventModel note;
-  final String schoolCode;
 
-  const AddEventPage({Key key, this.note, this.schoolCode}) : super(key: key);
+  const AddEventPage({Key key, this.note}) : super(key: key);
 
   @override
-  _AddEventPageState createState() => _AddEventPageState(this.schoolCode);
-
+  _AddEventPageState createState() => _AddEventPageState();
 }
 
-
 class _AddEventPageState extends State<AddEventPage> {
-  String schoolCode;
-  _AddEventPageState(this.schoolCode);
   TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
   TextEditingController _title;
   TextEditingController _description;
@@ -36,11 +31,9 @@ class _AddEventPageState extends State<AddEventPage> {
 
   @override
   Widget build(BuildContext context) {
-    DatabaseService<EventModel> eventDBS = DatabaseService<EventModel>("School/"+schoolCode+"/events/",fromDS: (id,data) => EventModel.fromDS(id, data), toMap:(event) => event.toMap());
-
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.note != null ? "Edit Note" : "Add note"),
+        title: Text(widget.note != null ? "Edit Event" : "Add event"),
       ),
       key: _key,
       body: Form(
@@ -116,7 +109,7 @@ class _AddEventPageState extends State<AddEventPage> {
                                 await eventDBS.createItem(EventModel(
                                   title: _title.text,
                                   description: _description.text,
-                                  eventDate: DateTime.now()
+                                  eventDate: _eventDate
                                 ));
                               }
                               Navigator.pop(context);

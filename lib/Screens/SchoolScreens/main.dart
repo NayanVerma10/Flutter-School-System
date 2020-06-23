@@ -12,6 +12,7 @@ import '../Icons/iconss_icons.dart';
 import '../Icons/iconsss_icons.dart';
 
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:Schools/widgets/add_event.dart';
 
 void main(String schoolCode) {
   runApp(MyApp(schoolCode));
@@ -34,6 +35,9 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+             routes: {
+        "add_event": (_) => AddEventPage(),
+      },
       title: 'SCHOOL NAME',
       theme: ThemeData(
         primaryColor: Colors.black,
