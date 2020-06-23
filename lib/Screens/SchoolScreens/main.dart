@@ -98,10 +98,10 @@ class _MyAppState extends State<MyApp> {
               children: [
                 //What each tab will contain
                 Studnets(schoolCode),
-                Management(),
+                Management(schoolCode),
                 Academics(),
                 Staff(schoolCode),
-                Profile()
+                Profile(schoolCode)
               ],
             ),
             floatingActionButton: SpeedDial(
