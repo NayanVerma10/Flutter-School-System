@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:teacher_dashboard/classDetails.dart';
-import 'package:teacher_dashboard/iconssss_icons.dart';
-import 'package:teacher_dashboard/stdProfile.dart';
-import 'package:teacher_dashboard/iconss_icons.dart';
-import 'package:teacher_dashboard/setBehavior.dart';
+import './classDetails.dart';
+import '../Icons/iconssss_icons.dart';
+import './stdProfile.dart';
+import '../Icons/iconss_icons.dart';
+import './setBehavior.dart';
 import 'dart:math' as math;
 
 class Behavior extends StatefulWidget {

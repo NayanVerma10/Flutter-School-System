@@ -36,5 +36,7 @@ class Iconssss {
   static const IconData bullhorn = IconData(0xe801, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData doc_text = IconData(0xf0f6, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData doc_text_inv = IconData(0xf15c, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData thumbs_up = IconData(0xf164, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData thumbs_down = IconData(0xf165, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData user_check = IconData(0xf4fc, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }
