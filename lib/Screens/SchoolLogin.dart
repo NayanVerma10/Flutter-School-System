@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'SchoolRegistration.dart';
 import 'SchoolScreens/main.dart';
+import 'service.dart';
 
 class SchoolLogin extends StatefulWidget {
   @override
@@ -116,6 +117,7 @@ class _SchoolLoginState extends State<SchoolLogin> {
                               )));
                               print(schoolCode);
                               main(schoolCode);
+                              service(schoolCode);
                               //Navigator.push(context, MaterialPageRoute(builder: (context)=>SchoolRegistration()));
                               verified = false;
                             } else {
