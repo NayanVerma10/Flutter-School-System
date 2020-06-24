@@ -226,7 +226,6 @@ class Message extends StatelessWidget {
                 children: [
                   Text(
                     text,
-                    textAlign: me ? TextAlign.right:TextAlign.left,
                   ),
                   Text(date.split('T')[0]+' '+date.split('T')[1].substring(0,5),style: TextStyle(fontSize: 6),)
                 ],
