@@ -807,7 +807,7 @@ class _AddStdState extends State<AddStd> {
       'rollno': _rollno,
       'gender': _gender,
       'class': selectedclass.name,
-      'section': section,
+      'section': section.toUpperCase(),
       'email': _email.toLowerCase(),
       'mobile': _mobile,
       'father \'s name': _fathername,
