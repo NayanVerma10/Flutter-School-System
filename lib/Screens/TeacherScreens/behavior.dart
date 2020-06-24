@@ -1,13 +1,8 @@
-import 'dart:html';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import './classDetails.dart';
-import '../Icons/iconssss_icons.dart';
-import './stdProfile.dart';
 import '../Icons/iconss_icons.dart';
 import './setBehavior.dart';
-import 'dart:math' as math;
 
 class Student {
   String name, documentId,rollNo;

@@ -7,17 +7,28 @@ import '../Icons/my_flutter_app_icons.dart';
 import './students.dart';
 import './tutorials.dart';
 import '../Icons/iconsss_icons.dart';
+import './Discussions.dart';
 
 class ClassDetails extends StatefulWidget {
-  final String className,schoolCode,teachersId,classNumber,section,subject;
-  ClassDetails({Key key, this.className,this.schoolCode,this.teachersId,this.classNumber,this.section,this.subject}) : super(key: key);
+  final String className, schoolCode, teachersId, classNumber, section, subject;
+  ClassDetails(
+      {Key key,
+      this.className,
+      this.schoolCode,
+      this.teachersId,
+      this.classNumber,
+      this.section,
+      this.subject})
+      : super(key: key);
   @override
-  _ClassDetailsState createState() => _ClassDetailsState(className,schoolCode,teachersId,classNumber,section,subject);
+  _ClassDetailsState createState() => _ClassDetailsState(
+      className, schoolCode, teachersId, classNumber, section, subject);
 }
 
 class _ClassDetailsState extends State<ClassDetails> {
-  final String className,schoolCode,teachersId,classNumber,section,subject;
-  _ClassDetailsState(this.className,this.schoolCode,this.teachersId,this.classNumber,this.section,this.subject);
+  final String className, schoolCode, teachersId, classNumber, section, subject;
+  _ClassDetailsState(this.className, this.schoolCode, this.teachersId,
+      this.classNumber, this.section, this.subject);
 
   int _currentIndex = 0;
 
@@ -27,7 +38,8 @@ class _ClassDetailsState extends State<ClassDetails> {
       Students(),
       Tutorials(),
       Assignments(),
-      Behavior(className,schoolCode,teachersId,classNumber,section,subject),
+      Behavior(
+          className, schoolCode, teachersId, classNumber, section, subject),
       Attendance()
     ];
     return Scaffold(
@@ -42,17 +54,24 @@ class _ClassDetailsState extends State<ClassDetails> {
       ),
       body: tabs[_currentIndex],
       floatingActionButton: FloatingActionButton(
-          child: Icon(
-            Icons.chat,
-            color: Colors.white,
-          ),
-          backgroundColor: Colors.black,
-          onPressed: null
-//          (){
-//            Navigator.push(context,
-//                       MaterialPageRoute(builder: (context) => Discussions()));
-//         },
-          ),
+        child: Icon(
+          Icons.chat,
+          color: Colors.white,
+        ),
+        backgroundColor: Colors.black,
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => Discussions(
+                      className: className,
+                      schoolCode: schoolCode,
+                      teachersId: teachersId,
+                      classNumber: classNumber,
+                      section: section,
+                      subject: subject)));
+        },
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         backgroundColor: Colors.black,
