@@ -77,7 +77,7 @@ class _ClassesState extends State<Classes> {
                     context,
                     MaterialPageRoute(
                         builder: (context) =>
-                            ClassDetails(className: className)));
+                            ClassDetails(className: className,classNumber: classList[index]['Class'],schoolCode: schoolCode,teachersId: teachersId,section: classList[index]['Section'],subject: classList[index]['Subject'],)));
               });
             },
             //  leading: Icon(icons[index]),

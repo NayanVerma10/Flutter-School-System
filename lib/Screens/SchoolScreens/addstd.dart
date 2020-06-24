@@ -815,7 +815,11 @@ class _AddStdState extends State<AddStd> {
       'dob': _dob,
       'address': _address,
       'subjects': subjects
-    }).whenComplete(() => print('Student added'));
+    }).whenComplete(() {
+      print('Student added');
+      subjects=[]; // So that when the form is filled again old values dont mix up , because they did;
+      }
+      );
   }
 
   _buildRow(int index) {

@@ -672,7 +672,7 @@ class _AddTeacherState extends State<AddTeacher> {
     for (int i = 0; i < value; i++) {
       Map<String, String> obj = {
         'Class': classentries[i].name,
-        'Section': sectionentries[i],
+        'Section': sectionentries[i].toUpperCase(),
         "Subject": subjectentries[i]
       };
       entries.add(obj);
@@ -715,7 +715,7 @@ class _AddTeacherState extends State<AddTeacher> {
     else
       isClassTeacher = false;
 
-    Map<String,dynamic> classteacher={"isclassteacher":isClassTeacher,"class":selectedclass.name,"section":section};
+    Map<String,dynamic> classteacher={"isclassteacher":isClassTeacher,"class":selectedclass.name,"section":section.toUpperCase()};
 
 
     await databaseReference
@@ -735,7 +735,10 @@ class _AddTeacherState extends State<AddTeacher> {
       'dob': _dob,
       'address': _address,
       'classes': entries
-    }).whenComplete(() => print('Teacher added'));
+    }).whenComplete((){
+      print('Teacher added');
+      entries=[];   // This is done so that when the form is filled again the previous values dont interfare; Coz they did the last time I tested (comment by Nayan)  
+    });
   }
 
 //  @override

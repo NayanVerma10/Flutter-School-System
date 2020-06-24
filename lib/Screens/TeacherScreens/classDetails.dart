@@ -30,7 +30,6 @@ class _ClassDetailsState extends State<ClassDetails> {
       Behavior(className,schoolCode,teachersId,classNumber,section,subject),
       Attendance()
     ];
-
     return Scaffold(
       appBar: AppBar(
         title: Text(

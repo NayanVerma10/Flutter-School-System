@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import './classDetails.dart';
@@ -7,36 +9,29 @@ import '../Icons/iconss_icons.dart';
 import './setBehavior.dart';
 import 'dart:math' as math;
 
+class Student {
+  String name, documentId,rollNo;
+  Student({this.name, this.documentId,this.rollNo});
+}
+
 class Behavior extends StatefulWidget {
-  String className, schoolCode, teachersId, classNumber, section, subject;
+  final String className, schoolCode, teachersId, classNumber, section, subject;
   Behavior(this.className, this.schoolCode, this.teachersId, this.classNumber,
       this.section, this.subject);
   @override
-  _BehaviorState createState() =>
-      _BehaviorState(schoolCode, teachersId, classNumber, section, subject);
+  _BehaviorState createState() => _BehaviorState(
+      schoolCode, teachersId, classNumber, section, subject, className);
 }
 
 //String className='X-A';
 
 class _BehaviorState extends State<Behavior> {
-  String schoolCode, teachersId, classNumber, section, subject;
+  String schoolCode, teachersId, classNumber, section, subject, className;
+  bool hasStudnets = true;
   _BehaviorState(this.schoolCode, this.teachersId, this.classNumber,
-      this.section, this.subject);
+      this.section, this.subject, this.className);
 
-  var stdName = [
-    'Lee Joon Gi',
-    'Cha Eun Woo',
-    'Lee Sung Kyung',
-    'Yang Ki Jong',
-    'Jang Ki Yong',
-    'Kim Tae Hyung',
-    'Kim Seo Woo',
-    'Jung Hae In',
-    'Bae Suzy',
-    'Chae Soo Bin',
-    'Jung Jin Yeong',
-    'Jung Ji Hyun'
-  ];
+  List<Student> studentList = [];
 
   void loadData() {
     Firestore.instance
@@ -47,7 +42,25 @@ class _BehaviorState extends State<Behavior> {
         .where('section', isEqualTo: section)
         .where('subjects', arrayContains: subject)
         .getDocuments()
-        .then((value) => print(value));
+        .then((value) {
+      List<Student> temp = [];
+      if (value.documents.isNotEmpty) {
+        value.documents.forEach((element) {
+          Student std = Student(
+              name:
+                  element.data['first name'] + ' ' + element.data['last name'],
+              documentId: element.documentID,rollNo: element.data['rollno']);
+          temp.add(std);
+        });
+        setState(() {
+          studentList = temp;
+        });
+      } else {
+        setState(() {
+          hasStudnets = false;
+        });
+      }
+    });
   }
 
   @override
@@ -59,55 +72,64 @@ class _BehaviorState extends State<Behavior> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: ListView.builder(
-      //itemCount: 10,
-      itemCount: stdName.length,
-      itemBuilder: (context, index) {
-        return Card(
-          //                           <-- Card widget
-          child: ListTile(
-              title: Text(
-                stdName[index],
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              leading: Icon(
-                Iconss.user_graduate,
-                color: Colors.black,
-                size: 20,
-              ),
-              trailing: Icon(
-                Icons.keyboard_arrow_right,
-                color: Colors.black,
-              ),
-              onTap: () {
-                //                                  <-- onTap
-                setState(() {
-                  // Navigator.push(context,
-                  //   MaterialPageRoute(builder: (context) => SetBehavior()));
-                  showDialog(
-                      context: context,
-                      builder: (context) {
-                        return Dialog(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6)),
-                            elevation: 16,
-                            child: SingleChildScrollView(
-                                child: Container(
-                                    height: 500.0,
-                                    width: 700.0,
-                                    child: SetBehavior()
-                                    // ])
-                                    )));
-                      });
-                });
-              }
+    if (hasStudnets && studentList.isNotEmpty)
+      return Scaffold(
+          body: ListView.builder(
+        //itemCount: 10,
+        itemCount: studentList.length,
+        itemBuilder: (context, index) {
+          return Card(
+            //                           <-- Card widget
+            child: ListTile(
+                title: Text(
+                  studentList[index].name,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(studentList[index].rollNo),
+                leading: Icon(
+                  Iconss.user_graduate,
+                  color: Colors.black,
+                  size: 20,
+                ),
+                trailing: Icon(
+                  Icons.keyboard_arrow_right,
+                  color: Colors.black,
+                ),
+                onTap: () {
+                  //                                  <-- onTap
+                  setState(() {
+                    // Navigator.push(context,
+                    //   MaterialPageRoute(builder: (context) => SetBehavior()));
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return Dialog(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(6)),
+                              elevation: 16,
+                              child: SingleChildScrollView(
+                                  child: Container(
+                                      height: 500.0,
+                                      width: 700.0,
+                                      child: SetBehavior(
+                                          schoolCode,
+                                          studentList[index].documentId,
+                                          className)
+                                      // ])
+                                      )));
+                        });
+                  });
+                }
 
-              //  leading: Icon(icons[index]),
-              // title: Text(titles[index]),
-              ),
-        );
-      },
-    ));
+                //  leading: Icon(icons[index]),
+                // title: Text(titles[index]),
+                ),
+          );
+        },
+      ));
+    else if (!hasStudnets)
+      return Text('');
+    else
+      return Center(child: CircularProgressIndicator());
   }
 }
