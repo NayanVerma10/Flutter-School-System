@@ -13,6 +13,8 @@ import '../Icons/iconsss_icons.dart';
 
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:Schools/widgets/add_event.dart';
+import 'package:Schools/widgets/add_announcements.dart';
+
 
 void main(String schoolCode) {
   runApp(MyApp(schoolCode));
@@ -37,6 +39,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
              routes: {
         "add_event": (_) => AddEventPage(),
+        "add_announcement": (_) => AddAnnouncementPage(),
       },
       title: 'SCHOOL NAME',
       theme: ThemeData(

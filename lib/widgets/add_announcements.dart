@@ -2,20 +2,20 @@ import 'package:Schools/models/announcement.dart';
 import 'package:flutter/material.dart';
 import 'package:Schools/Screens/service.dart';
 
-class AddEventPage extends StatefulWidget {
+class AddAnnouncementPage extends StatefulWidget {
   final AnnouncementModel note;
 
-  const AddEventPage({Key key, this.note}) : super(key: key);
+  const AddAnnouncementPage({Key key, this.note}) : super(key: key);
 
   @override
-  _AddEventPageState createState() => _AddEventPageState();
+  _AddAnnouncementPageState createState() => _AddAnnouncementPageState();
 }
 
-class _AddEventPageState extends State<AddEventPage> {
+class _AddAnnouncementPageState extends State<AddAnnouncementPage> {
   TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
   TextEditingController _title;
   TextEditingController _description;
-  DateTime _eventDate;
+  DateTime _date;
   final _formKey = GlobalKey<FormState>();
   final _key = GlobalKey<ScaffoldState>();
   bool processing;
@@ -25,7 +25,7 @@ class _AddEventPageState extends State<AddEventPage> {
     super.initState();
     _title = TextEditingController(text: widget.note != null ? widget.note.title : "");
     _description = TextEditingController(text:  widget.note != null ? widget.note.description : "");
-    _eventDate = DateTime.now();
+    _date = DateTime.now();
     processing = false;
   }
 
@@ -33,7 +33,7 @@ class _AddEventPageState extends State<AddEventPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.note != null ? "Edit Event" : "Add event"),
+        title: Text(widget.note != null ? "Edit Announcement" : "Add Announcement"),
       ),
       key: _key,
       body: Form(
@@ -73,12 +73,12 @@ class _AddEventPageState extends State<AddEventPage> {
               const SizedBox(height: 10.0),
               ListTile(
                 title: Text("Date (YYYY-MM-DD)"),
-                subtitle: Text("${_eventDate.year} - ${_eventDate.month} - ${_eventDate.day}"),
+                subtitle: Text("${_date.year} - ${_date.month} - ${_date.day}"),
                 onTap: ()async{
-                  DateTime picked = await showDatePicker(context: context, initialDate: _eventDate, firstDate: DateTime(_eventDate.year-5), lastDate: DateTime(_eventDate.year+5));
+                  DateTime picked = await showDatePicker(context: context, initialDate: _date, firstDate: DateTime(_date.year-5), lastDate: DateTime(_date.year+5));
                   if(picked != null) {
                     setState(() {
-                      _eventDate = picked;
+                      _date = picked;
                     });
                   }
                 },
@@ -109,7 +109,7 @@ class _AddEventPageState extends State<AddEventPage> {
                                 await annDBS.createItem(AnnouncementModel(
                                   title: _title.text,
                                   description: _description.text,
-                                  date: _eventDate
+                                  date: _date
                                 ));
                               }
                               Navigator.pop(context);

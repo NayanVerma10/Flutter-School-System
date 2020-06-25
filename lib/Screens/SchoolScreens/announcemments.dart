@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:table_calendar/table_calendar.dart';
-import 'package:Schools/widgets/view_event.dart';
+import 'package:Schools/widgets/view_announcements.dart';
 import 'package:Schools/models/announcement.dart';
 import 'package:Schools/Screens/service.dart';
 
@@ -13,26 +12,27 @@ class Announcements extends StatefulWidget {
 
 class _AnnouncementsState extends State<Announcements> {
   _AnnouncementsState(schoolCode);
-  Map<DateTime, List<dynamic>> _events;
-  List<dynamic> _selectedEvents;
+  // Map<String, List<dynamic>> _announcements;
+  List<dynamic> _announcements;
+  List<AnnouncementModel> allAnnouncements;
 
   @override
 void initState() {
     super.initState();
-    _events = {};
-    _selectedEvents = [];
+    _announcements = [];
+    // _selectedAnnouncements = [];
   }
   
-   Map<DateTime, List<dynamic>> _groupEvents(List<AnnouncementModel> allEvents) {
-    Map<DateTime, List<dynamic>> data = {};
-    allEvents.forEach((event) {
-      DateTime date = DateTime(
-          event.date.year, event.date.month, event.date.day, 12);
-      if (data[date] == null) data[date] = [];
-      data[date].add(event);
-    });
-    return data;
-  }
+  //  Map<String, List<dynamic>> _listAnnouncements(List<AnnouncementModel> allAnnouncements) {
+  //   Map<String, List<dynamic>> data = {};
+  //   allAnnouncements.forEach((announcement) {
+  //     if (data[title] == null) data[title] = [];
+  //     data[title].add(announcement);
+  //   });
+  //   return data;
+  // }
+
+  
   @override
   Widget build(BuildContext context) {
 
@@ -47,26 +47,27 @@ void initState() {
           stream: annDBS.streamList(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              List<AnnouncementModel> allEvents = snapshot.data;
-              if (allEvents.isNotEmpty) {
-                _events = _groupEvents(allEvents);
+              List<AnnouncementModel> allAnnouncements = snapshot.data;
+              if (allAnnouncements.isNotEmpty) {
+                _announcements = allAnnouncements;
               } else {
-                _events = {};
-                _selectedEvents = [];
+                _announcements = [];
+                // _selectedAnnouncements = [];
               }
-            }
+             }
             return SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  ..._selectedEvents.map((event) => ListTile(
-                        title: Text(event.title),
+                  ..._announcements.map((announcement) => ListTile(
+                        title: Text(announcement.title
+                        ,style: DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2),),
                         onTap: () {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (_) => EventDetailsPage(
-                                        event: event,
+                                  builder: (_) => AnnouncementDetailsPage(
+                                        announcement: announcement,
                                       )));
                         },
                       )),

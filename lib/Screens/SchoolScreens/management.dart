@@ -64,7 +64,8 @@ class _ManagementState extends State<Management> {
     child:new RaisedButton(
             padding: EdgeInsets.all(30),
             child: new Text(
-              "Delete Collection",
+              // "Delete Collection",
+              " Manage Entries  ",
               style:
                   DefaultTextStyle.of(context).style.apply(fontSizeFactor: 1.8),
             ),
