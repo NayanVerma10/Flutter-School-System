@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'SchoolLogin.dart';
+import 'TeachersLogin.dart';
+import 'StudentLogin.dart';
 import './Icons/iconss_icons.dart';
 
 class InitialScreen extends StatelessWidget {
@@ -24,7 +26,7 @@ class InitialScreen extends StatelessWidget {
                   color: Colors.black,
                   textColor: Colors.white,
                   padding: EdgeInsets.all(50),
-                  onPressed: () {},
+                  onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context)=>StudentLogin(),));},
                   icon: Icon(Iconss.user_graduate),
                   label: Text('Student'),
                   shape: RoundedRectangleBorder(
@@ -37,7 +39,7 @@ class InitialScreen extends StatelessWidget {
                   color: Colors.black,
                   textColor: Colors.white,
                   padding: EdgeInsets.all(50),
-                  onPressed: () {},
+                  onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context)=>TeachersLogin()));},
                   icon: Icon(Iconss.user_tie),
                   label: Text('Teacher'),
                   shape: RoundedRectangleBorder(

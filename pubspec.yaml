@@ -37,7 +37,8 @@ dependencies:
   flutter_speed_dial: 
   firebase_helpers:
   table_calendar:
-  
+  flutter_speed_dial:
+  bubble:       #Added By Nayan for Chat/Discussions 
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -60,6 +61,13 @@ flutter:
     - family:  Iconsss
       fonts:
         - asset: fonts/Iconsss.ttf
+    - family:  Iconssss
+      fonts:
+        - asset: fonts/Iconssss.ttf     
+    - family:  MyFlutterApp
+      fonts:
+        - asset: fonts/MyFlutterApp.ttf
+
 
 
   # The following line ensures that the Material Icons font is

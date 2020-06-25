@@ -25,7 +25,7 @@ class _StudentProfileState extends State<StudentProfile> {
           _showDialog(context, key, value);
         },
       );
-    else if (value.runtimeType == List) {
+    else /*if (value.runtimeType == List) */{
       return ListTile(
         title: Text(key.toUpperCase(),style: TextStyle(fontWeight: FontWeight.bold,)),
         subtitle: Text(value.toString()),

@@ -47,7 +47,7 @@ class _SchoolRegistrationStat extends State<SchoolRegistration> {
   Future<bool> verifyemail() async {
     await Firestore.instance
         .collection('School')
-        .where('schoolemail', isEqualTo: id)
+        .where('schoolemail', isEqualTo: id.toLowerCase())
         .getDocuments()
         .then((value) => {if (value.documents.isEmpty) _isEmailUnique = true});
     return true;
@@ -79,7 +79,7 @@ class _SchoolRegistrationStat extends State<SchoolRegistration> {
         Firestore.instance.collection("School").document(gpa);
     Map<String, dynamic> studentsm = {
       "schoolname": name,
-      "schoolemail": id,
+      "schoolemail": id.toLowerCase(),
       "schoolcode": gpa,
       "password": x2,
       "schoolno": x1,

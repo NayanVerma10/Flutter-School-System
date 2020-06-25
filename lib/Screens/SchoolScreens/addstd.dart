@@ -807,15 +807,19 @@ class _AddStdState extends State<AddStd> {
       'rollno': _rollno,
       'gender': _gender,
       'class': selectedclass.name,
-      'section': section,
-      'email': _email,
+      'section': section.toUpperCase(),
+      'email': _email.toLowerCase(),
       'mobile': _mobile,
       'father \'s name': _fathername,
       'mother \'s name': _mothername,
       'dob': _dob,
       'address': _address,
       'subjects': subjects
-    }).whenComplete(() => print('Student added'));
+    }).whenComplete(() {
+      print('Student added');
+      subjects=[]; // So that when the form is filled again old values dont mix up , because they did;
+      }
+      );
   }
 
   _buildRow(int index) {

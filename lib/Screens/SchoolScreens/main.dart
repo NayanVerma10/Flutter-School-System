@@ -59,7 +59,7 @@ class _MyAppState extends State<MyApp> {
                   // Headings of each tab
                   Tab(
                       icon: Icon(Iconsss.book_reader, size: 20),
-                      text: 'CLASSES'),
+                      text: 'STUDENTS'),
                   Column(children: <Widget>[
                     Container(
                       height: 20,

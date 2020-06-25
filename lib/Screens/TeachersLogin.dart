@@ -1,32 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'SchoolRegistration.dart';
-import 'SchoolScreens/main.dart';
-import 'service.dart';
+import 'TeachersRegistration.dart';
+import './TeacherScreens/main.dart';
 
-class SchoolLogin extends StatefulWidget {
+class TeachersLogin extends StatefulWidget {
   @override
-  _SchoolLoginState createState() => _SchoolLoginState();
+  _TeachersLoginState createState() => _TeachersLoginState();
 }
 
-class _SchoolLoginState extends State<SchoolLogin> {
+class _TeachersLoginState extends State<TeachersLogin> {
   final _formKey = GlobalKey<FormState>();
 
   String givenemailmobile;
   String givenpassword;
   String schoolCode;
+  String teachersId;
   bool verified = false;
 
   Future<bool> verifyemail() async {
     await Firestore.instance
         .collection('School')
-        .where('schoolemail', isEqualTo: givenemailmobile.toLowerCase())
+        .document(schoolCode)
+        .collection('Teachers')
+        .where('email', isEqualTo: givenemailmobile.toLowerCase())
         .getDocuments()
         .then((value) => {
               value.documents.forEach((element) {
                 if (element["password"] == givenpassword) verified = true;
-                schoolCode=element.documentID;
+                teachersId=element.documentID;
               })
             });
     return true;
@@ -35,12 +37,14 @@ class _SchoolLoginState extends State<SchoolLogin> {
   Future<bool> verifyphone() async {
     await Firestore.instance
         .collection('School')
-        .where('schoolno', isEqualTo: givenemailmobile)
+        .document(schoolCode)
+        .collection('Teachers')
+        .where('mobile', isEqualTo: givenemailmobile)
         .getDocuments()
         .then((value) => {
               value.documents.forEach((element) {
                 if (element["password"] == givenpassword) verified = true;
-                schoolCode=element.documentID;
+                teachersId=element.documentID;
               })
             });
     return true;
@@ -50,7 +54,7 @@ class _SchoolLoginState extends State<SchoolLogin> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('School Login'),
+        title: Text('Teachers Login'),
       ),
       body: Builder(
         builder: (context) => Container(
@@ -62,6 +66,24 @@ class _SchoolLoginState extends State<SchoolLogin> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
+                    TextFormField(
+                      onChanged: (string) => {schoolCode = string},
+                      decoration: InputDecoration(
+                          hintText: 'School Code',
+                          prefixIcon: Icon(
+                            Icons.school,
+                            color: Colors.black,
+                          )),
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return 'Please enter some text';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(
+                      height: 30,
+                    ),
                     TextFormField(
                       onChanged: (string) => {givenemailmobile = string},
                       decoration: InputDecoration(
@@ -115,9 +137,8 @@ class _SchoolLoginState extends State<SchoolLogin> {
                                   content: Text(
                                 'Logged in',
                               )));
-                              print(schoolCode);
-                              main(schoolCode);
-                              service(schoolCode);
+                              print(teachersId);
+                              main(schoolCode,teachersId);
                               //Navigator.push(context, MaterialPageRoute(builder: (context)=>SchoolRegistration()));
                               verified = false;
                             } else {
@@ -141,7 +162,7 @@ class _SchoolLoginState extends State<SchoolLogin> {
                           style: TextStyle(fontSize: 12),
                         ),
                         FlatButton(
-                          onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context)=>SchoolRegistration()));},
+                          onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context)=>TeachersRegistration()));},
                           child: Text(
                             'Register',
                             style: TextStyle(
