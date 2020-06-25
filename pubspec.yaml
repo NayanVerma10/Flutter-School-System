@@ -32,7 +32,8 @@ dependencies:
   grouped_buttons:
   image_picker:
   image_cropper:
-  flutter_speed_dial: 
+  flutter_speed_dial:
+  bubble:       #Added By Nayan for Chat/Discussions 
 
 
   # The following adds the Cupertino Icons font to your application.

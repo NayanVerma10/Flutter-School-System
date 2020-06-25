@@ -1,5 +1,7 @@
+import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/rendering.dart';
 
 class User {
   String className,
@@ -39,6 +41,7 @@ class _DiscussionsState extends State<Discussions> {
       subject,
       teachersName;
   User user;
+  int limitOfMessages=50;
   _DiscussionsState(this.className, this.schoolCode, this.teachersId,
       this.classNumber, this.section, this.subject);
 
@@ -49,6 +52,9 @@ class _DiscussionsState extends State<Discussions> {
 
   Future<void> callback() async {
     if (messageController.text.length > 0) {
+      setState(() {
+        limitOfMessages++;
+      });
       await _firestore
           .collection('School')
           .document(schoolCode)
@@ -66,7 +72,7 @@ class _DiscussionsState extends State<Discussions> {
       scrollController.animateTo(
         scrollController.position.maxScrollExtent,
         curve: Curves.easeOut,
-        duration: const Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 200),
       );
     }
   }
@@ -117,14 +123,16 @@ class _DiscussionsState extends State<Discussions> {
                     .collection('Classes')
                     .document(classNumber + '_' + section + '_' + subject)
                     .collection('Discussions')
-                    .orderBy('date')
+                    .orderBy('date',descending: true)
+                    .limit(limitOfMessages)
                     .snapshots(),
-                builder: (context, snapshot) {
+                builder: (context, snapshot){
                   if (!snapshot.hasData)
                     return Center(
                       child: CircularProgressIndicator(),
                     );
                   List<DocumentSnapshot> docs = snapshot.data.documents;
+                  print(limitOfMessages);
 
                   List<Widget> messages = docs
                       .map((doc) => Message(
@@ -136,17 +144,20 @@ class _DiscussionsState extends State<Discussions> {
                             me: teachersId == doc.data['fromId'],
                           ))
                       .toList();
+                  List<Widget> reversedMessages=messages.reversed.toList(); // This is Important because the data is captured in decending order
 
                   return ListView(
                     controller: scrollController,
                     children: <Widget>[
-                      ...messages,
+                      ...reversedMessages,
                     ],
                   );
                 },
               ),
             ),
             Container(
+              decoration: BoxDecoration(color: Colors.transparent),
+              padding: EdgeInsets.symmetric(horizontal: 2,vertical: 2),
               child: Row(
                 children: <Widget>[
                   Expanded(
@@ -154,11 +165,12 @@ class _DiscussionsState extends State<Discussions> {
                       onSubmitted: (value) => callback(),
                       decoration: InputDecoration(
                         hintText: "Enter a Message...",
-                        border: const OutlineInputBorder(),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(70),),
                       ),
                       controller: messageController,
                     ),
                   ),
+                  SizedBox(width: 2,),
                   SendButton(
                     text: "Send",
                     callback: callback,
@@ -180,10 +192,11 @@ class SendButton extends StatelessWidget {
   const SendButton({Key key, this.text, this.callback}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return FlatButton(
-      color: Colors.orange,
+    return FloatingActionButton(
+      elevation: 0,
+      tooltip: text,
+      child: Icon(Icons.send),
       onPressed: callback,
-      child: Text(text),
     );
   }
 }
@@ -202,7 +215,7 @@ class Message extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 5,vertical: 5),
+      padding: EdgeInsets.symmetric(horizontal: 5,vertical: 7),
       child: Column(
         crossAxisAlignment:
             me ? CrossAxisAlignment.end : CrossAxisAlignment.start,
@@ -214,13 +227,14 @@ class Message extends StatelessWidget {
               fontWeight: isTeacher?FontWeight.bold:FontWeight.normal,
             ),
           ),
-          Material(
+          Bubble(
             color: me ? Colors.green[100] : Colors.deepPurple[100],
-            borderRadius: BorderRadius.circular(10.0),
-            elevation: 6.0,
+            nip: me ? BubbleNip.rightTop : BubbleNip.leftTop,
+            nipWidth: 12,
+            elevation: 2,
             child: Container(
-              constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width*0.75),
-              padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+              constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width*0.7,),
+              padding: EdgeInsets.symmetric(vertical: 1.0, horizontal: 5.0),
               child: Column(
                 crossAxisAlignment: me?CrossAxisAlignment.end:CrossAxisAlignment.start,
                 children: [
@@ -231,7 +245,7 @@ class Message extends StatelessWidget {
                 ],
               ),
             ),
-          )
+          ),
         ],
       ),
     );
