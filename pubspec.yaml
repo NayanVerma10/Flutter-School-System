@@ -37,7 +37,6 @@ dependencies:
   flutter_speed_dial: 
   firebase_helpers:
   table_calendar:
-  flutter_speed_dial:
   bubble:       #Added By Nayan for Chat/Discussions 
 
 
