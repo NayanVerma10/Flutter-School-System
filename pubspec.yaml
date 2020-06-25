@@ -27,11 +27,16 @@ dependencies:
   # Firebase Related Dependencies
   cloud_functions:
   cloud_firestore:
+  font_awesome_flutter:
 
   # Other Dependencies
   grouped_buttons:
   image_picker:
+  firebase_storage:
   image_cropper:
+  flutter_speed_dial: 
+  firebase_helpers:
+  table_calendar:
   flutter_speed_dial:
   bubble:       #Added By Nayan for Chat/Discussions 
 
