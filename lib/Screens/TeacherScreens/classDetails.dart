@@ -25,13 +25,12 @@ class ClassDetails extends StatefulWidget {
       className, schoolCode, teachersId, classNumber, section, subject);
 }
 
-class _ClassDetailsState extends State<ClassDetails> {
+class _ClassDetailsState extends State<ClassDetails> 
+{
   final String className, schoolCode, teachersId, classNumber, section, subject;
   _ClassDetailsState(this.className, this.schoolCode, this.teachersId,
-      this.classNumber, this.section, this.subject);
-
+  this.classNumber, this.section, this.subject);
   int _currentIndex = 0;
-
   @override
   Widget build(BuildContext context) {
     var tabs = [
@@ -40,7 +39,7 @@ class _ClassDetailsState extends State<ClassDetails> {
       Assignments(),
       Behavior(
           className, schoolCode, teachersId, classNumber, section, subject),
-      Attendance()
+      Pagin1()
     ];
     return Scaffold(
       appBar: AppBar(
