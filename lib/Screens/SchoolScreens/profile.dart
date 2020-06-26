@@ -17,13 +17,12 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   File _image;
   String schoolCode;
-  School school = School("", "", "", "","");
+  School school = School("", "", "", "", "");
   TextEditingController _schoolNameController = TextEditingController();
   TextEditingController _schoolBoardController = TextEditingController();
   TextEditingController _schoolNoController = TextEditingController();
   TextEditingController _schoolEmailController = TextEditingController();
   TextEditingController _schoolPasswordController = TextEditingController();
-
 
   _ProfileState(this.schoolCode);
 
@@ -67,14 +66,17 @@ class _ProfileState extends State<Profile> {
   }
 
   Widget displayUserInformation(context, snapshot) {
+    
     return Column(
       children: <Widget>[
         Column(
           children: <Widget>[
+                                    Padding(padding: const EdgeInsets.all(10)),
+
             Align(
               alignment: Alignment.center,
               child: CircleAvatar(
-                radius: 100,
+                radius: 70,
                 backgroundColor: Color(0x8A000000),
                 child: ClipOval(
                   child: SizedBox(
@@ -104,7 +106,7 @@ class _ProfileState extends State<Profile> {
           child: Text(
             "${school.schoolname}",
             style:
-                DefaultTextStyle.of(context).style.apply(fontSizeFactor: 3.0),
+                DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2.5),
           ),
         ),
         Padding(
@@ -128,7 +130,13 @@ class _ProfileState extends State<Profile> {
             style: DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2),
           ),
         ),
+                        Padding(padding: const EdgeInsets.all(10)),
+
         RaisedButton(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(18.0),
+              side: BorderSide(color: Colors.black)),
+              
           child: Text("Edit Details",
               style:
                   DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2)),
@@ -157,113 +165,156 @@ class _ProfileState extends State<Profile> {
 
   void _schoolEditBottomSheet(BuildContext context) {
     showModalBottomSheet(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(15.0)),
+      ),
+      backgroundColor: Colors.white70,
       isScrollControlled: true,
       context: context,
       builder: (BuildContext bc) {
         return Container(
-          height: MediaQuery.of(context).size.height * .80,
+          height: MediaQuery.of(context).size.height * .65,
           child: Padding(
             padding: const EdgeInsets.only(left: 15.0, top: 15.0),
             child: Column(
               children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Text("Update Profile",
-                        style: DefaultTextStyle.of(context)
-                            .style
-                            .apply(fontSizeFactor: 1.5)),
-                    Spacer(),
-                    IconButton(
-                      icon: Icon(Icons.cancel),
-                      color: Colors.black,
-                      iconSize: 25,
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ],
+             
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 8.0),
                 ),
                 Row(
                   children: [
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.only(right: 15.0),
-                        child: TextField(
+                        child: TextFormField(
                           controller: _schoolNameController,
+                          validator: (value) => (value.isEmpty)
+                              ? "Please Enter your School Name"
+                              : null,
                           decoration: InputDecoration(
-                            helperText: "School Name",
-                          ),
+                              contentPadding: new EdgeInsets.symmetric(
+                                  vertical: 0.0, horizontal: 10.0),
+                              labelText: "School Name",
+                              filled: true,
+                              fillColor: Colors.white54,
+                              focusColor: Colors.white,
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(25))),
                         ),
                       ),
                     )
                   ],
                 ),
+                Padding(padding: const EdgeInsets.all(5)),
                 Row(
                   children: [
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.only(right: 15.0),
-                        child: TextField(
+                        child: TextFormField(
                           controller: _schoolBoardController,
+                          validator: (value) => (value.isEmpty)
+                              ? "Please Enter your School's Board of Affiliation"
+                              : null,
                           decoration: InputDecoration(
-                            helperText: "School Board",
-                          ),
+                              contentPadding: new EdgeInsets.symmetric(
+                                  vertical: 0.0, horizontal: 10.0),
+                              labelText: "School Board",
+                              filled: true,
+                              fillColor: Colors.white54,
+                              focusColor: Colors.white,
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(25))),
                         ),
                       ),
                     )
                   ],
                 ),
-                    Row(
+                Padding(padding: const EdgeInsets.all(5)),
+                Row(
                   children: [
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.only(right: 15.0),
-                        child: TextField(
+                        child: TextFormField(
                           controller: _schoolNoController,
+                          validator: (value) => (value.isEmpty)
+                              ? "Please Enter your School's Affiliation Code"
+                              : null,
                           decoration: InputDecoration(
-                            helperText: "School Number",
-                          ),
+                              contentPadding: new EdgeInsets.symmetric(
+                                  vertical: 0.0, horizontal: 10.0),
+                              labelText: "School's Affiliation Code",
+                              filled: true,
+                              fillColor: Colors.white54,
+                              focusColor: Colors.white,
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(25))),
                         ),
                       ),
                     )
                   ],
                 ),
+                Padding(padding: const EdgeInsets.all(5)),
                 Row(
                   children: [
                     Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 15.0),
-                        child: TextField(
-                          controller: _schoolEmailController,
-                          decoration: InputDecoration(
-                            helperText: "School Email (required for login)",
-                          ),
-                        ),
+                        child: Padding(
+                      padding: const EdgeInsets.only(right: 15.0),
+                      child: TextFormField(
+                        controller: _schoolEmailController,
+                        validator: (value) => (value.isEmpty)
+                            ? "Please Enter your School Email to be used for login"
+                            : null,
+                        decoration: InputDecoration(
+                            contentPadding: new EdgeInsets.symmetric(
+                                vertical: 0.0, horizontal: 10.0),
+                            labelText: "School Email",
+                            filled: true,
+                            fillColor: Colors.white54,
+                            focusColor: Colors.white,
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(25))),
                       ),
-                    )
+                    ))
                   ],
                 ),
-            
+                Padding(padding: const EdgeInsets.all(5)),
                 Row(
                   children: [
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.only(right: 15.0),
-                        child: TextField(
+                        child: TextFormField(
                           controller: _schoolPasswordController,
+                          validator: (value) => (value.isEmpty)
+                              ? "Please Enter the password to be used for login"
+                              : null,
                           decoration: InputDecoration(
-                            helperText: "Password required for login",
-                          ),
+                              contentPadding: new EdgeInsets.symmetric(
+                                  vertical: 0.0, horizontal: 10.0),
+                              labelText: "Login Password",
+                              filled: true,
+                              fillColor: Colors.white54,
+                              focusColor: Colors.white,
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(25))),
                         ),
                       ),
                     )
                   ],
                 ),
+                Padding(padding: const EdgeInsets.all(5)),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     RaisedButton(
-                      child: Text('Save'),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18.0),
+                          side: BorderSide(color: Colors.black)),
+                      child: Text('Save', style: TextStyle(fontSize: 22)),
                       color: Colors.black,
                       textColor: Colors.white,
                       onPressed: () async {
@@ -271,13 +322,14 @@ class _ProfileState extends State<Profile> {
                         school.schoolemail = _schoolEmailController.text;
                         school.schoolno = _schoolNoController.text;
                         school.schoolboard = _schoolBoardController.text;
-                        school.schoolpassword =_schoolPasswordController.text;
+                        school.schoolpassword = _schoolPasswordController.text;
                         setState(() {
                           _schoolNameController.text = school.schoolname;
                           _schoolEmailController.text = school.schoolemail;
                           _schoolNoController.text = school.schoolno;
                           _schoolBoardController.text = school.schoolboard;
-                          _schoolPasswordController.text=school.schoolpassword;
+                          _schoolPasswordController.text =
+                              school.schoolpassword;
                         });
                         Firestore.instance
                             .collection('School')

@@ -19,65 +19,81 @@ class _ManagementState extends State<Management> {
   Widget build(BuildContext context) {
     String schoolCode;
     return Container(
+      padding: const EdgeInsets.all(20),
       margin: const EdgeInsets.only(top: 30.0),
       child: new Column(
         children: <Widget>[
-                   Padding(
-    padding: const EdgeInsets.all(20),
-    child: new RaisedButton(
-            padding: EdgeInsets.all(30),
-            child: new Text(
-              "Announcements ",
-              style:
-                  DefaultTextStyle.of(context).style.apply(fontSizeFactor: 1.8),
+          Padding(padding: const EdgeInsets.all(20)),
+          ButtonTheme(
+            minWidth: 350.0,
+            height: 80.0,
+            buttonColor: Colors.black,
+            hoverColor: Colors.blueGrey[200],
+            child: new RaisedButton(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18.0),
+                  side: BorderSide(color: Colors.black)),
+              padding: EdgeInsets.all(30),
+              child: new Text("Announcements ",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 30)),
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => Announcements(schoolCode)));
+              },
             ),
-            color: Colors.blueAccent[600],
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => Announcements(schoolCode)));
-            },
           ),
-          ),
-           Padding(
-    padding: const EdgeInsets.all(20),
-    child:new RaisedButton(
-            padding: EdgeInsets.all(30),
-            child: new Text(
-              "Events Calendar",
-              style:
-                  DefaultTextStyle.of(context).style.apply(fontSizeFactor: 1.8),
+          Padding(padding: const EdgeInsets.all(20)),
+
+          ButtonTheme(
+            minWidth: 350.0,
+            height: 80.0,
+            buttonColor: Colors.black,
+            hoverColor: Colors.blueGrey[200],
+            child: new RaisedButton(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18.0),
+                  side: BorderSide(color: Colors.black)),
+              padding: EdgeInsets.all(30),
+              child: new Text("Events Calendar",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 30)),
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => Calendar(schoolCode)));
+              },
             ),
-            color: Colors.blueAccent[600],
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => Calendar(schoolCode)));
-            },
           ),
-           ),
- 
-           Padding(
-    padding: const EdgeInsets.all(20),
-    child:new RaisedButton(
-            padding: EdgeInsets.all(30),
-            child: new Text(
-              // "Delete Collection",
-              " Manage Entries  ",
-              style:
-                  DefaultTextStyle.of(context).style.apply(fontSizeFactor: 1.8),
+          Padding(padding: const EdgeInsets.all(20)),
+
+          ButtonTheme(
+            minWidth: 350.0,
+            height: 80.0,
+            buttonColor: Colors.black,
+            hoverColor: Colors.red[800],
+            child: new RaisedButton(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18.0),
+                  side: BorderSide(color: Colors.black)),
+              padding: EdgeInsets.all(30),
+              child: new Text(" Delete Collections ",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 30)),
+              color: Colors.blueAccent[600],
+              onPressed: () {},
             ),
-            color: Colors.blueAccent[600],
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => Calendar(schoolCode)));
-            },
-          ),
-           )
+          )
+          //  )
         ],
       ),
     );

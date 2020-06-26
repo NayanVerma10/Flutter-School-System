@@ -24,5 +24,6 @@ class AnnouncementDetailsPage extends StatelessWidget {
         ),
       ),
     );
+
   }
 }
