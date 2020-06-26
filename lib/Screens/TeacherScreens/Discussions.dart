@@ -1,19 +1,15 @@
+import 'dart:async';
+
 import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/rendering.dart';
 
 class User {
-  String className,
-      schoolCode,
-      userId,
-      classNumber,
-      section,
-      subject,
-      userName;
+  String className, schoolCode, userId, classNumber, section, subject, userName;
   bool isTeacher;
   User(this.userName, this.className, this.schoolCode, this.userId,
-      this.classNumber, this.section, this.subject,this.isTeacher);
+      this.classNumber, this.section, this.subject, this.isTeacher);
 }
 
 class Discussions extends StatefulWidget {
@@ -41,7 +37,7 @@ class _DiscussionsState extends State<Discussions> {
       subject,
       teachersName;
   User user;
-  int limitOfMessages=50;
+  int limitOfMessages = 50;
   _DiscussionsState(this.className, this.schoolCode, this.teachersId,
       this.classNumber, this.section, this.subject);
 
@@ -92,7 +88,7 @@ class _DiscussionsState extends State<Discussions> {
               value.data['first name'] + ' ' + value.data['last name'])
           .then((value) {
         user = User(teachersName, className, schoolCode, teachersId,
-            classNumber, section, subject,true);
+            classNumber, section, subject, true);
       });
     });
   }
@@ -123,10 +119,10 @@ class _DiscussionsState extends State<Discussions> {
                     .collection('Classes')
                     .document(classNumber + '_' + section + '_' + subject)
                     .collection('Discussions')
-                    .orderBy('date',descending: true)
+                    .orderBy('date', descending: true)
                     .limit(limitOfMessages)
                     .snapshots(),
-                builder: (context, snapshot){
+                builder: (context, snapshot) {
                   if (!snapshot.hasData)
                     return Center(
                       child: CircularProgressIndicator(),
@@ -144,8 +140,15 @@ class _DiscussionsState extends State<Discussions> {
                             me: teachersId == doc.data['fromId'],
                           ))
                       .toList();
-                  List<Widget> reversedMessages=messages.reversed.toList(); // This is Important because the data is captured in decending order
-
+                  List<Widget> reversedMessages = messages.reversed
+                      .toList(); // This is Important because the data is captured in decending order
+                  Timer(
+                      Duration(milliseconds: 200),
+                      () => scrollController.animateTo(
+                            scrollController.position.maxScrollExtent,
+                            curve: Curves.easeOut,
+                            duration: const Duration(milliseconds: 200),
+                          ));
                   return ListView(
                     controller: scrollController,
                     children: <Widget>[
@@ -157,7 +160,7 @@ class _DiscussionsState extends State<Discussions> {
             ),
             Container(
               decoration: BoxDecoration(color: Colors.transparent),
-              padding: EdgeInsets.symmetric(horizontal: 2,vertical: 2),
+              padding: EdgeInsets.symmetric(horizontal: 2, vertical: 2),
               child: Row(
                 children: <Widget>[
                   Expanded(
@@ -165,12 +168,16 @@ class _DiscussionsState extends State<Discussions> {
                       onSubmitted: (value) => callback(),
                       decoration: InputDecoration(
                         hintText: "Enter a Message...",
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(70),),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(70),
+                        ),
                       ),
                       controller: messageController,
                     ),
                   ),
-                  SizedBox(width: 2,),
+                  SizedBox(
+                    width: 2,
+                  ),
                   SendButton(
                     text: "Send",
                     callback: callback,
@@ -210,12 +217,20 @@ class Message extends StatelessWidget {
 
   final bool me;
 
-  const Message({Key key, this.from, this.text, this.me,this.isTeacher,this.date,this.fromId}) : super(key: key);
+  const Message(
+      {Key key,
+      this.from,
+      this.text,
+      this.me,
+      this.isTeacher,
+      this.date,
+      this.fromId})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 5,vertical: 7),
+      padding: EdgeInsets.symmetric(horizontal: 5, vertical: 7),
       child: Column(
         crossAxisAlignment:
             me ? CrossAxisAlignment.end : CrossAxisAlignment.start,
@@ -224,7 +239,7 @@ class Message extends StatelessWidget {
             from,
             style: TextStyle(
               fontSize: 8,
-              fontWeight: isTeacher?FontWeight.bold:FontWeight.normal,
+              fontWeight: isTeacher ? FontWeight.bold : FontWeight.normal,
             ),
           ),
           Bubble(
@@ -233,15 +248,23 @@ class Message extends StatelessWidget {
             nipWidth: 12,
             elevation: 2,
             child: Container(
-              constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width*0.7,),
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.7,
+              ),
               padding: EdgeInsets.symmetric(vertical: 1.0, horizontal: 5.0),
               child: Column(
-                crossAxisAlignment: me?CrossAxisAlignment.end:CrossAxisAlignment.start,
+                crossAxisAlignment:
+                    me ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                 children: [
                   Text(
                     text,
                   ),
-                  Text(date.split('T')[0]+' '+date.split('T')[1].substring(0,5),style: TextStyle(fontSize: 6),)
+                  Text(
+                    date.split('T')[0] +
+                        ' ' +
+                        date.split('T')[1].substring(0, 5),
+                    style: TextStyle(fontSize: 6),
+                  )
                 ],
               ),
             ),
