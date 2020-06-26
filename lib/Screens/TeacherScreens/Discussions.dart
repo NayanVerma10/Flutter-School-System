@@ -106,7 +106,7 @@ class _DiscussionsState extends State<Discussions> {
           IconButton(
             icon: Icon(Icons.close),
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.of(context).popUntil((route) => route.isFirst);
             },
           )
         ],
