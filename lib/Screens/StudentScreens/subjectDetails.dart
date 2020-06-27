@@ -120,30 +120,8 @@ class _SubjectDetailsState extends State<SubjectDetails>
                                 builder: (context) => Tutorials()));
                       });
                     },
-                    //  leading: Icon(icons[index]),
-                    // title: Text(titles[index]),
                   ),
                 )),
-                // Container(
-                //   margin: const EdgeInsets.only(left: 10.0, top: 30.0,bottom: 10,
-                //       ),
-                //   height: 60,
-                // child: Column(
-                //   mainAxisAlignment: MainAxisAlignment.start,
-                //   children: [
-                // Text('Tutorial',
-                // style: TextStyle(
-                //   backgroundColor: Colors.grey[300],
-                //   fontWeight: FontWeight.bold,
-                //   fontSize: 17
-                //   ),
-                // ),
-                // Text('Completed:0'),
-                // Text('Pending:0')
-                // ]),
-                //   //color: Colors.blue,
-                //   padding: EdgeInsets.all(4),
-                //   )
               ]),
               Row(children: [
                 new Container(
@@ -198,29 +176,14 @@ class _SubjectDetailsState extends State<SubjectDetails>
                                 builder: (context) => Assignments()));
                       });
                     },
-                    //  leading: Icon(icons[index]),
-                    // title: Text(titles[index]),
                   ),
                 )),
               ]),
-              Container(
-                margin: const EdgeInsets.only(
-                  left: 0.0,
-                  top: 20,
-                ),
-                child: Text(
-                  'Attendance',
-                  style: TextStyle(
-                      fontSize: 17,
-                      backgroundColor: Colors.grey[300],
-                      fontWeight: FontWeight.bold),
-                ),
-              ),
 
               Row(children: [
                 new Container(
                   margin: const EdgeInsets.only(
-                      left: 15.0, top: 10, bottom: 10, right: 15),
+                      left: 15.0, top: 30, bottom: 10, right: 15),
                   width: 80.0,
                   height: 80.0,
                   decoration: new BoxDecoration(
@@ -231,109 +194,82 @@ class _SubjectDetailsState extends State<SubjectDetails>
                           fit: BoxFit.cover)),
                 ),
                 Container(
-                    margin: const EdgeInsets.only(top: 0.0, bottom: 10),
-                    height: 100,
+                    margin: EdgeInsets.only(top: 20.0, bottom: 10),
+                    height: 180,
                     child: VerticalDivider(color: Colors.grey)),
-                // color: Colors.red,
-
-                // Text('Attendance',
-                // style: TextStyle(
-                //   fontSize: 17,
-                //   backgroundColor: Colors.grey[300],
-                //   fontWeight: FontWeight.bold
-                // ),
-                // ),
-
-                //SizedBox(height: 10,),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
+                Flexible(
+                    child: Container(
+                  // alignment: Alignment.centerLeft,
+                  // width: 200,
+                  margin: const EdgeInsets.only(top: 15.0),
+                  child: ListTile(
+                    // dense: true,
+                    // contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
+                    // contentPadding: EdgeInsets.only(left: 5.0),
+                    title: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Attendance',
+                            style: TextStyle(
+                                backgroundColor: Colors.grey[300],
+                                fontWeight: FontWeight.bold,
+                                fontSize: 17),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Container(
+                                  height: 180,
+                                  width: 110,
+                                  child: PieChart(
+                                    dataMap: dataMap,
+                                    chartLegendSpacing: 20.0,
+                                    chartRadius: 110,
+                                    colorList: colorlist,
+                                    legendPosition: LegendPosition.bottom,
+                                    chartType: ChartType.ring,
+                                    chartValueBackgroundColor: Colors.grey[200],
+                                    chartValueStyle:
+                                        defaultChartValueStyle.copyWith(
+                                      color:
+                                          Colors.blueGrey[900].withOpacity(0.9),
+                                    ),
+                                    showChartValueLabel: true,
+                                  ),
+                                ),
+                              ]),
+                        ]),
+                    trailing: Container(
                       margin: const EdgeInsets.only(
-                        left: 20.0,
-                        top: 0,
+                        top: 80,
                       ),
-                      child: Text(
-                        'Attendance',
-                        style: TextStyle(
-                            fontSize: 17,
-                            backgroundColor: Colors.grey[300],
-                            fontWeight: FontWeight.bold),
+                      child: Icon(
+                        Icons.keyboard_arrow_right,
+                        color: Colors.black,
                       ),
                     ),
-                    Container(
-                      // color: Colors.yellow,
-                      margin: const EdgeInsets.only(
-                        left: 5.0,
-                        top: 10,
-                        bottom: 10,
-                      ),
-                      height: 110,
+                    onTap: () {
+                      setState(() {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AttendDetails()));
+                      });
+                    },
+                    
+                  ),
+                )),
 
-                      child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => AttendDetails()));
-                            });
-                          },
-                          child: Row(children: [
-                            PieChart(
-                              dataMap: dataMap,
-                              chartLegendSpacing: 15.0,
-                              chartRadius: 110,
-                              colorList: colorlist,
-                              legendPosition: LegendPosition.right,
-                              chartType: ChartType.ring,
-                              chartValueBackgroundColor: Colors.grey[200],
-                              chartValueStyle: defaultChartValueStyle.copyWith(
-                                color: Colors.blueGrey[900].withOpacity(0.9),
-                              ),
-                              showChartValueLabel: true,
-                            ),
-                            SizedBox(
-                              width: 20,
-                            ),
-                            Icon(Icons.keyboard_arrow_right)
-                          ])),
-
-                      //color: Colors.blue,
-                      padding: EdgeInsets.all(4),
-                    ),
-                  ],
-                ),
               ]),
-
-              //     Container(
-              //      // color: Colors.yellow,
-              //       margin: const EdgeInsets.only(left: 5.0, top: 10,   bottom: 10,
-              //           ),
-              //       height: 120,
-
-              //       child: PieChart(
-              //     dataMap: dataMap,
-              //     chartLegendSpacing: 15.0,
-              //     chartRadius: 100,
-              //     colorList: colorlist,
-              //     legendPosition: LegendPosition.right,
-              //     chartType: ChartType.ring,
-              //     chartValueBackgroundColor: Colors.grey[200],
-              //     chartValueStyle: defaultChartValueStyle.copyWith(
-              //   color: Colors.blueGrey[900].withOpacity(0.9),
-              // ),
-              // showChartValueLabel: true,
-              //               ),
-
-              //       //color: Colors.blue,
-              //       padding: EdgeInsets.all(4),
-              //       ),
 
               Row(children: [
                 new Container(
                   margin: const EdgeInsets.only(
-                      left: 15.0, top: 30.0, bottom: 10, right: 15),
+                      left: 15.0, top: 20.0, bottom: 10, right: 15),
                   width: 80.0,
                   height: 80.0,
                   decoration: new BoxDecoration(
@@ -343,13 +279,13 @@ class _SubjectDetailsState extends State<SubjectDetails>
                           fit: BoxFit.cover)),
                 ),
                 Container(
-                    margin: const EdgeInsets.only(top: 30.0, bottom: 10),
+                    margin: const EdgeInsets.only(top: 20.0, bottom: 10),
                     height: 70,
                     child: VerticalDivider(color: Colors.grey)),
                 Container(
                   margin: const EdgeInsets.only(
                     left: 10.0,
-                    top: 50.0,
+                    top: 40.0,
                     bottom: 10,
                   ),
                   height: 50,
@@ -385,14 +321,18 @@ class _SubjectDetailsState extends State<SubjectDetails>
                     child: Container(
                   margin: const EdgeInsets.only(top: 15.0),
                   child: ListTile(
-                    title: Text(
-                      'Grades',
-                      style: TextStyle(
-                          backgroundColor: Colors.grey[300],
-                          fontWeight: FontWeight.bold,
-                          fontSize: 17),
+                    title: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          'Grades',
+                          style: TextStyle(
+                              backgroundColor: Colors.grey[300],
+                              fontWeight: FontWeight.bold,
+                              fontSize: 17),
+                        )
+                      ],
                     ),
-
                     trailing: Icon(
                       Icons.keyboard_arrow_right,
                       color: Colors.black,
@@ -404,75 +344,10 @@ class _SubjectDetailsState extends State<SubjectDetails>
                             MaterialPageRoute(builder: (context) => Grades()));
                       });
                     },
-                    //  leading: Icon(icons[index]),
-                    // title: Text(titles[index]),
+                    
                   ),
                 )),
               ]),
-              //     Row(
-              //   children: <Widget>[
-              //     Expanded(
-              //       flex: 100,
-              //       child: Container(
-              //          margin: EdgeInsets.only(left: 80, top: 30.0, right: 0
-              //         ),
-              //        // padding: _animationController.value==0? EdgeInsets.fromLTRB(100, 5, 0, 10):
-              //        // EdgeInsets.symmetric(),
-              //         height: 60,
-              //         width: 40,
-              //         color: Colors.pink,
-              //       child: IconButton(
-              //         icon:  Icon(Iconss.user_tie,
-              //         size: 50,
-              //         ),
-              //         onPressed: () {
-              //           if (_animationController.value == 0.0) {
-              //             _animationController.forward();
-              //             print(_animationController.value);
-
-              //           } else {
-              //             _animationController.reverse();
-              //             print(_animationController.value);
-              //           }
-              //         },
-              //       ),
-              //       ),
-              //     ),
-
-              //     Expanded(
-              //       flex: _animation.value,
-              //       // Uses to hide widget when flex is going to 0
-              //       child: SizedBox(
-              //         width: 0.0,
-              //         child: Container(
-              //           child: FittedBox(    //Add this
-              //             child: Row(
-              //               children: [
-              //         //          Container(
-              //         // margin: EdgeInsets.only(top: 30.0),
-              //         // height: 50, child: VerticalDivider(color: Colors.grey)),
-              //   Container(
-              //     margin: EdgeInsets.only(left: 0, top: 30.0, right: 40.0
-              //         ),
-              //     height: 50,
-              //     child: Text('Teacher: $teacherName',
-              //     style: TextStyle(
-              //       fontWeight: FontWeight.bold,
-              //       fontSize: 10
-              //       ),
-              //     ),
-              //     //color: Colors.blue,
-              //     padding: EdgeInsets.all(4),
-              //     )
-              //               ]
-              //               )
-              //           ),
-
-              //         ),
-              //       ),
-              //     )
-              //   ],
-              // ),
             ],
           ),
         ));
