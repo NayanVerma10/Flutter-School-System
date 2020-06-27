@@ -27,16 +27,15 @@ dependencies:
   # Firebase Related Dependencies
   cloud_functions:
   cloud_firestore:
-  font_awesome_flutter:
-  pie_chart:
-  convex_bottom_bar:  
+  firebase_storage:
+  firebase_helpers:
+  
   # Other Dependencies
   grouped_buttons:
   image_picker:
-  firebase_storage:
   image_cropper:
   flutter_speed_dial: 
-  firebase_helpers:
+  font_awesome_flutter:
   table_calendar:
   bubble:       #Added By Nayan for Chat/Discussions 
   convex_bottom_bar:  #Added by Ishita for subject Details
