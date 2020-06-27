@@ -37,7 +37,7 @@ class Style extends StyleHook {
 
   @override
   TextStyle textStyle(Color color) {
-    return TextStyle(fontSize: 15, color: color);
+    return TextStyle(fontSize: 12, color: color);
   }
 }
 
