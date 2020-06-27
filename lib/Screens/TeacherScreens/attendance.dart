@@ -441,7 +441,10 @@ bool value=true;
                                   });
                                   onCategorySelect(
                                       snapshot.data[index].documentID, value);
-                                  len = snapshot.data.length;
+                              setState(() {
+                                    len = snapshot.data.length;
+                              
+                              });
                                 },
                                 selected: snapshot.data[index].data["id"],
                                 secondary: RaisedButton(
