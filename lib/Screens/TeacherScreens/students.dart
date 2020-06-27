@@ -3,20 +3,57 @@ import './classDetails.dart';
 import '../Icons/iconssss_icons.dart';
 import './stdProfile.dart';
 import '../Icons/iconss_icons.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Students extends StatefulWidget {
+  String className, schoolCode, teachersId, classNumber, section, subject;
+  Students(this.className, this.schoolCode, this.teachersId, this.classNumber,
+      this.section, this.subject);
   @override
-  _StudentsState createState() => _StudentsState();
+  _StudentsState createState() => _StudentsState(className, schoolCode, teachersId, classNumber, section, subject);
 }
  
 //String className='X-A';
 
 class _StudentsState extends State<Students> {
+  String className, schoolCode, teachersId, classNumber, section, subject;
+  List stdName = [];
 
-  final stdName = [
-      'Lee Joon Gi', 'Cha Eun Woo', 'Lee Sung Kyung', 'Yang Ki Jong', 'Jang Ki Yong',
-      'Kim Tae Hyung', 'Kim Seo Woo', 'Jung Hae In', 'Bae Suzy', 'Chae Soo Bin', 'Jung Jin Yeong', 'Jung Ji Hyun'
-  ];
+  _StudentsState(this.className, this.schoolCode, this.teachersId, this.classNumber,
+      this.section, this.subject);
+
+  void loadData() {
+    Firestore.instance
+        .collection('School')
+        .document(schoolCode)
+        .collection('Student')
+        .where('class', isEqualTo: classNumber)
+        .where('section', isEqualTo: section)
+        .where('subjects', arrayContains: subject)
+        .getDocuments()
+        .then((value) {
+      List<String> temp = [];
+      if (value.documents.isNotEmpty) {
+        value.documents.forEach((element) {
+          String std = 
+                  element.data['first name'] + ' ' + element.data['last name'];
+
+          temp.add(std);
+        });
+        setState(() {
+          stdName = temp;
+        });
+      } 
+    });
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    loadData();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

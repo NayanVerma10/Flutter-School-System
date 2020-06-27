@@ -17,6 +17,22 @@ class MyApp extends StatefulWidget {
   _MyAppState createState() => _MyAppState(schoolCode,teachersId);
 }
 
+class Style extends StyleHook {
+  @override
+  double get activeIconSize => 20;
+
+  @override
+  double get activeIconMargin => 12;
+
+  @override
+  double get iconSize => 10;
+
+  @override
+  TextStyle textStyle(Color color) {
+    return TextStyle(fontSize: 15, color: color);
+  }
+}
+
 
 class _MyAppState extends State<MyApp> {
   String schoolCode,teachersId;
@@ -34,23 +50,6 @@ class _MyAppState extends State<MyApp> {
       Chats(schoolCode,teachersId),
       Profile(schoolCode,teachersId)
   ];
-    class Style extends StyleHook {
-  @override
-  double get activeIconSize => 20;
-
-  @override
-  double get activeIconMargin => 12;
-
-  @override
-  double get iconSize => 10;
-
-  @override
-  TextStyle textStyle(Color color) {
-    return TextStyle(fontSize: 15, color: color);
-  }
-}
- 
-
     return MaterialApp(     //change it into scaffold and add back button in appbar
         debugShowCheckedModeBanner: false,
         theme: ThemeData(

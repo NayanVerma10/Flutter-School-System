@@ -1,12 +1,11 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../Icons/iconss_icons.dart';
 import './setBehavior.dart';
 
 class Student {
-  String name, documentId,rollNo;
-  Student({this.name, this.documentId,this.rollNo});
+  String name, documentId, rollNo;
+  Student({this.name, this.documentId, this.rollNo});
 }
 
 class Behavior extends StatefulWidget {
@@ -44,7 +43,8 @@ class _BehaviorState extends State<Behavior> {
           Student std = Student(
               name:
                   element.data['first name'] + ' ' + element.data['last name'],
-              documentId: element.documentID,rollNo: element.data['rollno']);
+              documentId: element.documentID,
+              rollNo: element.data['rollno']);
           temp.add(std);
         });
         setState(() {
@@ -116,8 +116,6 @@ class _BehaviorState extends State<Behavior> {
                   });
                 }
 
-                //  leading: Icon(icons[index]),
-                // title: Text(titles[index]),
                 ),
           );
         },

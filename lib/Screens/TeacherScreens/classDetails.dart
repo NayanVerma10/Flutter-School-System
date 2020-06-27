@@ -50,7 +50,7 @@ class _ClassDetailsState extends State<ClassDetails>
   @override
   Widget build(BuildContext context) {
     var tabs = [
-      Students(),
+      Students(className, schoolCode, teachersId, classNumber, section, subject),
       Tutorials(),
       Assignments(),
       Behavior(
