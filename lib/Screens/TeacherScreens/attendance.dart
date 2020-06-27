@@ -39,12 +39,14 @@ class _AttendanceState extends State<Attendance> {
     v = false;
     selectedRadioTile = false;
   }
+
   setSelectedUser(bool val) {
     setState(() {
       selectedRadioTile = val;
       v = val;
     });
   }
+
   Future getPosts() async {
     var firestore = Firestore.instance;
     QuerySnapshot qn = await firestore
@@ -90,40 +92,40 @@ class _AttendanceState extends State<Attendance> {
       },
     );
   }
-void selectAll() async {
-  setState(() {
-    
-bool value=true;
-  /*for(int i=0;i<len;i++)
+
+  void selectAll() async {
+    setState(() {
+      bool value = true;
+      /*for(int i=0;i<len;i++)
   {
                                    updateId(snapshot.data[index].documentID, value);
                                     datapush(snapshot.data[index].documentID, value);
                                     updateCount(value, snapshot.data[index].documentID);
   }*/
-   setState(() {
-      var snapshots = Firestore.instance
-        .collection("School")
-        .document(schoolCode)
-        .collection('Student')
-        .where('class', isEqualTo: classNumber)
-        .where('section', isEqualTo: section)
-        .where('subjects', arrayContains: subject)
-        .getDocuments()
-     .then((querySnapshot)=> {
-    querySnapshot.documents.forEach((doc) {
-                                   updateId(doc.documentID, value);
-                                    datapush(doc.documentID, value);
-                                    updateCount(value, doc.documentID);
-                                    onCategorySelect(doc.documentID, value);
-    })
-})   .then((value) {
-        print('selected all checkboxes');
+      setState(() {
+        var snapshots = Firestore.instance
+            .collection("School")
+            .document(schoolCode)
+            .collection('Student')
+            .where('class', isEqualTo: classNumber)
+            .where('section', isEqualTo: section)
+            .where('subjects', arrayContains: subject)
+            .getDocuments()
+            .then((querySnapshot) => {
+                  querySnapshot.documents.forEach((doc) {
+                    updateId(doc.documentID, value);
+                    datapush(doc.documentID, value);
+                    updateCount(value, doc.documentID);
+                    onCategorySelect(doc.documentID, value);
+                  })
+                })
+            .then((value) {
+          print('selected all checkboxes');
+        });
+      });
     });
-
-  });
-
-   });
   }
+
   void reset() async {
     var snapshots = Firestore.instance
         .collection("School")
@@ -209,6 +211,7 @@ bool value=true;
     }
     //return await brew.document(selectlist[i]).updateData({
   }
+
 //
   void datapush(String number, bool val) {
     String sub = subject + 'attendance';
@@ -310,79 +313,87 @@ bool value=true;
     return Container(
       child: Column(
         children: <Widget>[
-          Container(
-            height: MediaQuery.of(context).size.height * 0.2,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: RaisedButton(
-                    color: Colors.black,
-                    onPressed: (){
-                      setState(() {
-                        reset();
-                      });
-                    },
-                    child: Text("Reset  ".toUpperCase(),
-                        style: TextStyle(
-                          color: Colors.white,
-                        )),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: RaisedButton(
-                    color: Colors.black,
-                    onPressed: (){
-                      setState(() {
-                        selectAll();
-                      });
-                    },
-                    child: Text("SELECT ALL  ".toUpperCase(),
-                        style: TextStyle(
-                          color: Colors.white,
-                        )),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: RaisedButton(
-                    child: Text(
-                      'Submit'.toUpperCase(),
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    color: Colors.black,
-                    onPressed: () {
-                      //update ho jaye
-                      showAlertDialog(context);
-                      reset();
-                    },
-                  ),
-                ),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+                      child: Row(
+              children: [
                 Container(
-                  padding: EdgeInsets.symmetric(vertical: 7, horizontal: 10),
-                  //height: 30,
-                  decoration: BoxDecoration(
-                      color: Colors.black,
-                      border: Border.all(color: Colors.black)),
-                  child: RichText(
-                    text: TextSpan(
-                      //text: 'Hello ',
-                      style: DefaultTextStyle.of(context).style,
-                      children: <TextSpan>[
-                        TextSpan(
-                            text: 'Selected:'.toUpperCase(),
-                            style: TextStyle(color: Colors.white)),
-                        TextSpan(
-                            text: ' ' + selectlist.length.toString(),
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            )),
-                      ],
-                    ),
+                  height: MediaQuery.of(context).size.height * 0.2,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: RaisedButton(
+                          color: Colors.black,
+                          onPressed: () {
+                            setState(() {
+                              reset();
+                            });
+                          },
+                          child: Text("Reset  ".toUpperCase(),
+                              style: TextStyle(
+                                color: Colors.white,
+                              )),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: RaisedButton(
+                          color: Colors.black,
+                          onPressed: () {
+                            setState(() {
+                              selectAll();
+                            });
+                          },
+                          child: Text("SELECT ALL  ".toUpperCase(),
+                              style: TextStyle(
+                                color: Colors.white,
+                              )),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: RaisedButton(
+                          child: Text(
+                            'Submit'.toUpperCase(),
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          color: Colors.black,
+                          onPressed: () {
+                            //update ho jaye
+                            showAlertDialog(context);
+                            reset();
+                          },
+                        ),
+                      ),
+                      Container(
+                        padding:
+                            EdgeInsets.symmetric(vertical: 7, horizontal: 10),
+                        //height: 30,
+                        decoration: BoxDecoration(
+                            color: Colors.black,
+                            border: Border.all(color: Colors.black)),
+                        child: RichText(
+                          text: TextSpan(
+                            //text: 'Hello ',
+                            style: DefaultTextStyle.of(context).style,
+                            children: <TextSpan>[
+                              TextSpan(
+                                  text: 'Selected:'.toUpperCase(),
+                                  style: TextStyle(color: Colors.white)),
+                              TextSpan(
+                                  text: ' ' + selectlist.length.toString(),
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  )),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -441,10 +452,9 @@ bool value=true;
                                   });
                                   onCategorySelect(
                                       snapshot.data[index].documentID, value);
-                              setState(() {
+                                  setState(() {
                                     len = snapshot.data.length;
-                              
-                              });
+                                  });
                                 },
                                 selected: snapshot.data[index].data["id"],
                                 secondary: RaisedButton(
