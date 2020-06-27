@@ -39,7 +39,7 @@ class _ClassDetailsState extends State<ClassDetails>
       Assignments(),
       Behavior(
           className, schoolCode, teachersId, classNumber, section, subject),
-      Pagin1()
+      Attendance(className, schoolCode, teachersId, classNumber, section, subject)
     ];
     return Scaffold(
       appBar: AppBar(
