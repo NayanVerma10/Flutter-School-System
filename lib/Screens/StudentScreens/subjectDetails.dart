@@ -50,7 +50,7 @@ class _SubjectDetailsState extends State<SubjectDetails>
           value.documents.forEach((element) {
             setState(() {
               teacherName =
-                  element.data['first name'] +' '+ element.data['last name'];
+                  element.data['first name'] + ' ' + element.data['last name'];
             });
           });
         });
@@ -84,8 +84,18 @@ class _SubjectDetailsState extends State<SubjectDetails>
           ),
           backgroundColor: Colors.black,
           onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => Discussions()));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => Discussions(
+                          schoolCode: schoolCode,
+                          className:
+                              classNumber + ' ' + section + ' ' + subject,
+                          classNumber: classNumber,
+                          section: section,
+                          studentId: studentId,
+                          subject: subject,
+                        )));
           },
         ),
         body: SingleChildScrollView(

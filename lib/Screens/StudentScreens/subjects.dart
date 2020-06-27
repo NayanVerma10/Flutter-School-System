@@ -23,7 +23,6 @@ class _SubjectsState extends State<Subjects> {
     Firestore.instance.collection('School').document(schoolCode).collection('Student').document(studentId).get()
     .then((value){
       setState(() {
-        print(value.data);
         classNumber=value.data['class'];
         section=value.data['section'];
         if(value.data['subjects']!=null)

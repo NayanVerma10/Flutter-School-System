@@ -58,17 +58,19 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(     //change it into scaffold and add back button in appbar
         debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+        primaryColor: Colors.black,
+        accentColor: Colors.black
+        ),
         home: Scaffold(
         appBar: AppBar(
         title: Text("STUDENT NAME",
         style: TextStyle(
-          color: Colors.white,
           fontSize: 20,
           fontWeight: FontWeight.bold
         ),
         ), 
         iconTheme: new IconThemeData(color: Colors.black), 
-        backgroundColor: Colors.black,
         ),
         body: tabs[_currentIndex],
         bottomNavigationBar:  StyleProvider(
