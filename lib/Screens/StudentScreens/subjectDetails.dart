@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import './assignment.dart';
 import './attendDetails.dart';
@@ -9,26 +10,57 @@ import './grades.dart';
 import 'package:pie_chart/pie_chart.dart';
 
 class SubjectDetails extends StatefulWidget {
-  final String subjName;
-  SubjectDetails({Key key, this.subjName}) : super(key: key);
+  final String schoolCode, studentId, classNumber, section, subject;
+  SubjectDetails(
+      {Key key,
+      this.schoolCode,
+      this.studentId,
+      this.classNumber,
+      this.section,
+      this.subject})
+      : super(key: key);
   @override
-  _SubjectDetailsState createState() => _SubjectDetailsState(subjName);
+  _SubjectDetailsState createState() => _SubjectDetailsState(
+      schoolCode, studentId, classNumber, section, subject);
 }
 
 class _SubjectDetailsState extends State<SubjectDetails>
     with SingleTickerProviderStateMixin {
-  final String subjName;
-  _SubjectDetailsState(this.subjName);
-  String teacherName = 'Bobin Padoriya';
+  final String schoolCode, studentId, classNumber, section, subject;
+  _SubjectDetailsState(this.schoolCode, this.studentId, this.classNumber,
+      this.section, this.subject);
+  String teacherName = '';
   List<Color> colorlist = [
     Colors.blue[900],
     Colors.red,
   ];
 
+  loadData() {
+    Firestore.instance
+        .collection('School')
+        .document(schoolCode)
+        .collection('Teachers')
+        .where('classes', arrayContains: {
+          'Class': classNumber,
+          'Section': section,
+          "Subject": subject
+        })
+        .getDocuments()
+        .then((value) {
+          value.documents.forEach((element) {
+            setState(() {
+              teacherName =
+                  element.data['first name'] +' '+ element.data['last name'];
+            });
+          });
+        });
+  }
+
   Map<String, double> dataMap = new Map();
   @override
   void initState() {
     super.initState();
+    loadData();
     dataMap.putIfAbsent("Present", () => 6);
     dataMap.putIfAbsent("Absent", () => 3);
   }
@@ -38,7 +70,7 @@ class _SubjectDetailsState extends State<SubjectDetails>
     return Scaffold(
         appBar: AppBar(
           title: Text(
-            subjName,
+            subject,
             style: TextStyle(
                 color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
           ),
@@ -170,7 +202,6 @@ class _SubjectDetailsState extends State<SubjectDetails>
                   ),
                 )),
               ]),
-
               Row(children: [
                 new Container(
                   margin: const EdgeInsets.only(
@@ -246,12 +277,9 @@ class _SubjectDetailsState extends State<SubjectDetails>
                                 builder: (context) => AttendDetails()));
                       });
                     },
-                    
                   ),
                 )),
-
               ]),
-
               Row(children: [
                 new Container(
                   margin: const EdgeInsets.only(
@@ -286,7 +314,6 @@ class _SubjectDetailsState extends State<SubjectDetails>
                   padding: EdgeInsets.all(4),
                 )
               ]),
-
               Row(children: [
                 new Container(
                   margin: const EdgeInsets.only(
@@ -330,7 +357,6 @@ class _SubjectDetailsState extends State<SubjectDetails>
                             MaterialPageRoute(builder: (context) => Grades()));
                       });
                     },
-                    
                   ),
                 )),
               ]),

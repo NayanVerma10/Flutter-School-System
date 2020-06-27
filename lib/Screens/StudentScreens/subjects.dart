@@ -65,7 +65,7 @@ class _SubjectsState extends State<Subjects> {
               onTap: () { //                                  <-- onTap
                   setState(() {
                     Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => SubjectDetails(subjName: subjects[index])));
+                      MaterialPageRoute(builder: (context) => SubjectDetails(schoolCode:schoolCode,studentId: studentId,classNumber:classNumber,section:section,subject: subjects[index])));
                   });
                 },
             ),
