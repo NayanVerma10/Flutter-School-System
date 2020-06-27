@@ -17,12 +17,13 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   File _image;
   String schoolCode;
-  School school = School("", "", "", "", "");
+  School school = School("", "", "", "", "", "");
   TextEditingController _schoolNameController = TextEditingController();
   TextEditingController _schoolBoardController = TextEditingController();
   TextEditingController _schoolNoController = TextEditingController();
   TextEditingController _schoolEmailController = TextEditingController();
   TextEditingController _schoolPasswordController = TextEditingController();
+  TextEditingController _schoolAboutController = TextEditingController();
 
   _ProfileState(this.schoolCode);
 
@@ -66,13 +67,12 @@ class _ProfileState extends State<Profile> {
   }
 
   Widget displayUserInformation(context, snapshot) {
-    
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Column(
           children: <Widget>[
-                                    Padding(padding: const EdgeInsets.all(10)),
-
+            Padding(padding: const EdgeInsets.all(10)),
             Align(
               alignment: Alignment.center,
               child: CircleAvatar(
@@ -98,51 +98,73 @@ class _ProfileState extends State<Profile> {
                 ),
                 onPressed: () {},
               ),
-            )
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                "${school.schoolname}",
+                style: DefaultTextStyle.of(context)
+                    .style
+                    .apply(fontSizeFactor: 2.5),
+              ),
+            ),
           ],
         ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            "${school.schoolname}",
-            style:
-                DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2.5),
-          ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                "Board: ${school.schoolboard}",
+                style:
+                    DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                "School Number: ${school.schoolno}",
+                style:
+                    DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                "Email: ${school.schoolemail}",
+                style:
+                    DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                "About Us: ${school.about}",
+                style: DefaultTextStyle.of(context)
+                    .style
+                    .apply(fontSizeFactor: 1.8),
+              ),
+            ),
+          ],
         ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            "Board: ${school.schoolboard}",
-            style: DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            "School Number: ${school.schoolno}",
-            style: DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            "Email: ${school.schoolemail}",
-            style: DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2),
-          ),
-        ),
-                        Padding(padding: const EdgeInsets.all(10)),
-
-        RaisedButton(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(18.0),
-              side: BorderSide(color: Colors.black)),
-              
-          child: Text("Edit Details",
-              style:
-                  DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2)),
-          onPressed: () {
-            _schoolEditBottomSheet(context);
-          },
+        Padding(padding: const EdgeInsets.all(10)),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            RaisedButton(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18.0),
+                  side: BorderSide(color: Colors.black)),
+              child: Text("Edit Details",
+                  style: DefaultTextStyle.of(context)
+                      .style
+                      .apply(fontSizeFactor: 2)),
+              onPressed: () {
+                _schoolEditBottomSheet(context);
+              },
+            )
+          ],
         )
       ],
     );
@@ -158,6 +180,7 @@ class _ProfileState extends State<Profile> {
       school.schoolboard = result.data['schoolboard'];
       school.schoolno = result.data['schoolno'];
       school.schoolemail = result.data['schoolemail'];
+      school.about = result.data['about'];
       return true;
     });
     return true;
@@ -173,12 +196,11 @@ class _ProfileState extends State<Profile> {
       context: context,
       builder: (BuildContext bc) {
         return Container(
-          height: MediaQuery.of(context).size.height * .65,
+          height: MediaQuery.of(context).size.height * .75,
           child: Padding(
             padding: const EdgeInsets.only(left: 15.0, top: 15.0),
             child: Column(
               children: <Widget>[
-             
                 Padding(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 16.0, vertical: 8.0),
@@ -308,6 +330,32 @@ class _ProfileState extends State<Profile> {
                 ),
                 Padding(padding: const EdgeInsets.all(5)),
                 Row(
+                  children: [
+                    Expanded(
+                        child: Padding(
+                      padding: const EdgeInsets.only(right: 15.0),
+                      child: TextFormField(
+                        controller: _schoolAboutController,
+                        minLines: 3,
+                        maxLines: 5,
+                        validator: (value) => (value.isEmpty)
+                            ? "Please Enter your something about the School Organization"
+                            : null,
+                        decoration: InputDecoration(
+                            contentPadding: new EdgeInsets.symmetric(
+                                vertical: 0.0, horizontal: 10.0),
+                            labelText: "About Us",
+                            filled: true,
+                            fillColor: Colors.white54,
+                            focusColor: Colors.white,
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(25))),
+                      ),
+                    ))
+                  ],
+                ),
+                Padding(padding: const EdgeInsets.all(5)),
+                Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     RaisedButton(
@@ -323,6 +371,7 @@ class _ProfileState extends State<Profile> {
                         school.schoolno = _schoolNoController.text;
                         school.schoolboard = _schoolBoardController.text;
                         school.schoolpassword = _schoolPasswordController.text;
+                        school.about = _schoolAboutController.text;
                         setState(() {
                           _schoolNameController.text = school.schoolname;
                           _schoolEmailController.text = school.schoolemail;
@@ -330,6 +379,7 @@ class _ProfileState extends State<Profile> {
                           _schoolBoardController.text = school.schoolboard;
                           _schoolPasswordController.text =
                               school.schoolpassword;
+                          _schoolAboutController.text = school.about;
                         });
                         Firestore.instance
                             .collection('School')
