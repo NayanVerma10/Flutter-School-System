@@ -108,61 +108,68 @@ class _ProfileState extends State<Profile> {
                     .apply(fontSizeFactor: 2.5),
               ),
             ),
+            SizedBox(height: 15),
           ],
         ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                "Board: ${school.schoolboard}",
-                style:
-                    DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 40,vertical: 5),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  "Board: ${school.schoolboard}",
+                  style:
+                      DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2),
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                "School Number: ${school.schoolno}",
-                style:
-                    DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  "School Number: ${school.schoolno}",
+                  style:
+                      DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2),
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                "Email: ${school.schoolemail}",
-                style:
-                    DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  "Email: ${school.schoolemail}",
+                  style:
+                      DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2),
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                "About Us: ${school.about}",
-                style: DefaultTextStyle.of(context)
-                    .style
-                    .apply(fontSizeFactor: 1.8),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  "About Us: ${school.about}",
+                  style: DefaultTextStyle.of(context)
+                      .style
+                      .apply(fontSizeFactor: 1.8),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         Padding(padding: const EdgeInsets.all(10)),
         Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            RaisedButton(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18.0),
-                  side: BorderSide(color: Colors.black)),
-              child: Text("Edit Details",
-                  style: DefaultTextStyle.of(context)
-                      .style
-                      .apply(fontSizeFactor: 2)),
-              onPressed: () {
-                _schoolEditBottomSheet(context);
-              },
+            Padding(
+              padding: const EdgeInsets.only(left: 50),
+              child: RaisedButton(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18.0),
+                    side: BorderSide(color: Colors.black)),
+                child: Text("Edit Details",
+                    style: DefaultTextStyle.of(context)
+                        .style
+                        .apply(fontSizeFactor: 2)),
+                onPressed: () {
+                  _schoolEditBottomSheet(context);
+                },
+              ),
             )
           ],
         )

@@ -82,7 +82,7 @@ class _StudentProfileState extends State<StudentProfile> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Studnet'),
+          title: Text('Student'),
         ),
         body: StreamBuilder(
           stream: Firestore.instance
