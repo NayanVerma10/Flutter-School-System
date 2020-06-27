@@ -187,7 +187,7 @@ class _AttendanceState extends State<Attendance> {
             .document(schoolCode)
             .collection('Student')
             .document(number)
-            .setData({sub: FieldValue.increment(1)});
+            .setData({sub: FieldValue.increment(1)}, merge: true);
       });
     } else {
       setState(() {
@@ -197,7 +197,7 @@ class _AttendanceState extends State<Attendance> {
             .document(schoolCode)
             .collection('Student')
             .document(number)
-            .setData({sub: FieldValue.increment(-1)});
+            .setData({sub: FieldValue.increment(-1)}, merge: true);
       });
     }
   }
@@ -286,11 +286,7 @@ class _AttendanceState extends State<Attendance> {
                   padding: const EdgeInsets.all(8.0),
                   child: RaisedButton(
                     color: Colors.black,
-                    onPressed: (){
-                      setState(() {
-                        reset();
-                      });
-                    },
+                    onPressed: reset,
                     child: Text("Reset  ".toUpperCase(),
                         style: TextStyle(
                           color: Colors.white,
@@ -359,7 +355,7 @@ class _AttendanceState extends State<Attendance> {
                         onRefresh: _refreshLocalGallery,
                         child: ListView.builder(
                           itemCount: snapshot.data.length,
-                          itemBuilder: (_, index) {
+                          itemBuilder: (context, index) {
                             return Card(
                               elevation: 5.0,
                               margin: new EdgeInsets.symmetric(

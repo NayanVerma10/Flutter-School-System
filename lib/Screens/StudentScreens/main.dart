@@ -16,9 +16,7 @@ class MyApp extends StatefulWidget {
   _MyAppState createState() => _MyAppState();
 }
 
-
 class _MyAppState extends State<MyApp> {
-
   int _currentIndex=0;
   final tabs=[
       Subjects(),

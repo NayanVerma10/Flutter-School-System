@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 //import 'pro.dart';
@@ -70,17 +69,19 @@ class _ListPageState extends State<ListPage> {
     return qn.documents;
   }
 
-  Future<Null> _refreshLocalGallery() async {
+  Future<Null> _refreshLocalGallery() async 
+{
     print('refreshing....');
     setState(() {
       getPosts();
     });
     return null;
-  }
-
+}
+ 
   @override
   Widget build(BuildContext context) {
-    funcButton(DocumentSnapshot post) {
+    funcButton(DocumentSnapshot post) 
+    {
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -90,7 +91,6 @@ class _ListPageState extends State<ListPage> {
                 )),
       );
     }
-
     return Container(
         child: FutureBuilder(
             future: getPosts(),
@@ -131,7 +131,7 @@ class _ListPageState extends State<ListPage> {
                           onTap: () {
                             print("pressed");
                             //readData();
-                            funcButton(snapshot.data[index]);
+                          funcButton(snapshot.data[index]);
                           },
                           subtitle: Text(
                             snapshot.data[index].data["designation"],
@@ -215,7 +215,6 @@ class MapScreenState extends State<ProfilePage>
   TextEditingController controller2;
   TextEditingController controller3;
   TextEditingController controller4;
-
   TextEditingController controllerd;
   TextEditingController controllera;
   TextEditingController controllerg;
