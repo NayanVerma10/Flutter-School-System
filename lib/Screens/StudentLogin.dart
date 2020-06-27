@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'StudentRegistration.dart';
-//import './StudentScreens/main.dart';
+import './StudentScreens/main.dart';
 
 class StudentLogin extends StatefulWidget {
   @override
@@ -138,7 +138,7 @@ class _StudentLoginState extends State<StudentLogin> {
                                 'Logged in',
                               )));
                               print(studentId);
-                              //main(schoolCode,studentId);
+                              main(schoolCode,studentId);
                               //Navigator.push(context, MaterialPageRoute(builder: (context)=>SchoolRegistration()));
                               verified = false;
                             } else {

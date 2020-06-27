@@ -39,6 +39,8 @@ dependencies:
   firebase_helpers:
   table_calendar:
   bubble:       #Added By Nayan for Chat/Discussions 
+  convex_bottom_bar:  #Added by Ishita for subject Details
+  pie_chart:    #Added by Ishita for subject Details
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -87,6 +89,19 @@ flutter:
     - assets/images/employee2.png
     - assets/images/employee.png
     - assets/images/dev.jpg
+    - assets/images/assignment.png
+    - assets/images/attendance.jpg
+    - assets/images/fteacher.png
+    - assets/images/mteacher.png
+    - assets/images/grades.png
+    - assets/images/tutorials.png
+    - assets/images/assignment2.png
+    - assets/images/attendance2.jpg
+    - assets/images/fteacher2.jpg
+    - assets/images/mteacher2.jpg
+    - assets/images/grades2.jpg
+    - assets/images/tutorials2.jpg
+    
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

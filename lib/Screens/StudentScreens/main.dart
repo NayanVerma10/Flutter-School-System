@@ -8,23 +8,52 @@ import '../Icons/iconssss_icons.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 
 void main(schoolCode,studentId) {
-  runApp(MyApp());
+  runApp(MyApp(schoolCode,studentId));
 }
 
 class MyApp extends StatefulWidget {
+  String schoolCode,studentId;
+  MyApp(this.schoolCode,this.studentId);
   @override
-  _MyAppState createState() => _MyAppState();
+  _MyAppState createState() => _MyAppState(schoolCode,studentId);
+}
+
+class Style extends StyleHook {
+  @override
+  double get activeIconSize => 20;
+
+  @override
+  double get activeIconMargin => 12;
+
+  @override
+  double get iconSize => 10;
+
+  @override
+  TextStyle textStyle(Color color) {
+    return TextStyle(fontSize: 15, color: color);
+  }
 }
 
 class _MyAppState extends State<MyApp> {
+  String schoolCode,studentId;
+  _MyAppState(this.schoolCode,this.studentId);
+  List tabs;
+
   int _currentIndex=0;
-  final tabs=[
-      Subjects(),
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    tabs=[
+      Subjects(schoolCode,studentId),
       TimeTable(),
       Announcements(),
       Chats(),
       Profile()
   ];
+  
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(     //change it into scaffold and add back button in appbar
@@ -42,78 +71,32 @@ class _MyAppState extends State<MyApp> {
         backgroundColor: Colors.black,
         ),
         body: tabs[_currentIndex],
-        bottomNavigationBar: Builder(builder: (context) =>
-        BottomNavigationBar(
-          currentIndex: _currentIndex,
-          backgroundColor: Colors.black,
-          selectedFontSize: 15, 
-          unselectedFontSize: 13,
-          selectedItemColor: Colors.white,
-          unselectedItemColor: Colors.grey,          
-          type: BottomNavigationBarType.shifting,  //static bar
-          iconSize: 20,  //iconsze
-          items: [
-            BottomNavigationBarItem(             
-              backgroundColor: Colors.black,
-              icon:  Icon(Icons.book),
-                      
-              title: Text('Subjects',              
-              style: TextStyle(
-                fontWeight: FontWeight.bold,                
-              ),),
-            //backgroundColor: Colors.grey
-            ),
+        bottomNavigationBar:  StyleProvider(
+  style: Style(),
+  child: ConvexAppBar(
+    initialActiveIndex: 0,
+    height: 45,
+    top: -30,
+    curveSize: 100,
+    style: TabStyle.titled,
+    items: [
+      TabItem(title: "Subjects",icon:  Icon(Icons.book)),
+      TabItem(title: "Time Table",icon:  Icon(Icons.event_note)),
+      TabItem(title: "Bulletin",icon:  Icon(Iconssss.bullhorn)),
+      TabItem(title: "Chats",icon:  Icon(Icons.chat)),      
+      TabItem(title: "Profile",icon:  Icon(Icons.person,size: 30,)),
 
-            BottomNavigationBarItem(
-              backgroundColor: Colors.black,
-              icon: Icon(Icons.event_note),
-              title: Text('Time Table',
-              style: TextStyle(
-                fontWeight: FontWeight.bold
-              ),),
-            //backgroundColor: Colors.grey
-            ),
-             BottomNavigationBarItem(  
-               backgroundColor: Colors.black,            
-              icon: Icon(Iconssss.bullhorn),
-              title: Text('Announcements',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,               
-              ),),
-            //backgroundColor: Colors.grey
-            ),
-            BottomNavigationBarItem(
-              backgroundColor: Colors.black,
-              icon: Icon(Icons.chat),
-              title: Text('Chat',
-              style: TextStyle(
-                fontWeight: FontWeight.bold
-              ),),
-           // backgroundColor: Colors.grey
-            ),
-             BottomNavigationBarItem(
-               backgroundColor: Colors.black,
-              icon: Icon(Icons.person,
-              size: 23,),
-              title: Text('Profile',
-              style: TextStyle(
-                fontWeight: FontWeight.bold
-              ),),
-            //backgroundColor: Colors.grey
-            ),
-          ],
-          onTap: (index){
-             setState(() {
-              //  if (index==0){
-              //     Navigator.push(context,
-              //        MaterialPageRoute(builder: (context) => Classes())); 
-              //  }else{
+      
+    ],
+    backgroundColor: Colors.black,    
+    onTap: (index){
+             setState(() {            
                _currentIndex=index;
-              // }
+              
              });
           },
-        ),
-     )) );
+  )
+  )
+     ) );
   }
 }
-
