@@ -90,7 +90,40 @@ class _AttendanceState extends State<Attendance> {
       },
     );
   }
+void selectAll() async {
+  setState(() {
+    
+bool value=true;
+  /*for(int i=0;i<len;i++)
+  {
+                                   updateId(snapshot.data[index].documentID, value);
+                                    datapush(snapshot.data[index].documentID, value);
+                                    updateCount(value, snapshot.data[index].documentID);
+  }*/
+   setState(() {
+      var snapshots = Firestore.instance
+        .collection("School")
+        .document(schoolCode)
+        .collection('Student')
+        .where('class', isEqualTo: classNumber)
+        .where('section', isEqualTo: section)
+        .where('subjects', arrayContains: subject)
+        .getDocuments()
+     .then((querySnapshot)=> {
+    querySnapshot.documents.forEach((doc) {
+                                   updateId(doc.documentID, value);
+                                    datapush(doc.documentID, value);
+                                    updateCount(value, doc.documentID);
+                                    onCategorySelect(doc.documentID, value);
+    })
+})   .then((value) {
+        print('selected all checkboxes');
+    });
 
+  });
+
+   });
+  }
   void reset() async {
     var snapshots = Firestore.instance
         .collection("School")
@@ -160,9 +193,9 @@ class _AttendanceState extends State<Attendance> {
           .document(schoolCode)
           .collection('Student')
           .document(number)
-          .updateData({
+          .setData({
         sub: FieldValue.arrayUnion([s])
-      });
+      }, merge: true);
     } else {
       String s = dt;
       return await Firestore.instance
@@ -170,13 +203,13 @@ class _AttendanceState extends State<Attendance> {
           .document(schoolCode)
           .collection('Student')
           .document(number)
-          .updateData({
+          .setData({
         sub: FieldValue.arrayRemove([s])
-      });
+      }, merge: true);
     }
     //return await brew.document(selectlist[i]).updateData({
   }
-
+//
   void datapush(String number, bool val) {
     String sub = subject + 'attendance';
     if (val == true) {
@@ -187,7 +220,7 @@ class _AttendanceState extends State<Attendance> {
             .document(schoolCode)
             .collection('Student')
             .document(number)
-            .setData({sub: FieldValue.increment(1)});
+            .setData({sub: FieldValue.increment(1)}, merge: true);
       });
     } else {
       setState(() {
@@ -197,7 +230,7 @@ class _AttendanceState extends State<Attendance> {
             .document(schoolCode)
             .collection('Student')
             .document(number)
-            .setData({sub: FieldValue.increment(-1)});
+            .setData({sub: FieldValue.increment(-1)}, merge: true);
       });
     }
   }
@@ -234,7 +267,7 @@ class _AttendanceState extends State<Attendance> {
     documentReference.get().then((datasnapshot) {
       String sub = subject + '_attendance';
       setState(() {
-        for (int i = 0; i <= 9; i++) {
+        for (int i = 0; i <= 15; i++) {
           print(datasnapshot.data["sub"][i]);
           liststamp.add(datasnapshot.data["sub"][i]);
         }
@@ -292,6 +325,21 @@ class _AttendanceState extends State<Attendance> {
                       });
                     },
                     child: Text("Reset  ".toUpperCase(),
+                        style: TextStyle(
+                          color: Colors.white,
+                        )),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: RaisedButton(
+                    color: Colors.black,
+                    onPressed: (){
+                      setState(() {
+                        selectAll();
+                      });
+                    },
+                    child: Text("SELECT ALL  ".toUpperCase(),
                         style: TextStyle(
                           color: Colors.white,
                         )),

@@ -28,8 +28,6 @@ dependencies:
   cloud_functions:
   cloud_firestore:
   font_awesome_flutter:
-  pie_chart:
-  convex_bottom_bar:  
   # Other Dependencies
   grouped_buttons:
   image_picker:
