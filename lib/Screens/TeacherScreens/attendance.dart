@@ -73,9 +73,9 @@ class _AttendanceState extends State<Attendance> {
           "\nPresent Students: " +
           selectlist.length.toString() +
           '\n' +
-          'Total Students: ' +
+          'Total Students:- ' +
           len.toString() +
-          '\nPresent Ratio:' +
+          '\nPresent Ratio:-' +
           ((selectlist.length / len) * 100).toInt().toString() +
           "%"),
       actions: [
