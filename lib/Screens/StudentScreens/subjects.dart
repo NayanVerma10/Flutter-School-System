@@ -4,31 +4,53 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import './subjectDetails.dart';
 
 class Subjects extends StatefulWidget {
+  String schoolCode,studentId;
+  Subjects(this.schoolCode,this.studentId);
   @override
-  _SubjectsState createState() => _SubjectsState();
+  _SubjectsState createState() => _SubjectsState(schoolCode,studentId);
 }
  
-//String className='X-A';
 
 class _SubjectsState extends State<Subjects> {
+  String schoolCode,studentId;
+  _SubjectsState(this.schoolCode,this.studentId);
   
+  String classNumber,section;
+  bool gotData=false;
+  List subjects= [];
 
-  final subjList = [
-      'Maths', 'Science', 'Hindi', 'English','Social Science'
-  ];
-  //final databaseReference = Firestore.instance;
+  loadData(){
+    Firestore.instance.collection('School').document(schoolCode).collection('Student').document(studentId).get()
+    .then((value){
+      setState(() {
+        print(value.data);
+        classNumber=value.data['class'];
+        section=value.data['section'];
+        if(value.data['subjects']!=null)
+          subjects= value.data['subjects'];
+        gotData=true;
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadData();
+  }
   
- 
 
   @override
   Widget build(BuildContext context) {
+    if(!gotData)
+      return Center(child: CircularProgressIndicator());
     return ListView.builder(
         //itemCount: 10,s
-        itemCount: subjList.length,
+        itemCount: subjects.length,
         itemBuilder: (context, index) {
           return Card( //                           <-- Card widget
             child: ListTile(              
-              title: Text(subjList[index],
+              title: Text(subjects[index],
               style: TextStyle(
                 fontWeight: FontWeight.bold
               ),
@@ -43,11 +65,9 @@ class _SubjectsState extends State<Subjects> {
               onTap: () { //                                  <-- onTap
                   setState(() {
                     Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => SubjectDetails(subjName: subjList[index])));
+                      MaterialPageRoute(builder: (context) => SubjectDetails(subjName: subjects[index])));
                   });
                 },
-            //  leading: Icon(icons[index]),
-             // title: Text(titles[index]),
             ),
           );
         }, 

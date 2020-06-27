@@ -33,15 +33,6 @@ class _SubjectDetailsState extends State<SubjectDetails>
     dataMap.putIfAbsent("Absent", () => 3);
   }
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _animationController = AnimationController(duration: Duration(seconds: 1), vsync: this);
-  //   _animation = IntTween(begin: 100, end: 0).animate(_animationController);
-  //   _animation.addListener(() => setState(() {}));
-  //   _animationController.value=1;      // 1 if pehle se full covered ho
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -199,13 +190,8 @@ class _SubjectDetailsState extends State<SubjectDetails>
                     child: VerticalDivider(color: Colors.grey)),
                 Flexible(
                     child: Container(
-                  // alignment: Alignment.centerLeft,
-                  // width: 200,
                   margin: const EdgeInsets.only(top: 15.0),
                   child: ListTile(
-                    // dense: true,
-                    // contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
-                    // contentPadding: EdgeInsets.only(left: 5.0),
                     title: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [

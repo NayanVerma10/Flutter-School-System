@@ -8,12 +8,14 @@ import '../Icons/iconssss_icons.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 
 void main(schoolCode,studentId) {
-  runApp(MyApp());
+  runApp(MyApp(schoolCode,studentId));
 }
 
 class MyApp extends StatefulWidget {
+  String schoolCode,studentId;
+  MyApp(this.schoolCode,this.studentId);
   @override
-  _MyAppState createState() => _MyAppState();
+  _MyAppState createState() => _MyAppState(schoolCode,studentId);
 }
 
 class Style extends StyleHook {
@@ -33,15 +35,25 @@ class Style extends StyleHook {
 }
 
 class _MyAppState extends State<MyApp> {
+  String schoolCode,studentId;
+  _MyAppState(this.schoolCode,this.studentId);
+  List tabs;
 
   int _currentIndex=0;
-  final tabs=[
-      Subjects(),
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    tabs=[
+      Subjects(schoolCode,studentId),
       TimeTable(),
       Announcements(),
       Chats(),
       Profile()
   ];
+  
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(     //change it into scaffold and add back button in appbar
