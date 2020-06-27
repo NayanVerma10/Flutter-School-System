@@ -37,7 +37,7 @@ class _DiscussionsState extends State<Discussions> {
       subject,
       studentName;
   User user;
-  int limitOfMessages = 50;
+  int limitOfMessages = 200;
   _DiscussionsState(this.className, this.schoolCode, this.studentId,
       this.classNumber, this.section, this.subject);
 
@@ -48,9 +48,7 @@ class _DiscussionsState extends State<Discussions> {
 
   Future<void> callback() async {
     if (messageController.text.length > 0) {
-      setState(() {
         limitOfMessages++;
-      });
       await _firestore
           .collection('School')
           .document(schoolCode)
