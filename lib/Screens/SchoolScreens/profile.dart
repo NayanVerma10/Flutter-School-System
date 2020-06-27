@@ -112,7 +112,7 @@ class _ProfileState extends State<Profile> {
           ],
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 40,vertical: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 5),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -157,7 +157,7 @@ class _ProfileState extends State<Profile> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Padding(
-              padding: const EdgeInsets.only(left: 50),
+              padding: const EdgeInsets.only(left: 20),
               child: RaisedButton(
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18.0),
