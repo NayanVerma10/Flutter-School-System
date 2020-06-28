@@ -48,7 +48,6 @@ documentReference.get().then((datasnapshot)
 class ListPage extends StatefulWidget {
   String schoolCode;
   ListPage(this.schoolCode);
-
   @override
   _ListPageState createState() => _ListPageState(schoolCode);
 }
@@ -88,7 +87,7 @@ class _ListPageState extends State<ListPage> {
             builder: (context) => ProfilePage(
                   post: post,
                   schoolCode:schoolCode
-                )),
+                ),),
       );
     }
     return Container(
@@ -222,13 +221,13 @@ class MapScreenState extends State<ProfilePage>
   final namecontroller = new TextEditingController();
   final namecontroller1 = new TextEditingController();
   final namecontroller2 = new TextEditingController();
-
   final namecontrollera = new TextEditingController();
   final namecontrollerg = new TextEditingController();
   final namecontrollerq = new TextEditingController();
   final namecontrollerd = new TextEditingController();
   @override
-  void initState() {
+  void initState()
+  {
     // TODO: implement initState
     super.initState();
     namecontroller1.text = widget.post.data["first name"];
@@ -247,7 +246,6 @@ class MapScreenState extends State<ProfilePage>
     namecontrollerd.text = widget.post.data["designation"];
     controllerd = TextEditingController(text: widget.post.data["designation"]);
   }
-
   @override
   Widget build(BuildContext context) {
     String rt = widget.post.data["first name"];
@@ -367,7 +365,7 @@ class MapScreenState extends State<ProfilePage>
                                       children: <Widget>[
                                         new Column(
                                           mainAxisAlignment:
-                                              MainAxisAlignment.start,
+                                          MainAxisAlignment.start,
                                           mainAxisSize: MainAxisSize.min,
                                           children: <Widget>[
                                             new Text(
