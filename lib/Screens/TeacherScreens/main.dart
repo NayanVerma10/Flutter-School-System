@@ -7,14 +7,15 @@ import './chats.dart';
 import '../Icons/iconssss_icons.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 
-void main(schoolCode,teachersId) {
-  runApp(MyApp(schoolCode,teachersId));
+void main(schoolCode, teachersId) {
+  runApp(MyApp(schoolCode, teachersId));
 }
+
 class MyApp extends StatefulWidget {
-  String schoolCode,teachersId;
-  MyApp(this.schoolCode,this.teachersId);
+  String schoolCode, teachersId;
+  MyApp(this.schoolCode, this.teachersId);
   @override
-  _MyAppState createState() => _MyAppState(schoolCode,teachersId);
+  _MyAppState createState() => _MyAppState(schoolCode, teachersId);
 }
 
 class Style extends StyleHook {
@@ -33,90 +34,85 @@ class Style extends StyleHook {
   }
 }
 
-
 class _MyAppState extends State<MyApp> {
-  String schoolCode,teachersId;
-  _MyAppState(this.schoolCode,this.teachersId);
+  String schoolCode, teachersId;
+  _MyAppState(this.schoolCode, this.teachersId);
 
-  int _currentIndex=0;
-  
+  int _currentIndex = 0;
+
   @override
   Widget build(BuildContext context) {
-
-    var tabs=[
-      Classes(schoolCode,teachersId),
-      Schedule(schoolCode,teachersId),
-      Announcements(schoolCode,teachersId),
-      Chats(schoolCode,teachersId),
-      Profile(schoolCode,teachersId)
-  ];
-    return MaterialApp(     //change it into scaffold and add back button in appbar
+    var tabs = [
+      Classes(schoolCode, teachersId),
+      Schedule(schoolCode, teachersId),
+      // Announcements(schoolCode,teachersId),
+      Chats(schoolCode, teachersId),
+      Profile(schoolCode, teachersId)
+    ];
+    return MaterialApp(
+        //change it into scaffold and add back button in appbar
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primaryColor: Colors.black,
-          accentColor: Colors.black
-        ),
+        theme: ThemeData(primaryColor: Colors.black, accentColor: Colors.black),
         home: Scaffold(
-        appBar: AppBar(
-        title: Text("TEACHER NAME",
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 20,
-          fontWeight: FontWeight.bold
-        ),
-        ), 
-        iconTheme: new IconThemeData(color: Colors.black), 
-        backgroundColor: Colors.black,
-        ),
-        body: tabs[_currentIndex],
-        bottomNavigationBar: 
-         StyleProvider(
-  style: Style(),
-  child: ConvexAppBar(
-    initialActiveIndex: 0,
-    height: 45,
-    top: -30,
-    curveSize: 100,
-    style: TabStyle.titled,
-    items: [
-      TabItem(title: "Classes",icon:  Icon(Icons.book)),
-      TabItem(title: "Schedule",icon:  Icon(Icons.event_note)),
-      TabItem(title: "Bulletin",icon:  Icon(Iconssss.bullhorn)),
-      TabItem(title: "Chats",icon:  Icon(Icons.chat)),      
-      TabItem(title: "Profile",icon:  Icon(Icons.person,size: 30,)),
-
-      
-    ],
-    backgroundColor: Colors.black,    
-    onTap: (index){
-             setState(() {            
-               _currentIndex=index;
-              
-             });
-          },
-  )
-  )
-        ) );
+            appBar: AppBar(
+              title: Text(
+                "TEACHER NAME",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold),
+              ),
+              iconTheme: new IconThemeData(color: Colors.black),
+              backgroundColor: Colors.black,
+            ),
+            body: tabs[_currentIndex],
+            bottomNavigationBar: StyleProvider(
+                style: Style(),
+                child: ConvexAppBar(
+                  initialActiveIndex: 0,
+                  height: 45,
+                  top: -30,
+                  curveSize: 100,
+                  style: TabStyle.titled,
+                  items: [
+                    TabItem(title: "Classes", icon: Icon(Icons.book)),
+                    TabItem(title: "Schedule", icon: Icon(Icons.event_note)),
+                    TabItem(title: "Bulletin", icon: Icon(Iconssss.bullhorn)),
+                    TabItem(title: "Chats", icon: Icon(Icons.chat)),
+                    TabItem(
+                        title: "Profile",
+                        icon: Icon(
+                          Icons.person,
+                          size: 30,
+                        )),
+                  ],
+                  backgroundColor: Colors.black,
+                  onTap: (index) {
+                    setState(() {
+                      _currentIndex = index;
+                    });
+                  },
+                ))));
   }
 }
 // Builder(builder: (context) =>
 //         BottomNavigationBar(
 //           currentIndex: _currentIndex,
 //           backgroundColor: Colors.black,
-//           selectedFontSize: 15, 
+//           selectedFontSize: 15,
 //           unselectedFontSize: 13,
 //           selectedItemColor: Colors.white,
-//           unselectedItemColor: Colors.grey,          
+//           unselectedItemColor: Colors.grey,
 //           type: BottomNavigationBarType.fixed,  //static bar
 //           iconSize: 20,  //iconsze
 //           items: [
-//             BottomNavigationBarItem(             
+//             BottomNavigationBarItem(
 //               backgroundColor: Colors.black,
 //               icon:  Icon(Icons.book),
-                      
-//               title: Text('Classes',              
+
+//               title: Text('Classes',
 //               style: TextStyle(
-//                 fontWeight: FontWeight.bold,                
+//                 fontWeight: FontWeight.bold,
 //               ),),
 //             //backgroundColor: Colors.grey
 //             ),
@@ -130,12 +126,12 @@ class _MyAppState extends State<MyApp> {
 //               ),),
 //             //backgroundColor: Colors.grey
 //             ),
-//              BottomNavigationBarItem(  
-//                backgroundColor: Colors.black,            
+//              BottomNavigationBarItem(
+//                backgroundColor: Colors.black,
 //               icon: Icon(Iconssss.bullhorn),
 //               title: Text('Bulletin',
 //               style: TextStyle(
-//                 fontWeight: FontWeight.bold,               
+//                 fontWeight: FontWeight.bold,
 //               ),),
 //             //backgroundColor: Colors.grey
 //             ),
@@ -163,7 +159,7 @@ class _MyAppState extends State<MyApp> {
 //              setState(() {
 //               //  if (index==0){
 //               //     Navigator.push(context,
-//               //        MaterialPageRoute(builder: (context) => Classes())); 
+//               //        MaterialPageRoute(builder: (context) => Classes()));
 //               //  }else{
 //                _currentIndex=index;
 //               // }

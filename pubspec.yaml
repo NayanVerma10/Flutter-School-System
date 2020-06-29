@@ -29,7 +29,7 @@ dependencies:
   cloud_firestore:
   firebase_storage:
   firebase_helpers:
-  
+  random_string:
   # Other Dependencies
   grouped_buttons:
   image_picker:
