@@ -40,6 +40,9 @@ dependencies:
   bubble:       #Added By Nayan for Chat/Discussions 
   convex_bottom_bar:  #Added by Ishita for subject Details
   pie_chart:    #Added by Ishita for subject Details
+  flutter_webrtc:     #Added by Ayush for Vo/Vicalling
+  socket_io_client:   #Added by Ayush for Vo/Vicalling
+  provider:           #Added by Ayush for Vo/Vicalling
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

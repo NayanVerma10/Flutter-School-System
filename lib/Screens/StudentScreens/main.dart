@@ -45,7 +45,7 @@ class _MyAppState extends State<MyApp> {
     // TODO: implement initState
     super.initState();
     tabs = [
-      // Subjects(schoolCode,studentId),
+      Subjects(schoolCode,studentId),
       TimeTable(),
       Announcements(),
       Chats(),
