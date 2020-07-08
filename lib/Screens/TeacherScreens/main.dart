@@ -6,29 +6,30 @@ import './schedule.dart';
 import './chats.dart';
 import '../Icons/iconssss_icons.dart';
 
-void main(schoolCode,teachersId) {
-  runApp(MyApp(schoolCode,teachersId));
+void main(schoolCode, teachersId) {
+  runApp(MyApp(schoolCode, teachersId));
 }
+
 class MyApp extends StatefulWidget {
-  String schoolCode,teachersId;
-  MyApp(this.schoolCode,this.teachersId);
+  String schoolCode, teachersId;
+  MyApp(this.schoolCode, this.teachersId);
   @override
-  _MyAppState createState() => _MyAppState(schoolCode,teachersId);
+  _MyAppState createState() => _MyAppState(schoolCode, teachersId);
 }
 
 class _MyAppState extends State<MyApp> {
-  String schoolCode,teachersId;
-  _MyAppState(this.schoolCode,this.teachersId);
+  String schoolCode, teachersId;
+  _MyAppState(this.schoolCode, this.teachersId);
 
-  int _currentIndex=0;
-  
+  int _currentIndex = 0;
+
   @override
   Widget build(BuildContext context) {
 
     var tabs=[
       Classes(schoolCode,teachersId),
       Schedule(schoolCode,teachersId),
-      Announcements(schoolCode,teachersId),
+      AnnouncementDetailsPage(),
       Chats(schoolCode,teachersId),
       Profile(schoolCode,teachersId)
   ];
@@ -125,20 +126,20 @@ class _MyAppState extends State<MyApp> {
 //         BottomNavigationBar(
 //           currentIndex: _currentIndex,
 //           backgroundColor: Colors.black,
-//           selectedFontSize: 15, 
+//           selectedFontSize: 15,
 //           unselectedFontSize: 13,
 //           selectedItemColor: Colors.white,
-//           unselectedItemColor: Colors.grey,          
+//           unselectedItemColor: Colors.grey,
 //           type: BottomNavigationBarType.fixed,  //static bar
 //           iconSize: 20,  //iconsze
 //           items: [
-//             BottomNavigationBarItem(             
+//             BottomNavigationBarItem(
 //               backgroundColor: Colors.black,
 //               icon:  Icon(Icons.book),
-                      
-//               title: Text('Classes',              
+
+//               title: Text('Classes',
 //               style: TextStyle(
-//                 fontWeight: FontWeight.bold,                
+//                 fontWeight: FontWeight.bold,
 //               ),),
 //             //backgroundColor: Colors.grey
 //             ),
@@ -152,12 +153,12 @@ class _MyAppState extends State<MyApp> {
 //               ),),
 //             //backgroundColor: Colors.grey
 //             ),
-//              BottomNavigationBarItem(  
-//                backgroundColor: Colors.black,            
+//              BottomNavigationBarItem(
+//                backgroundColor: Colors.black,
 //               icon: Icon(Iconssss.bullhorn),
 //               title: Text('Bulletin',
 //               style: TextStyle(
-//                 fontWeight: FontWeight.bold,               
+//                 fontWeight: FontWeight.bold,
 //               ),),
 //             //backgroundColor: Colors.grey
 //             ),
@@ -185,7 +186,7 @@ class _MyAppState extends State<MyApp> {
 //              setState(() {
 //               //  if (index==0){
 //               //     Navigator.push(context,
-//               //        MaterialPageRoute(builder: (context) => Classes())); 
+//               //        MaterialPageRoute(builder: (context) => Classes()));
 //               //  }else{
 //                _currentIndex=index;
 //               // }
