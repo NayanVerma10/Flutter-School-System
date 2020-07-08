@@ -38,7 +38,6 @@ dependencies:
   table_calendar:
   font_awesome_flutter:
   bubble:       #Added By Nayan for Chat/Discussions 
-  convex_bottom_bar:  #Added by Ishita for subject Details
   pie_chart:    #Added by Ishita for subject Details
 
   # The following adds the Cupertino Icons font to your application.

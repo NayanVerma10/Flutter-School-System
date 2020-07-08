@@ -8,7 +8,6 @@ import './students.dart';
 import './tutorials.dart';
 import '../Icons/iconsss_icons.dart';
 import './Discussions.dart';
-import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 
 class ClassDetails extends StatefulWidget {
   final String className, schoolCode, teachersId, classNumber, section, subject;
@@ -25,21 +24,7 @@ class ClassDetails extends StatefulWidget {
   _ClassDetailsState createState() => _ClassDetailsState(
       className, schoolCode, teachersId, classNumber, section, subject);
 }
-class Style extends StyleHook {
-  @override
-  double get activeIconSize => 20;
 
-  @override
-  double get activeIconMargin => 12;
-
-  @override
-  double get iconSize => 10;
-
-  @override
-  TextStyle textStyle(Color color) {
-    return TextStyle(fontSize: 12, color: color);
-  }
-}
 
 class _ClassDetailsState extends State<ClassDetails> 
 {
@@ -58,27 +43,26 @@ class _ClassDetailsState extends State<ClassDetails>
       Attendance(className, schoolCode, teachersId, classNumber, section, subject)
     ];
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          className,
-          style: TextStyle(
-              color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+      appBar:AppBar(
+        title: Text(className,
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 20,
+          fontWeight: FontWeight.bold
         ),
-        iconTheme: new IconThemeData(color: Colors.white),
-        backgroundColor: Colors.black,
-      ),
+        ), 
+        iconTheme: new IconThemeData(color: Colors.white), 
+        backgroundColor: Colors.black,          
+             ),
       body: tabs[_currentIndex],
       floatingActionButton: FloatingActionButton(
-        child: Icon(
-          Icons.chat,
-          color: Colors.white,
+        child: Icon(Icons.chat,
+        color: Colors.white,
         ),
         backgroundColor: Colors.black,
-        onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => Discussions(
+        onPressed: (){
+           Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Discussions(
                       className: className,
                       schoolCode: schoolCode,
                       teachersId: teachersId,
@@ -87,42 +71,78 @@ class _ClassDetailsState extends State<ClassDetails>
                       subject: subject)));
         },
       ),
-      bottomNavigationBar: StyleProvider(
-  style: Style(),
-  child: ConvexAppBar(
-    initialActiveIndex: 0,
-    height: 45,
-    top: -30,
-    curveSize: 100,
-    style: TabStyle.titled,
-    items: [
-      TabItem(title: "Students",icon:  Icon(Iconsss.book_reader,size: 17,)),
-      TabItem(title: "Tutorials",icon:  Icon(Iconsss.book)),
-      TabItem(title: "Assignments",icon:  Icon(Icons.assignment)),
-      TabItem(title: "Behavior",icon:  Icon(MyFlutterApp.thumbs_up_down)),      
-      TabItem(title: "Attendance",icon:  Container(              
+        bottomNavigationBar:
+   BottomNavigationBar(
+          currentIndex: _currentIndex,
+          backgroundColor: Colors.black,
+          selectedFontSize: 15, 
+          unselectedFontSize: 13,
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.grey,          
+          type: BottomNavigationBarType.fixed,  //static bar
+          iconSize: 20,  //iconsze
+          items: [
+            BottomNavigationBarItem(             
+              backgroundColor: Colors.black,
+              icon:  Icon(Iconsss.book_reader,
+              size: 17,
+              ),                      
+              title: Text('Students',              
+              style: TextStyle(
+                fontWeight: FontWeight.bold,                
+              ),),
+            //backgroundColor: Colors.grey
+            ),
+            BottomNavigationBarItem(
+              backgroundColor: Colors.black,
+              icon: Icon(Iconsss.book),
+              title: Text('Tutorials',
+              style: TextStyle(
+                fontWeight: FontWeight.bold
+              ),),
+            //backgroundColor: Colors.grey
+            ),
+             BottomNavigationBarItem(  
+               backgroundColor: Colors.black,            
+              icon: Icon(Icons.assignment),
+              title: Text('Assignments',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,               
+              ),),
+            //backgroundColor: Colors.grey
+            ),
+            BottomNavigationBarItem(
+              backgroundColor: Colors.black,
+              icon: Icon(MyFlutterApp.thumbs_up_down),
+              title: Text('Behavior',
+              style: TextStyle(
+                fontWeight: FontWeight.bold
+              ),),
+           // backgroundColor: Colors.grey
+            ),
+             BottomNavigationBarItem(
+               backgroundColor: Colors.black,
+              icon: Container(              
                 padding: EdgeInsets.all(0),
                 height: 20,
                 width: 30,
                 child: Icon(Iconssss.user_check,
               size: 17,
               )
-              ),)
-
-      
-    ],
-    backgroundColor: Colors.black,    
-    onTap: (index){
-             setState(() {            
-               _currentIndex=index;
-              
+              ),
+              title: Text('Attendance',
+              style: TextStyle(
+                fontWeight: FontWeight.bold
+              ),),
+            //backgroundColor: Colors.grey
+            ),
+          ],
+          onTap: (index){
+             setState(() {              
+               _currentIndex=index;               
              });
           },
-  )
-  )
-
-      
-    );
+        ));
   }
 }
 // BottomNavigationBar(
