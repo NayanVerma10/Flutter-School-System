@@ -51,7 +51,76 @@ class _MyAppState extends State<MyApp> {
               iconTheme: new IconThemeData(color: Colors.black),
             ),
             body: tabs[_currentIndex],
-            
+            bottomNavigationBar:  BottomNavigationBar(
+          currentIndex: _currentIndex,
+          backgroundColor: Colors.black,
+          selectedFontSize: 15, 
+          unselectedFontSize: 13,
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.grey,          
+          type: BottomNavigationBarType.fixed,  //static bar
+          iconSize: 20,  //iconsze
+          items: [
+            BottomNavigationBarItem(             
+              backgroundColor: Colors.black,
+              icon:  Icon(Icons.book),
+                      
+              title: Text('Subjects',              
+              style: TextStyle(
+                fontWeight: FontWeight.bold,                
+              ),),
+            //backgroundColor: Colors.grey
+            ),
+
+            BottomNavigationBarItem(
+              backgroundColor: Colors.black,
+              icon: Icon(Icons.event_note),
+              title: Text('Time Table',
+              style: TextStyle(
+                fontWeight: FontWeight.bold
+              ),),
+            //backgroundColor: Colors.grey
+            ),
+             BottomNavigationBarItem(  
+               backgroundColor: Colors.black,            
+              icon: Icon(Iconssss.bullhorn),
+              title: Text('Bulletin',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,               
+              ),),
+            //backgroundColor: Colors.grey
+            ),
+            BottomNavigationBarItem(
+              backgroundColor: Colors.black,
+              icon: Icon(Icons.chat),
+              title: Text('Chat',
+              style: TextStyle(
+                fontWeight: FontWeight.bold
+              ),),
+           // backgroundColor: Colors.grey
+            ),
+             BottomNavigationBarItem(
+               backgroundColor: Colors.black,
+              icon: Icon(Icons.person,
+              size: 23,),
+              title: Text('Profile',
+              style: TextStyle(
+                fontWeight: FontWeight.bold
+              ),),
+            //backgroundColor: Colors.grey
+            ),],
+             onTap: (index){
+             setState(() {
+              //  if (index==0){
+              //     Navigator.push(context,
+              //        MaterialPageRoute(builder: (context) => Classes())); 
+              //  }else{
+               _currentIndex=index;
+              // }
+             });
+          },
+
+       ),
             
     ));
   }
