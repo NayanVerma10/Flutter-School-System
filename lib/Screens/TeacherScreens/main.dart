@@ -35,6 +35,10 @@ class _MyAppState extends State<MyApp> {
   ];
     return MaterialApp(                        //change it into scaffold and add back button in appbar
         debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primaryColor: Colors.black,
+          accentColor: Colors.black,
+        ),
         home: Scaffold(
         appBar: AppBar(
         title: Text("TEACHER NAME",

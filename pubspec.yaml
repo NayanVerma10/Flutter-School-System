@@ -37,9 +37,9 @@ dependencies:
   flutter_speed_dial: 
   table_calendar:
   font_awesome_flutter:
-  bubble:       #Added By Nayan for Chat/Discussions 
+  jitsi_meet: #Added by Nayan for video chatting using jitsi
+  bubble:       #Added by Nayan for Chat/Discussions 
   pie_chart:    #Added by Ishita for subject Details
-  flutter_webrtc:     #Added by Ayush for Vo/Vicalling
   socket_io_client:   #Added by Ayush for Vo/Vicalling
   provider:           #Added by Ayush for Vo/Vicalling
 
