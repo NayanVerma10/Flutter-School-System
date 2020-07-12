@@ -1,9 +1,13 @@
 import 'dart:async';
+import 'dart:ui' as ui;
+// ignore: avoid_web_libraries_in_flutter
+import 'dart:html' show IFrameElement;
 
 import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/foundation.dart';
 
 import './VideoChat.dart';
 
@@ -50,7 +54,7 @@ class _DiscussionsState extends State<Discussions> {
 
   Future<void> callback() async {
     if (messageController.text.length > 0) {
-        limitOfMessages++;
+      limitOfMessages++;
       await _firestore
           .collection('School')
           .document(schoolCode)
@@ -87,8 +91,8 @@ class _DiscussionsState extends State<Discussions> {
           .then((value) => studentName =
               value.data['first name'] + ' ' + value.data['last name'])
           .then((value) {
-        user = User(studentName, className, schoolCode, studentId,
-            classNumber, section, subject, false);
+        user = User(studentName, className, schoolCode, studentId, classNumber,
+            section, subject, false);
       });
     });
   }
@@ -183,8 +187,30 @@ class _DiscussionsState extends State<Discussions> {
                     tooltip: 'Start Meeting',
                     child: Icon(Icons.videocam),
                     heroTag: null,
-                    onPressed: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>MyApp(schoolCode: schoolCode,className: className,classNumber: classNumber,section: section,subject: subject,studentId: studentId,)));
+                    onPressed: () {
+                      if (!kIsWeb)
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => MyApp(
+                                      schoolCode: schoolCode,
+                                      className: className,
+                                      classNumber: classNumber,
+                                      section: section,
+                                      subject: subject,
+                                      studentId: studentId,
+                                    )));
+                      else
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => WebJitsiMeet(schoolCode +
+                                    '-' +
+                                    classNumber +
+                                    '-' +
+                                    section +
+                                    '-' +
+                                    subject)));
                     },
                   ),
                   SizedBox(
@@ -284,5 +310,26 @@ class Message extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class WebJitsiMeet extends StatelessWidget {
+  String meetId;
+  WebJitsiMeet(this.meetId);
+
+  @override
+  Widget build(BuildContext context) {
+    print(meetId);
+    // ignore : undefined_prefixed_name
+    ui.platformViewRegistry.registerViewFactory(
+        'hello-world-html',
+        (int viewId) => IFrameElement()
+          ..allow = "camera *;microphone *"
+          ..width = '640'
+          ..height = '360'
+          ..src = 'https://meet.jit.si/' + meetId
+          ..style.border = 'none');
+
+    return Scaffold(body: HtmlElementView(viewType: 'hello-world-html'));
   }
 }
