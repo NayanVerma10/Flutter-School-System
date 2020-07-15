@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:ui' as ui;
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:html' show IFrameElement;
+
+import 'package:universal_html/html.dart' show IFrameElement;
 
 import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
