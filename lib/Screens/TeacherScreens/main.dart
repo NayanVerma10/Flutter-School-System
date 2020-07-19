@@ -24,16 +24,15 @@ class _MyAppState extends State<MyApp> {
   List<Widget> tabs;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
-    tabs=[
-      Classes(schoolCode,teachersId),
-      Schedule(schoolCode,teachersId),
+    tabs = [
+      Classes(schoolCode, teachersId),
+      Schedule(schoolCode, teachersId),
       AnnouncementDetailsPage(),
-      Chats(schoolCode,teachersId),
-      Profile(schoolCode,teachersId)
-  ];
-
+      Chats(schoolCode, teachersId),
+      Profile(schoolCode, teachersId)
+    ];
   }
 
   int _currentIndex = 0;
@@ -165,9 +164,8 @@ class _MyAppState extends State<MyApp> {
       );
     }
     return MaterialApp(
-        //change it into scaffold and add back button in appbar
+        theme: ThemeData(primaryColor: Colors.black, accentColor: Colors.black),
         debugShowCheckedModeBanner: false,
         home: home);
-    
   }
 }

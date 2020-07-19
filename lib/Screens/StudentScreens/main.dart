@@ -169,6 +169,10 @@ class _MyAppState extends State<MyApp> {
         ),
       );
     }
-    return MaterialApp(debugShowCheckedModeBanner: false, home: home);
+    return MaterialApp(
+      theme: ThemeData(primaryColor: Colors.black, accentColor: Colors.black),
+      debugShowCheckedModeBanner: false,
+      home: home,
+    );
   }
 }

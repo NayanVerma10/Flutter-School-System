@@ -15,7 +15,6 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:Schools/widgets/add_event.dart';
 import 'package:Schools/widgets/add_announcements.dart';
 
-
 void main(String schoolCode) {
   runApp(MyApp(schoolCode));
 }
@@ -37,15 +36,12 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-             routes: {
+      routes: {
         "add_event": (_) => AddEventPage(),
         "add_announcement": (_) => AddAnnouncementPage(),
       },
       title: 'SCHOOL NAME',
-      theme: ThemeData(
-        primaryColor: Colors.black,
-        accentColor: Colors.black
-      ),
+      theme: ThemeData(primaryColor: Colors.black, accentColor: Colors.black),
       debugShowCheckedModeBanner: false,
       home: DefaultTabController(
         length: 5, // Number of Tabs you want
