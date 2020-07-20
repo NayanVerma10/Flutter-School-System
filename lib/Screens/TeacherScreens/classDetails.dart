@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import './assignment.dart';
 import './attendance.dart';
 import './behavior.dart';
@@ -8,6 +9,7 @@ import './students.dart';
 import './tutorials.dart';
 import '../Icons/iconsss_icons.dart';
 import './Discussions.dart';
+import './VideoChat.dart';
 
 class ClassDetails extends StatefulWidget {
   final String className, schoolCode, teachersId, classNumber, section, subject;
@@ -25,122 +27,159 @@ class ClassDetails extends StatefulWidget {
       className, schoolCode, teachersId, classNumber, section, subject);
 }
 
-
-class _ClassDetailsState extends State<ClassDetails> 
-{
+class _ClassDetailsState extends State<ClassDetails> {
   final String className, schoolCode, teachersId, classNumber, section, subject;
   _ClassDetailsState(this.className, this.schoolCode, this.teachersId,
-  this.classNumber, this.section, this.subject);
+      this.classNumber, this.section, this.subject);
   int _currentIndex = 0;
+
+  void videoChat() {
+    if (!kIsWeb)
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => MyApp(
+                    schoolCode: schoolCode,
+                    className: className,
+                    classNumber: classNumber,
+                    section: section,
+                    subject: subject,
+                    teachersId: teachersId,
+                  )));
+    else
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => WebJitsiMeet(
+                  schoolCode +
+                      '-' +
+                      classNumber +
+                      '-' +
+                      section +
+                      '-' +
+                      subject,
+                  className)));
+  }
+
   @override
   Widget build(BuildContext context) {
     var tabs = [
-      Students(className, schoolCode, teachersId, classNumber, section, subject),
+      Students(
+          className, schoolCode, teachersId, classNumber, section, subject),
       Tutorials(),
       Assignments(),
       Behavior(
           className, schoolCode, teachersId, classNumber, section, subject),
-      Attendance(className, schoolCode, teachersId, classNumber, section, subject)
+      Attendance(
+          className, schoolCode, teachersId, classNumber, section, subject)
     ];
     return Scaffold(
-      appBar:AppBar(
-        title: Text(className,
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 20,
-          fontWeight: FontWeight.bold
+        appBar: AppBar(
+          title: Text(
+            className,
+            style: TextStyle(
+                color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          actions: <Widget>[
+            IconButton(icon: Icon(Icons.videocam), onPressed: videoChat)
+          ],
+          iconTheme: new IconThemeData(color: Colors.white),
+          backgroundColor: Colors.black,
         ),
-        ), 
-        iconTheme: new IconThemeData(color: Colors.white), 
-        backgroundColor: Colors.black,          
-             ),
-      body: tabs[_currentIndex],
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.chat,
-        color: Colors.white,
+        body: tabs[_currentIndex],
+        floatingActionButton: FloatingActionButton(
+          child: Icon(
+            Icons.chat,
+            color: Colors.white,
+          ),
+          backgroundColor: Colors.black,
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => Discussions(
+                        className: className,
+                        schoolCode: schoolCode,
+                        teachersId: teachersId,
+                        classNumber: classNumber,
+                        section: section,
+                        subject: subject)));
+          },
         ),
-        backgroundColor: Colors.black,
-        onPressed: (){
-           Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Discussions(
-                      className: className,
-                      schoolCode: schoolCode,
-                      teachersId: teachersId,
-                      classNumber: classNumber,
-                      section: section,
-                      subject: subject)));
-        },
-      ),
-        bottomNavigationBar:
-   BottomNavigationBar(
+        bottomNavigationBar: BottomNavigationBar(
           currentIndex: _currentIndex,
           backgroundColor: Colors.black,
-          selectedFontSize: 15, 
+          selectedFontSize: 15,
           unselectedFontSize: 13,
           selectedItemColor: Colors.white,
-          unselectedItemColor: Colors.grey,          
-          type: BottomNavigationBarType.fixed,  //static bar
-          iconSize: 20,  //iconsze
+          unselectedItemColor: Colors.grey,
+          type: BottomNavigationBarType.fixed, //static bar
+          iconSize: 20, //iconsze
           items: [
-            BottomNavigationBarItem(             
+            BottomNavigationBarItem(
               backgroundColor: Colors.black,
-              icon:  Icon(Iconsss.book_reader,
-              size: 17,
-              ),                      
-              title: Text('Students',              
-              style: TextStyle(
-                fontWeight: FontWeight.bold,                
-              ),),
-            //backgroundColor: Colors.grey
+              icon: Icon(
+                Iconsss.book_reader,
+                size: 17,
+              ),
+              title: Text(
+                'Students',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              //backgroundColor: Colors.grey
             ),
             BottomNavigationBarItem(
               backgroundColor: Colors.black,
               icon: Icon(Iconsss.book),
-              title: Text('Tutorials',
-              style: TextStyle(
-                fontWeight: FontWeight.bold
-              ),),
-            //backgroundColor: Colors.grey
+              title: Text(
+                'Tutorials',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              //backgroundColor: Colors.grey
             ),
-             BottomNavigationBarItem(  
-               backgroundColor: Colors.black,            
+            BottomNavigationBarItem(
+              backgroundColor: Colors.black,
               icon: Icon(Icons.assignment),
-              title: Text('Assignments',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,               
-              ),),
-            //backgroundColor: Colors.grey
+              title: Text(
+                'Assignments',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              //backgroundColor: Colors.grey
             ),
             BottomNavigationBarItem(
               backgroundColor: Colors.black,
               icon: Icon(MyFlutterApp.thumbs_up_down),
-              title: Text('Behavior',
-              style: TextStyle(
-                fontWeight: FontWeight.bold
-              ),),
-           // backgroundColor: Colors.grey
-            ),
-             BottomNavigationBarItem(
-               backgroundColor: Colors.black,
-              icon: Container(              
-                padding: EdgeInsets.all(0),
-                height: 20,
-                width: 30,
-                child: Icon(Iconssss.user_check,
-              size: 17,
-              )
+              title: Text(
+                'Behavior',
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              title: Text('Attendance',
-              style: TextStyle(
-                fontWeight: FontWeight.bold
-              ),),
-            //backgroundColor: Colors.grey
+              // backgroundColor: Colors.grey
+            ),
+            BottomNavigationBarItem(
+              backgroundColor: Colors.black,
+              icon: Container(
+                  padding: EdgeInsets.all(0),
+                  height: 20,
+                  width: 30,
+                  child: Icon(
+                    Iconssss.user_check,
+                    size: 17,
+                  )),
+              title: Text(
+                'Attendance',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              //backgroundColor: Colors.grey
             ),
           ],
-          onTap: (index){
-             setState(() {              
-               _currentIndex=index;               
-             });
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
           },
         ));
   }
@@ -148,21 +187,21 @@ class _ClassDetailsState extends State<ClassDetails>
 // BottomNavigationBar(
 //           currentIndex: _currentIndex,
 //           backgroundColor: Colors.black,
-//           selectedFontSize: 15, 
+//           selectedFontSize: 15,
 //           unselectedFontSize: 13,
 //           selectedItemColor: Colors.white,
-//           unselectedItemColor: Colors.grey,          
+//           unselectedItemColor: Colors.grey,
 //           type: BottomNavigationBarType.fixed,  //static bar
 //           iconSize: 20,  //iconsze
 //           items: [
-//             BottomNavigationBarItem(             
+//             BottomNavigationBarItem(
 //               backgroundColor: Colors.black,
 //               icon:  Icon(Iconsss.book_reader,
 //               size: 17,
-//               ),                      
-//               title: Text('Students',              
+//               ),
+//               title: Text('Students',
 //               style: TextStyle(
-//                 fontWeight: FontWeight.bold,                
+//                 fontWeight: FontWeight.bold,
 //               ),),
 //             //backgroundColor: Colors.grey
 //             ),
@@ -175,12 +214,12 @@ class _ClassDetailsState extends State<ClassDetails>
 //               ),),
 //             //backgroundColor: Colors.grey
 //             ),
-//              BottomNavigationBarItem(  
-//                backgroundColor: Colors.black,            
+//              BottomNavigationBarItem(
+//                backgroundColor: Colors.black,
 //               icon: Icon(Icons.assignment),
 //               title: Text('Assignments',
 //               style: TextStyle(
-//                 fontWeight: FontWeight.bold,               
+//                 fontWeight: FontWeight.bold,
 //               ),),
 //             //backgroundColor: Colors.grey
 //             ),
@@ -195,14 +234,14 @@ class _ClassDetailsState extends State<ClassDetails>
 //             ),
 //              BottomNavigationBarItem(
 //                backgroundColor: Colors.black,
-              // icon: Container(              
-              //   padding: EdgeInsets.all(0),
-              //   height: 20,
-              //   width: 30,
-              //   child: Icon(Iconssss.user_check,
-              // size: 17,
-              // )
-              // ),
+// icon: Container(
+//   padding: EdgeInsets.all(0),
+//   height: 20,
+//   width: 30,
+//   child: Icon(Iconssss.user_check,
+// size: 17,
+// )
+// ),
 //               title: Text('Attendance',
 //               style: TextStyle(
 //                 fontWeight: FontWeight.bold
@@ -211,8 +250,8 @@ class _ClassDetailsState extends State<ClassDetails>
 //             ),
 //           ],
 //           onTap: (index){
-//              setState(() {              
-//                _currentIndex=index;               
+//              setState(() {
+//                _currentIndex=index;
 //              });
 //           },
 //         ),

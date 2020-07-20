@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import './assignment.dart';
 import './attendDetails.dart';
 import './discussions.dart';
 
 import './tutorials.dart';
 import './grades.dart';
+import './VideoChat.dart';
 
 import 'package:pie_chart/pie_chart.dart';
 
@@ -24,8 +26,8 @@ class SubjectDetails extends StatefulWidget {
       schoolCode, studentId, classNumber, section, subject);
 }
 
-class _SubjectDetailsState extends State<SubjectDetails>
-    with SingleTickerProviderStateMixin {
+class _SubjectDetailsState extends State<SubjectDetails> with SingleTickerProviderStateMixin {
+  
   final String schoolCode, studentId, classNumber, section, subject;
   _SubjectDetailsState(this.schoolCode, this.studentId, this.classNumber,
       this.section, this.subject);
@@ -34,6 +36,39 @@ class _SubjectDetailsState extends State<SubjectDetails>
     Colors.blue[900],
     Colors.red,
   ];
+
+  void videoChat() {
+    if (!kIsWeb)
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => MyApp(
+                    schoolCode: schoolCode,
+                    className: classNumber+' '+section+' '+subject,
+                    classNumber: classNumber,
+                    section: section,
+                    subject: subject,
+                    studentId: studentId,
+                  )));
+    else
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => WebJitsiMeet(
+                  schoolCode +
+                      '-' +
+                      classNumber +
+                      '-' +
+                      section +
+                      '-' +
+                      subject,
+                  classNumber +
+                      ' ' +
+                      section +
+                      ' ' +
+                      subject)));
+  }
+
 
   loadData() {
     Firestore.instance
@@ -74,6 +109,9 @@ class _SubjectDetailsState extends State<SubjectDetails>
             style: TextStyle(
                 color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
           ),
+          actions: <Widget>[
+            IconButton(icon: Icon(Icons.videocam), onPressed: videoChat)
+          ],
           iconTheme: new IconThemeData(color: Colors.white),
           backgroundColor: Colors.black,
         ),

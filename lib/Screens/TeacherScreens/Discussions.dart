@@ -211,7 +211,7 @@ class _DiscussionsState extends State<Discussions> {
                                     '-' +
                                     section +
                                     '-' +
-                                    subject)));
+                                    subject,className)));
                     },
                   ),
                   SizedBox(
@@ -314,27 +314,5 @@ class Message extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-class WebJitsiMeet extends StatelessWidget {
-  String meetId;
-  WebJitsiMeet(this.meetId);
-
-  @override
-  Widget build(BuildContext context) {
-    print(meetId);
-
-    // ignore:undefined_prefixed_name
-    ui.platformViewRegistry.registerViewFactory(
-        'hello-world-html',
-        (int viewId) => IFrameElement()
-          ..allow = "camera *;microphone *"
-          ..width = '640'
-          ..height = '360'
-          ..src = 'https://meet.jit.si/' + meetId
-          ..style.border = 'none');
-
-    return Scaffold(body: HtmlElementView(viewType: 'hello-world-html'));
   }
 }
