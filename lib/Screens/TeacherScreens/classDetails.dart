@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import './studentsGrid.dart';
 import './assignment.dart';
 import './attendance.dart';
 import './behavior.dart';
@@ -32,6 +33,7 @@ class _ClassDetailsState extends State<ClassDetails> {
   _ClassDetailsState(this.className, this.schoolCode, this.teachersId,
       this.classNumber, this.section, this.subject);
   int _currentIndex = 0;
+  int v = 0;
 
   void videoChat() {
     if (!kIsWeb)
@@ -64,12 +66,13 @@ class _ClassDetailsState extends State<ClassDetails> {
   @override
   Widget build(BuildContext context) {
     var tabs = [
-      Students(
-          className, schoolCode, teachersId, classNumber, section, subject),
+      v == 0
+          ? StudentsList(
+              className, schoolCode, teachersId, classNumber, section, subject)
+          : StudentsGrid(
+              className, schoolCode, teachersId, classNumber, section, subject),
       Tutorials(),
       Assignments(),
-      Behavior(
-          className, schoolCode, teachersId, classNumber, section, subject),
       Attendance(
           className, schoolCode, teachersId, classNumber, section, subject)
     ];
@@ -80,9 +83,50 @@ class _ClassDetailsState extends State<ClassDetails> {
             style: TextStyle(
                 color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
           ),
-          actions: <Widget>[
-            IconButton(icon: Icon(Icons.videocam), onPressed: videoChat)
-          ],
+          actions: _currentIndex == 0
+              ? <Widget>[
+                  IconButton(
+                      icon: Icon(Iconssss.list,
+                          size: 20,
+                          //color: Colors.white,
+
+                          color: v == 0 ? Colors.white : Colors.grey),
+                      onPressed: () {
+                        setState(() {
+                          v = 0;
+                        });
+                      }),
+                  IconButton(
+                      icon: Icon(Iconssss.th_thumb,
+                          // color: Colors.white,
+                          size: 20,
+                          color: v == 1 ? Colors.white : Colors.grey),
+                      onPressed: () {
+                        setState(() {
+                          v = 1;
+                        });
+                      }),
+                  FlatButton.icon(
+                    label: Text('Join Class'),
+                    icon: Icon(
+                      Icons.videocam,
+                      color: Colors.white,
+                    ),
+                    onPressed: videoChat,
+                    textColor: Colors.white,
+                  ),
+                ]
+              : <Widget>[
+                  FlatButton.icon(
+                    label: Text('Join Class'),
+                    icon: Icon(
+                      Icons.videocam,
+                      color: Colors.white,
+                    ),
+                    onPressed: videoChat,
+                    textColor: Colors.white,
+                  ),
+                ],
           iconTheme: new IconThemeData(color: Colors.white),
           backgroundColor: Colors.black,
         ),
@@ -122,26 +166,39 @@ class _ClassDetailsState extends State<ClassDetails> {
                 Iconsss.book_reader,
                 size: 17,
               ),
-              title: Text(
-                'Students',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
+              title: Container(
+                margin: EdgeInsets.only(top: 2),
+                child: Text(
+                  'Students',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               //backgroundColor: Colors.grey
             ),
             BottomNavigationBarItem(
               backgroundColor: Colors.black,
-              icon: Icon(Iconsss.book),
-              title: Text(
-                'Tutorials',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
+              icon: Container(
+                  margin: EdgeInsets.only(top: 3),
+                  child: Icon(
+                    Iconsss.book,
+                    size: 18,
+                  )),
+              title: Container(
+                  margin: EdgeInsets.only(top: 2),
+                  child: Text(
+                    'Tutorials',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  )),
               //backgroundColor: Colors.grey
             ),
             BottomNavigationBarItem(
               backgroundColor: Colors.black,
-              icon: Icon(Icons.assignment),
+              icon: Icon(
+                Icons.assignment,
+                size: 22,
+              ),
               title: Text(
                 'Assignments',
                 style: TextStyle(
@@ -149,15 +206,6 @@ class _ClassDetailsState extends State<ClassDetails> {
                 ),
               ),
               //backgroundColor: Colors.grey
-            ),
-            BottomNavigationBarItem(
-              backgroundColor: Colors.black,
-              icon: Icon(MyFlutterApp.thumbs_up_down),
-              title: Text(
-                'Behavior',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              // backgroundColor: Colors.grey
             ),
             BottomNavigationBarItem(
               backgroundColor: Colors.black,
@@ -184,74 +232,3 @@ class _ClassDetailsState extends State<ClassDetails> {
         ));
   }
 }
-// BottomNavigationBar(
-//           currentIndex: _currentIndex,
-//           backgroundColor: Colors.black,
-//           selectedFontSize: 15,
-//           unselectedFontSize: 13,
-//           selectedItemColor: Colors.white,
-//           unselectedItemColor: Colors.grey,
-//           type: BottomNavigationBarType.fixed,  //static bar
-//           iconSize: 20,  //iconsze
-//           items: [
-//             BottomNavigationBarItem(
-//               backgroundColor: Colors.black,
-//               icon:  Icon(Iconsss.book_reader,
-//               size: 17,
-//               ),
-//               title: Text('Students',
-//               style: TextStyle(
-//                 fontWeight: FontWeight.bold,
-//               ),),
-//             //backgroundColor: Colors.grey
-//             ),
-//             BottomNavigationBarItem(
-//               backgroundColor: Colors.black,
-//               icon: Icon(Iconsss.book),
-//               title: Text('Tutorials',
-//               style: TextStyle(
-//                 fontWeight: FontWeight.bold
-//               ),),
-//             //backgroundColor: Colors.grey
-//             ),
-//              BottomNavigationBarItem(
-//                backgroundColor: Colors.black,
-//               icon: Icon(Icons.assignment),
-//               title: Text('Assignments',
-//               style: TextStyle(
-//                 fontWeight: FontWeight.bold,
-//               ),),
-//             //backgroundColor: Colors.grey
-//             ),
-//             BottomNavigationBarItem(
-//               backgroundColor: Colors.black,
-//               icon: Icon(MyFlutterApp.thumbs_up_down),
-//               title: Text('Behavior',
-//               style: TextStyle(
-//                 fontWeight: FontWeight.bold
-//               ),),
-//            // backgroundColor: Colors.grey
-//             ),
-//              BottomNavigationBarItem(
-//                backgroundColor: Colors.black,
-// icon: Container(
-//   padding: EdgeInsets.all(0),
-//   height: 20,
-//   width: 30,
-//   child: Icon(Iconssss.user_check,
-// size: 17,
-// )
-// ),
-//               title: Text('Attendance',
-//               style: TextStyle(
-//                 fontWeight: FontWeight.bold
-//               ),),
-//             //backgroundColor: Colors.grey
-//             ),
-//           ],
-//           onTap: (index){
-//              setState(() {
-//                _currentIndex=index;
-//              });
-//           },
-//         ),

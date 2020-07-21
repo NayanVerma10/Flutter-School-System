@@ -6,21 +6,22 @@ import './announcements.dart';
 import './timeTable.dart';
 import '../Icons/iconssss_icons.dart';
 import 'package:universal_platform/universal_platform.dart';
+import '../LogoutTheUser.dart';
 
 void main(schoolCode, studentId) {
-  runApp(MyApp(schoolCode, studentId));
+  runApp(MyAppStudent(schoolCode, studentId));
 }
 
-class MyApp extends StatefulWidget {
+class MyAppStudent extends StatefulWidget {
   String schoolCode, studentId;
-  MyApp(this.schoolCode, this.studentId);
+  MyAppStudent(this.schoolCode, this.studentId);
   @override
-  _MyAppState createState() => _MyAppState(schoolCode, studentId);
+  _MyAppStudentState createState() => _MyAppStudentState(schoolCode, studentId);
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppStudentState extends State<MyAppStudent> {
   String schoolCode, studentId;
-  _MyAppState(this.schoolCode, this.studentId);
+  _MyAppStudentState(this.schoolCode, this.studentId);
   List<Widget> tabs;
 
   int _currentIndex = 0;
@@ -52,6 +53,16 @@ class _MyAppState extends State<MyApp> {
             ),
             iconTheme: new IconThemeData(color: Colors.black),
             backgroundColor: Colors.black,
+            actions: <Widget>[
+              FlatButton(
+                  onPressed: () {
+                    logoutTheUser();
+                  },
+                  child: Text(
+                    'Logout',
+                    style: TextStyle(color: Colors.white),
+                  )),
+            ],
           ),
           body: tabs[_currentIndex],
           bottomNavigationBar: BottomNavigationBar(
@@ -115,6 +126,7 @@ class _MyAppState extends State<MyApp> {
                   'Profile',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
+
                 //backgroundColor: Colors.grey
               ),
             ],
@@ -162,6 +174,16 @@ class _MyAppState extends State<MyApp> {
               'Student Name',
               style: TextStyle(fontSize: 20),
             ),
+            actions: <Widget>[
+              FlatButton(
+                  onPressed: () {
+                    logoutTheUser();
+                  },
+                  child: Text(
+                    'Logout',
+                    style: TextStyle(color: Colors.white),
+                  )),
+            ],
           ),
           body: TabBarView(
             children: tabs,

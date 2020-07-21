@@ -6,21 +6,23 @@ import './schedule.dart';
 import './chats.dart';
 import '../Icons/iconssss_icons.dart';
 import 'package:universal_platform/universal_platform.dart';
+import '../LogoutTheUser.dart';
 
 void main(schoolCode, teachersId) {
-  runApp(MyApp(schoolCode, teachersId));
+  runApp(MyAppTeacher(schoolCode, teachersId));
 }
 
-class MyApp extends StatefulWidget {
+class MyAppTeacher extends StatefulWidget {
   String schoolCode, teachersId;
-  MyApp(this.schoolCode, this.teachersId);
+  MyAppTeacher(this.schoolCode, this.teachersId);
   @override
-  _MyAppState createState() => _MyAppState(schoolCode, teachersId);
+  _MyAppTeacherState createState() =>
+      _MyAppTeacherState(schoolCode, teachersId);
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppTeacherState extends State<MyAppTeacher> {
   String schoolCode, teachersId;
-  _MyAppState(this.schoolCode, this.teachersId);
+  _MyAppTeacherState(this.schoolCode, this.teachersId);
   List<Widget> tabs;
 
   @override
@@ -53,6 +55,16 @@ class _MyAppState extends State<MyApp> {
             ),
             iconTheme: new IconThemeData(color: Colors.black),
             backgroundColor: Colors.black,
+            actions: <Widget>[
+              FlatButton(
+                  onPressed: () {
+                    logoutTheUser();
+                  },
+                  child: Text(
+                    'Logout',
+                    style: TextStyle(color: Colors.white),
+                  )),
+            ],
           ),
           body: tabs[_currentIndex],
           bottomNavigationBar: Builder(
@@ -156,6 +168,16 @@ class _MyAppState extends State<MyApp> {
               'Teacher Name',
               style: TextStyle(fontSize: 20),
             ),
+            actions: <Widget>[
+              FlatButton(
+                  onPressed: () {
+                    logoutTheUser();
+                  },
+                  child: Text(
+                    'Logout',
+                    style: TextStyle(color: Colors.white),
+                  )),
+            ],
           ),
           body: TabBarView(
             children: tabs,

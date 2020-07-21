@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'SchoolRegistration.dart';
 import 'SchoolScreens/main.dart';
@@ -38,14 +39,7 @@ class _SchoolLoginState extends State<SchoolLogin> {
       await _googleSignIn.signOut();
 
       if (verified) {
-        Scaffold.of(context).showSnackBar(SnackBar(
-            content: Text(
-          'Logged in',
-        )));
-        print(schoolCode);
-        service(schoolCode);
-        main(schoolCode);
-        verified = false;
+        await logTheUserIn(context);
       } else {
         Scaffold.of(context).showSnackBar(SnackBar(
             content: Text(
@@ -55,6 +49,22 @@ class _SchoolLoginState extends State<SchoolLogin> {
     } catch (err) {
       print(err);
     }
+  }
+
+  Future<void> logTheUserIn(BuildContext context) async {
+    Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text(
+      'Logged in',
+    )));
+    print(schoolCode);
+    service(schoolCode);
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('schoolCode', schoolCode);
+    await prefs.setString('type', 'School');
+
+    main(schoolCode);
+    verified = false;
   }
 
   Future<bool> verifyGoogleMail() async {
@@ -169,14 +179,7 @@ class _SchoolLoginState extends State<SchoolLogin> {
                               await verifyphone();
                               print(verified);
                               if (verified) {
-                                Scaffold.of(context).showSnackBar(SnackBar(
-                                    content: Text(
-                                  'Logged in',
-                                )));
-                                print(schoolCode);
-                                main(schoolCode);
-                                service(schoolCode);
-                                verified = false;
+                                logTheUserIn(context);
                               } else {
                                 Scaffold.of(context).showSnackBar(SnackBar(
                                   content: Icon(

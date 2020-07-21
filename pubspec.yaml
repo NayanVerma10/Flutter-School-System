@@ -47,7 +47,9 @@ dependencies:
   provider:           #Added by Ayush for Vo/Vicalling
   universal_platform: #Added by Ishita for differentiating by different platforms
   universal_html:
-
+  shared_preferences: #Added by Nayan for storing the data locally
+  flutter_staggered_animations: #Added By Ishita for Students List
+  awesome_dialog: #Added By Ishita for Student List
   
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

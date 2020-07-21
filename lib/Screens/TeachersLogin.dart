@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'TeachersRegistration.dart';
 import './TeacherScreens/main.dart';
@@ -43,9 +44,8 @@ class _TeachersLoginState extends State<TeachersLogin> {
             content: Text(
           'Logged in',
         )));
-        print(teachersId);
-        main(schoolCode, teachersId);
-        verified = false;
+        await logInTheUser();
+
       } else {
         Scaffold.of(context).showSnackBar(SnackBar(
           content: Icon(
@@ -58,6 +58,18 @@ class _TeachersLoginState extends State<TeachersLogin> {
     } catch (err) {
       print(err);
     }
+  }
+
+  Future<void> logInTheUser() async {
+    print(teachersId);
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('schoolCode', schoolCode);
+    await prefs.setString('type', 'Teacher');
+    await prefs.setString('teachersId', teachersId);
+
+    main(schoolCode, teachersId);
+    verified = false;
   }
 
   Future<bool> verifyGoogleMail() async {
@@ -196,6 +208,7 @@ class _TeachersLoginState extends State<TeachersLogin> {
                                     content: Text(
                                   'Logged in',
                                 )));
+                                await logInTheUser();
                                 print(teachersId);
                                 main(schoolCode, teachersId);
                                 verified = false;
