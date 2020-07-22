@@ -314,14 +314,14 @@ class WebJitsiMeet extends StatelessWidget {
   Widget build(BuildContext context) {
     print(meetId);
     // ignore : undefined_prefixed_name
-    ui.platformViewRegistry.registerViewFactory(
-        'hello-world-html',
-        (int viewId) => IFrameElement()
-          ..allow = "camera *;microphone *"
-          ..width = '640'
-          ..height = '360'
-          ..src = 'https://meet.jit.si/' + meetId
-          ..style.border = 'none');
+    // ui.platformViewRegistry.registerViewFactory(
+    //     'hello-world-html',
+    //     (int viewId) => IFrameElement()
+    //       ..allow = "camera *;microphone *"
+    //       ..width = '640'
+    //       ..height = '360'
+    //       ..src = 'https://meet.jit.si/' + meetId
+    //       ..style.border = 'none');
 
     return Scaffold(
       appBar: AppBar(

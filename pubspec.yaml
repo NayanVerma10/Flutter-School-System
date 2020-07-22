@@ -29,14 +29,9 @@ dependencies:
   cloud_firestore:
   firebase_storage:
   firebase_helpers:
-<<<<<<< HEAD
-  universal_platform:
-    
-=======
   firebase_auth:  #Added by Nayan for Sign in
   google_sign_in: #Added by Nayan for Sign in
   
->>>>>>> 3815de4ef7ea0cd3286d79628d1e9f88039786d9
   # Other Dependencies
   grouped_buttons:
   image_picker:

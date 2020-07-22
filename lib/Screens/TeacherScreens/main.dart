@@ -33,7 +33,7 @@ class _MyAppTeacherState extends State<MyAppTeacher> {
       Schedule(schoolCode, teachersId),
       AnnouncementDetailsPage(),
       Chats(schoolCode, teachersId),
-      Profile(schoolCode, teachersId)
+      Profile1(schoolCode, teachersId)
     ];
   }
 
@@ -43,32 +43,6 @@ class _MyAppTeacherState extends State<MyAppTeacher> {
   Widget build(BuildContext context) {
     Widget home;
 
-<<<<<<< HEAD
-    var tabs=[
-      Classes(schoolCode,teachersId),
-      Schedule(schoolCode,teachersId),
-      Announcements(schoolCode,teachersId),
-      Chats(schoolCode,teachersId),
-      Profile1(schoolCode,teachersId)
-  ];
-    return MaterialApp(     //change it into scaffold and add back button in appbar
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primaryColor: Colors.black,
-          accentColor: Colors.black
-        ),
-        home: Scaffold(
-        appBar: AppBar(
-        title: Text("TEACHER NAME",
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 20,
-          fontWeight: FontWeight.bold
-        ),
-        ), 
-        iconTheme: new IconThemeData(color: Colors.black), 
-        backgroundColor: Colors.black,
-=======
     if (UniversalPlatform.isAndroid) {
       home = Scaffold(
           appBar: AppBar(
@@ -208,7 +182,6 @@ class _MyAppTeacherState extends State<MyAppTeacher> {
           body: TabBarView(
             children: tabs,
           ),
->>>>>>> 3815de4ef7ea0cd3286d79628d1e9f88039786d9
         ),
       );
     }
