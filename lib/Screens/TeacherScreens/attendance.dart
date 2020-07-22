@@ -182,7 +182,8 @@ class _AttendanceState extends State<Attendance> {
     documentReference.get().then((datasnapshot) {
       // print(datasnapshot.data["schoolno"]);
       return 7;
-    });
+    }
+    );
   }
 
   Future updateCount(bool val, String number) async {

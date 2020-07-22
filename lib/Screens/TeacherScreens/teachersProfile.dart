@@ -815,20 +815,6 @@ class MapScreenState extends State<ProfilePage>
                       Expanded(
                           child: TextField(
                         style: TextStyle(
-                          height: 1.25,
-                        ),
-                        controller: namecontroller1,
-                        decoration: InputDecoration(hintText: 'Name'),
-                        // controller: controller4,
-                        //  autofocus: true,
-                      )),
-                    ],
-                  ),
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                          child: TextField(
-                        style: TextStyle(
                           height: 1.5,
                         ),
                         controller: namecontrollerq,

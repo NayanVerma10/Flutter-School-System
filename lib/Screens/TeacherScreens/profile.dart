@@ -1,7 +1,14 @@
 import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+//import 'package:firebase/firebase.dart' as fb;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
+import 'package:image_picker/image_picker.dart';
+//import 'package:image_picker_web/image_picker_web.dart';
+import 'package:universal_platform/universal_platform.dart';
+//import 'dart:html';
 /*class Profile extends StatelessWidget {
   String schoolCode,teachersId;
   Profile(this.schoolCode,this.teachersId);
@@ -20,21 +27,20 @@ import 'dart:async';
     );
   }
 }*/
-class Profile extends StatefulWidget 
+class Profile1 extends StatefulWidget 
 {
   String schoolCode,teacherId;
-  Profile(this.schoolCode,this.teacherId);
+  Profile1(this.schoolCode,this.teacherId);
   @override
   //final DocumentSnapshot post;
 //  Profile({this.post,this.schoolCode});
   MapScreenState createState() => MapScreenState(schoolCode,teacherId);
 }
 
-class MapScreenState extends State<Profile>with SingleTickerProviderStateMixin 
+class MapScreenState extends State<Profile1>with SingleTickerProviderStateMixin 
 { 
   String schoolCode,teacherId;
   MapScreenState(this.schoolCode,this.teacherId);
- 
   TextEditingController controller1;
   TextEditingController controller2;
   TextEditingController controller3;
@@ -51,16 +57,36 @@ class MapScreenState extends State<Profile>with SingleTickerProviderStateMixin
   final namecontrollerq = new TextEditingController();
   final namecontrollerd = new TextEditingController();
   List<dynamic> classList = [];
- 
  // String schoolCode;
   bool _status = true;
   final FocusNode myFocusNode = FocusNode();
   @override
+ File _image; 
+String link="#";
+void check()
+{
+var val=Firestore.instance.collection('School').document(schoolCode).
+      collection('Teachers').document(teacherId).get().then((value){
+    //if(value.data['url'])
+    link=value.data['url'];
+    if(link==null)
+    link='#';
+      });
+
+}
+
+ Future<String>getD() async
+ {
+       var storageref = FirebaseStorage.instance    
+       .ref()    
+       .child('teachers/${namecontroller2.text}');    
+       return await storageref.getDownloadURL();
+ }
   void initState() {
     // TODO: implement initState
     super.initState();
-  
-  
+   check();
+      String stored=getD().toString();
     DocumentReference dc=Firestore.instance.collection('School').document(schoolCode).
     collection('Teachers').document(teacherId);
  
@@ -116,6 +142,74 @@ class MapScreenState extends State<Profile>with SingleTickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
     String rt,rt1,rt2;
+  bool isWeb=UniversalPlatform.isWeb;
+//   bool isWeb = UniversalPlatform.isWeb;
+  Future<void> _addPathToDatabase(String text) async {
+    try {
+      // Get image URL from firebase
+      final ref = FirebaseStorage().ref().child(text);
+      var imageString = await ref.getDownloadURL();
+
+      // Add location and url to database
+      await Firestore.instance.collection('School').document(schoolCode).
+      collection('Teachers').document(teacherId).setData({'url':imageString , 'location':text},merge: true);
+    }catch(e){
+      print(e.message);
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              content: Text(e.message),
+            );
+          }
+      );
+    }
+  }
+/*Future uploadPicWeb(BuildContext context) async{
+  String fileName=_image.path;
+  setState(() {
+   fb.storage().refFromURL("https://console.firebase.google.com/project/aatmanirbhar-51cd2/storage/aatmanirbhar-51cd2.appspot.com/files")
+   .child("teachers/${namecontroller2.text}").put(_image); 
+  });
+} */
+
+  Future uploadPic(BuildContext context) async {    
+   String fileName=_image.path;
+   StorageReference storageReference = FirebaseStorage.instance    
+       .ref()    
+       .child('teachers/${namecontroller2.text}');    
+   StorageUploadTask uploadTask = storageReference.putFile(_image);    
+   StorageTaskSnapshot taskSnapshot=await uploadTask.onComplete;    
+   print('File Uploaded');    
+     setState(() {    
+       print("Profile updated");
+   //    getUrl();
+   _addPathToDatabase("teachers/${namecontroller2.text}");
+    Scaffold.of(context).showSnackBar(SnackBar(content: Text('Profile Picture Uploaded')));
+       
+     });
+ }  
+
+Future getImage() async 
+{
+      var image = await ImagePicker().getImage(source: ImageSource.gallery);
+      setState(() {
+      _image = File(image.path);
+      //print(_image);
+   //   print("g"+_images.path);
+      print('Image path $_image');                                    
+    });
+}
+/*Future getImageWeb() async 
+{
+var fromPicker = await ImagePickerWeb.getImage(  outputType: ImageType.file);
+   setState(() {
+      _image = File(fromPicker.path);
+      //print(_image);
+   //   print("g"+_images.path);
+      print('Image path $_image');                                    
+    });
+}*/
     DocumentReference dc=Firestore.instance.collection('School').document(schoolCode).
     collection('Teachers').document(teacherId);
     dc.get().then((datas){
@@ -135,25 +229,33 @@ class MapScreenState extends State<Profile>with SingleTickerProviderStateMixin
                     color: Colors.white,
                     child: new Column(
                       children: <Widget>[
-                        Padding(
+                        
+
+
+                        //web      
+                        
+                        
+                        (isWeb==true) ?Padding(
                           padding: EdgeInsets.only(top: 20.0),
                           child:
-                              new Stack(fit: StackFit.loose, children: <Widget>[
-                            new Row(
+                          new Stack(fit: StackFit.loose, children: <Widget>[
+                          new Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
                                 new Container(
                                     width: 140.0,
                                     height: 140.0,
-                                    decoration: new BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      image: new DecorationImage(
-                                        image: new ExactAssetImage(
-                                            'assets/images/dev.jpg'),
-                                        fit: BoxFit.cover,
-                                      ),
-                                    )),
+                                    child: 
+                                    CircleAvatar(    
+                                    backgroundColor: Colors.black87,                                      
+                                      /*url==null?Image.asset('assets/images/dev.jpg' ,fit: BoxFit.cover,height: 100,width:100.0,):*/
+                                  child:(_image!=null)?Image.file(_image,fit:BoxFit.cover,height: 100,width:100.0,):
+                                   (link=='#')?(Image.asset("assets/images/dev.jpg",
+                                     fit: BoxFit.cover,height: 100,width:100.0,)):(Image.network(link,
+                                     fit: BoxFit.cover,height: 100,width:100.0,)),
+                                     ),
+                                    ),
                               ],
                             ),
                             Padding(
@@ -170,11 +272,122 @@ class MapScreenState extends State<Profile>with SingleTickerProviderStateMixin
                                           Icons.camera_alt,
                                           color: Colors.white,
                                         ),
-                                      ),
-                                      //onTap: imageSelectorGallery,
+                                      ), 
+                                      onTap:(){                                      
+                                     // (isWeb==true)?getImageWeb():
+                                      getImage(); 
+                                        //print(_image);
+                                      },
+                                    ),
+                                  ],
+                                ),
+                                ),
+                                Padding(
+                                padding: EdgeInsets.only(top: 120.0, left: 50.0),
+                                child: new Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    GestureDetector(
+                                      child: new CircleAvatar(
+                                        backgroundColor: Colors.black87,
+                                        radius: 25.0,
+                                        child: new Icon(
+                                          Icons.save,
+                                          color: Colors.white,
+                                        ),
+                                      ), 
+                                      onTap:(){                                      
+                                        //(isWeb)?uploadPicWeb(context):
+                                        uploadPic(context);
+
+                                        //print(_image);
+                                      },
                                     )
                                   ],
-                                )),
+                                )
+                                ),
+                          ]),
+                        ):
+                        
+                        
+
+
+
+                        
+                        
+                        //ye andorid le ffd
+                        Padding(
+                          padding: EdgeInsets.only(top: 20.0),
+                          child:
+                          new Stack(fit: StackFit.loose, children: <Widget>[
+                          new Row(
+ 
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                new Container(
+                                    width: 140.0,
+                                    height: 140.0,
+                                    child: 
+                                    CircleAvatar(    
+                                    backgroundColor: Colors.black87,                                      
+                                      /*url==null?Image.asset('assets/images/dev.jpg' ,fit: BoxFit.cover,height: 100,width:100.0,):*/
+                                  child:(_image!=null)?Image.file(_image,fit:BoxFit.cover,height: 100,width:100.0,):
+                                   (link=='#')?(Image.asset("assets/images/dev.jpg",
+                                     fit: BoxFit.cover,height: 100,width:100.0,)):(Image.network(link,
+                                     fit: BoxFit.cover,height: 100,width:100.0,)),
+                                     ),
+                                    ),
+                              ],
+                            ),
+                            Padding(
+                                padding:
+                                    EdgeInsets.only(top: 90.0, right: 100.0),
+                                child: new Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    GestureDetector(
+                                      child: new CircleAvatar(
+                                        backgroundColor: Colors.black87,
+                                        radius: 25.0,
+                                        child: new Icon(
+                                          Icons.camera_alt,
+                                          color: Colors.white,
+                                        ),
+                                      ), 
+                                      onTap:(){                                      
+                                     // (isWeb==true)?getImageWeb():
+                                      getImage(); 
+                                        //print(_image);
+                                      },
+                                    ),
+                                  ],
+                                ),
+                                ),
+                                Padding(
+                                padding: EdgeInsets.only(top: 120.0, left: 50.0),
+                                child: new Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    GestureDetector(
+                                      child: new CircleAvatar(
+                                        backgroundColor: Colors.black87,
+                                        radius: 25.0,
+                                        child: new Icon(
+                                          Icons.save,
+                                          color: Colors.white,
+                                        ),
+                                      ), 
+                                      onTap:(){                                      
+                                        //(isWeb)?uploadPicWeb(context):
+                                        uploadPic(context);
+
+                                        //print(_image);
+                                      },
+                                    )
+                                  ],
+                                )
+                                ),
                           ]),
                         )
                       ],
@@ -492,7 +705,8 @@ class MapScreenState extends State<Profile>with SingleTickerProviderStateMixin
                                           flex: 2,
                                         ),
                                       ],
-                                    )),
+                                    )
+                                    ,),
                                 Padding(
                                     padding: EdgeInsets.only(
                                         left: 25.0, right: 25.0, top: 0.0),
@@ -510,7 +724,7 @@ class MapScreenState extends State<Profile>with SingleTickerProviderStateMixin
                                               controller: controllerd,
                                               decoration: const InputDecoration(
                                                   hintText:
-                                                      "designatiob"),
+                                                      "designation"),
                                               enabled: !_status,
                                             ),
                                           ),

@@ -48,7 +48,7 @@ class _MyAppState extends State<MyApp> {
       Schedule(schoolCode,teachersId),
       Announcements(schoolCode,teachersId),
       Chats(schoolCode,teachersId),
-      Profile(schoolCode,teachersId)
+      Profile1(schoolCode,teachersId)
   ];
     return MaterialApp(     //change it into scaffold and add back button in appbar
         debugShowCheckedModeBanner: false,

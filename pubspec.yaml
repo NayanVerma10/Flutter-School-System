@@ -29,7 +29,8 @@ dependencies:
   cloud_firestore:
   firebase_storage:
   firebase_helpers:
-  
+  universal_platform:
+    
   # Other Dependencies
   grouped_buttons:
   image_picker:
