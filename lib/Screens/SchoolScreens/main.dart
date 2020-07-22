@@ -7,6 +7,7 @@ import 'staff.dart';
 import 'addemployee.dart';
 import 'addteacher.dart';
 import 'addstd.dart';
+import '../LogoutTheUser.dart';
 
 import '../Icons/iconss_icons.dart';
 import '../Icons/iconsss_icons.dart';
@@ -15,37 +16,33 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:Schools/widgets/add_event.dart';
 import 'package:Schools/widgets/add_announcements.dart';
 
-
 void main(String schoolCode) {
-  runApp(MyApp(schoolCode));
+  runApp(MyAppSchool(schoolCode));
 }
 
-class MyApp extends StatefulWidget {
+class MyAppSchool extends StatefulWidget {
   final String schoolCode;
 
-  MyApp(this.schoolCode);
+  MyAppSchool(this.schoolCode);
 
   @override
-  _MyAppState createState() => _MyAppState(schoolCode);
+  _MyAppSchoolState createState() => _MyAppSchoolState(schoolCode);
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppSchoolState extends State<MyAppSchool> {
   // This widget is the root of your application.
   String schoolCode;
-  _MyAppState(this.schoolCode);
+  _MyAppSchoolState(this.schoolCode);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-             routes: {
+      routes: {
         "add_event": (_) => AddEventPage(),
         "add_announcement": (_) => AddAnnouncementPage(),
       },
       title: 'SCHOOL NAME',
-      theme: ThemeData(
-        primaryColor: Colors.black,
-        accentColor: Colors.black
-      ),
+      theme: ThemeData(primaryColor: Colors.black, accentColor: Colors.black),
       debugShowCheckedModeBanner: false,
       home: DefaultTabController(
         length: 5, // Number of Tabs you want
@@ -100,6 +97,9 @@ class _MyAppState extends State<MyApp> {
                 'SCHOOL NAME',
                 style: TextStyle(fontSize: 20),
               ),
+              actions: <Widget>[
+                FlatButton(onPressed: (){logoutTheUser();}, child: Text('Logout',style: TextStyle(color: Colors.white),)),
+              ],
             ),
             body: TabBarView(
               children: [

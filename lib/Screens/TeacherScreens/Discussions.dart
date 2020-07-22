@@ -1,9 +1,16 @@
 import 'dart:async';
+import 'dart:ui' as ui;
+// ignore: avoid_web_libraries_in_flutter
+import 'package:universal_html/html.dart' show IFrameElement;
+
 
 import 'package:bubble/bubble.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/rendering.dart';
+
+import './VideoChat.dart';
 
 class User {
   String className, schoolCode, userId, classNumber, section, subject, userName;
@@ -48,7 +55,7 @@ class _DiscussionsState extends State<Discussions> {
 
   Future<void> callback() async {
     if (messageController.text.length > 0) {
-        limitOfMessages++;
+      limitOfMessages++;
       await _firestore
           .collection('School')
           .document(schoolCode)
@@ -174,11 +181,46 @@ class _DiscussionsState extends State<Discussions> {
                     ),
                   ),
                   SizedBox(
-                    width: 2,
+                    width: 1,
+                  ),
+                  FloatingActionButton(
+                    elevation: 0,
+                    tooltip: 'Start Meeting',
+                    child: Icon(Icons.videocam),
+                    heroTag: null,
+                    onPressed: () {
+                      if (!kIsWeb)
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => MyApp(
+                                      schoolCode: schoolCode,
+                                      className: className,
+                                      classNumber: classNumber,
+                                      section: section,
+                                      subject: subject,
+                                      teachersId: teachersId,
+                                    )));
+                      else
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => WebJitsiMeet(schoolCode +
+                                    '-' +
+                                    classNumber +
+                                    '-' +
+                                    section +
+                                    '-' +
+                                    subject,className)));
+                    },
+                  ),
+                  SizedBox(
+                    width: 1,
                   ),
                   SendButton(
                     text: "Send",
                     callback: callback,
+                    iconType: Icons.send,
                   )
                 ],
               ),
@@ -193,14 +235,16 @@ class _DiscussionsState extends State<Discussions> {
 class SendButton extends StatelessWidget {
   final String text;
   final VoidCallback callback;
+  final IconData iconType;
 
-  const SendButton({Key key, this.text, this.callback}) : super(key: key);
+  const SendButton({Key key, this.text, this.callback, this.iconType})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
       elevation: 0,
       tooltip: text,
-      child: Icon(Icons.send),
+      child: Icon(iconType),
       onPressed: callback,
     );
   }

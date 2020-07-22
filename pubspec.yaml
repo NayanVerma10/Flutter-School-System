@@ -29,8 +29,14 @@ dependencies:
   cloud_firestore:
   firebase_storage:
   firebase_helpers:
+<<<<<<< HEAD
   universal_platform:
     
+=======
+  firebase_auth:  #Added by Nayan for Sign in
+  google_sign_in: #Added by Nayan for Sign in
+  
+>>>>>>> 3815de4ef7ea0cd3286d79628d1e9f88039786d9
   # Other Dependencies
   grouped_buttons:
   image_picker:
@@ -38,10 +44,18 @@ dependencies:
   flutter_speed_dial: 
   table_calendar:
   font_awesome_flutter:
-  bubble:       #Added By Nayan for Chat/Discussions 
-  convex_bottom_bar:  #Added by Ishita for subject Details
+  random_string:
+  jitsi_meet: #Added by Nayan for video chatting using jitsi
+  bubble:       #Added by Nayan for Chat/Discussions 
   pie_chart:    #Added by Ishita for subject Details
-
+  socket_io_client:   #Added by Ayush for Vo/Vicalling
+  provider:           #Added by Ayush for Vo/Vicalling
+  universal_platform: #Added by Ishita for differentiating by different platforms
+  universal_html:
+  shared_preferences: #Added by Nayan for storing the data locally
+  flutter_staggered_animations: #Added By Ishita for Students List
+  awesome_dialog: #Added By Ishita for Student List
+  
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.3

@@ -36,8 +36,9 @@ class _AttendanceState extends State<Attendance> {
     //users = User.getUsers();
     //selectedRadio = 0;
     reset();
+ totalLength();
     v = false;
-    selectedRadioTile = false;
+    //selectedRadioTile = false;
   }
 
   setSelectedUser(bool val) {
@@ -46,7 +47,20 @@ class _AttendanceState extends State<Attendance> {
       v = val;
     });
   }
-
+int totalEquals;
+Future totalLength() async {
+  var qn = Firestore.instance
+        .collection("School")
+        .document(schoolCode)
+        .collection('Student')
+        .where('class', isEqualTo: classNumber)
+        .where('section', isEqualTo: section)
+        .where('subjects', arrayContains: subject);
+        var querySnapshot = await qn.getDocuments();
+   totalEquals = querySnapshot.documents.length;
+  return totalEquals;
+}
+    
   Future getPosts() async {
     var firestore = Firestore.instance;
     QuerySnapshot qn = await firestore
@@ -75,10 +89,10 @@ class _AttendanceState extends State<Attendance> {
           "\nPresent Students: " +
           selectlist.length.toString() +
           '\n' +
-          'Total Students:- ' +
-          len.toString() +
-          '\nPresent Ratio:-' +
-          ((selectlist.length / len) * 100).toInt().toString() +
+          'Total Students: ' +
+          totalEquals.toString() +
+          '\nPresent Ratio:' +
+          ((selectlist.length / totalEquals) * 100).toInt().toString() +
           "%"),
       actions: [
         okButton,
@@ -370,7 +384,7 @@ class _AttendanceState extends State<Attendance> {
                       ),
                       Container(
                         padding:
-                            EdgeInsets.symmetric(vertical: 7, horizontal: 10),
+                            EdgeInsets.symmetric(vertical: 7, horizontal: 5),
                         //height: 30,
                         decoration: BoxDecoration(
                             color: Colors.black,
@@ -450,9 +464,10 @@ class _AttendanceState extends State<Attendance> {
                                         snapshot.data[index].documentID, value);
                                     updateCount(
                                         value, snapshot.data[index].documentID);
-                                  });
                                   onCategorySelect(
                                       snapshot.data[index].documentID, value);
+                               
+                                  });
                                   setState(() {
                                     len = snapshot.data.length;
                                   });
@@ -468,10 +483,10 @@ class _AttendanceState extends State<Attendance> {
                                         snapshot
                                             .data[index].data["first name"]);
                                     getlist(snapshot.data[index].documentID);
-                                    print('Detailed Info!');
+                                    print(' Info!');
                                   },
                                   child: Text(
-                                    'Detailed Info!',
+                                    'Info!',
                                     style: TextStyle(color: Colors.white),
                                   ),
                                 ),

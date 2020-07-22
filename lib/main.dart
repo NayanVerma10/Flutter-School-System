@@ -1,8 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import './Screens/SchoolScreens/main.dart';
+import './Screens/StudentScreens/main.dart';
+import './Screens/TeacherScreens/main.dart';
 
 import './Screens/InitialScreen.dart';
-void main() {
-  runApp(MyApp());
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  if (prefs.getString('type') == 'School')
+    runApp(MyAppSchool(prefs.getString('schoolCode')));
+  else if (prefs.getString('type') == 'Student')
+    runApp(MyAppStudent(prefs.getString('schoolCode'),prefs.getString('studentId')));
+  else if (prefs.getString('type') == 'Teacher')
+    runApp(MyAppTeacher(prefs.getString('schoolCode'),prefs.getString('teachersId')));
+  else
+    runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {

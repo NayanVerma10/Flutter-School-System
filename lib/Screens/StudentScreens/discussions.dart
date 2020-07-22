@@ -1,9 +1,15 @@
 import 'dart:async';
+import 'dart:ui' as ui;
+
+import 'package:universal_html/html.dart' show IFrameElement;
 
 import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/foundation.dart';
+
+import './VideoChat.dart';
 
 class User {
   String className, schoolCode, userId, classNumber, section, subject, userName;
@@ -48,7 +54,7 @@ class _DiscussionsState extends State<Discussions> {
 
   Future<void> callback() async {
     if (messageController.text.length > 0) {
-        limitOfMessages++;
+      limitOfMessages++;
       await _firestore
           .collection('School')
           .document(schoolCode)
@@ -85,8 +91,8 @@ class _DiscussionsState extends State<Discussions> {
           .then((value) => studentName =
               value.data['first name'] + ' ' + value.data['last name'])
           .then((value) {
-        user = User(studentName, className, schoolCode, studentId,
-            classNumber, section, subject, false);
+        user = User(studentName, className, schoolCode, studentId, classNumber,
+            section, subject, false);
       });
     });
   }
@@ -174,7 +180,41 @@ class _DiscussionsState extends State<Discussions> {
                     ),
                   ),
                   SizedBox(
-                    width: 2,
+                    width: 1,
+                  ),
+                  FloatingActionButton(
+                    elevation: 0,
+                    tooltip: 'Start Meeting',
+                    child: Icon(Icons.videocam),
+                    heroTag: null,
+                    onPressed: () {
+                      if (!kIsWeb)  // This is to check Web nor not
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => MyApp(
+                                      schoolCode: schoolCode,
+                                      className: className,
+                                      classNumber: classNumber,
+                                      section: section,
+                                      subject: subject,
+                                      studentId: studentId,
+                                    )));
+                      else
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => WebJitsiMeet(schoolCode +
+                                    '-' +
+                                    classNumber +
+                                    '-' +
+                                    section +
+                                    '-' +
+                                    subject,className)));
+                    },
+                  ),
+                  SizedBox(
+                    width: 1,
                   ),
                   SendButton(
                     text: "Send",

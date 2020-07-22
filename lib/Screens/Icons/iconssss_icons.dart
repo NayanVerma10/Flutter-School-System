@@ -12,17 +12,25 @@
 ///       - asset: fonts/Iconssss.ttf
 ///
 /// 
+/// * Typicons, (c) Stephen Hutchings 2012
+///         Author:    Stephen Hutchings
+///         License:   SIL (http://scripts.sil.org/OFL)
+///         Homepage:  http://typicons.com/
 /// * Modern Pictograms, Copyright (c) 2012 by John Caserta. All rights reserved.
 ///         Author:    John Caserta
 ///         License:   SIL (http://scripts.sil.org/OFL)
 ///         Homepage:  http://thedesignoffice.org/project/modern-pictograms/
-/// * Font Awesome 4, Copyright (C) 2016 by Dave Gandy
-///         Author:    Dave Gandy
-///         License:   SIL ()
-///         Homepage:  http://fortawesome.github.com/Font-Awesome/
+/// * MFG Labs, Copyright (C) 2012 by Daniel Bruce
+///         Author:    MFG Labs
+///         License:   SIL (http://scripts.sil.org/OFL)
+///         Homepage:  http://www.mfglabs.com/
 /// * Font Awesome 5, Copyright (C) 2016 by Dave Gandy
 ///         Author:    Dave Gandy
 ///         License:   SIL (https://github.com/FortAwesome/Font-Awesome/blob/master/LICENSE.txt)
+///         Homepage:  http://fortawesome.github.com/Font-Awesome/
+/// * Font Awesome 4, Copyright (C) 2016 by Dave Gandy
+///         Author:    Dave Gandy
+///         License:   SIL ()
 ///         Homepage:  http://fortawesome.github.com/Font-Awesome/
 ///
 import 'package:flutter/widgets.dart';
@@ -33,7 +41,11 @@ class Iconssss {
   static const _kFontFam = 'Iconssss';
   static const _kFontPkg = null;
 
+  static const IconData th_large_outline = IconData(0xe800, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData bullhorn = IconData(0xe801, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData th_thumb = IconData(0xf00a, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData list = IconData(0xf03a, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData filter = IconData(0xf0b0, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData doc_text = IconData(0xf0f6, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData doc_text_inv = IconData(0xf15c, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData thumbs_up = IconData(0xf164, fontFamily: _kFontFam, fontPackage: _kFontPkg);
