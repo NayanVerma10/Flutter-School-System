@@ -148,7 +148,7 @@ class _MyAppStudentState extends State<MyAppStudent> {
           appBar: AppBar(
             backgroundColor: Colors.black,
             bottom: TabBar(
-              isScrollable: false,
+              isScrollable: true,
               tabs: [
                 // Headings of each tab
                 Tab(icon: Icon(Icons.book, size: 25), text: 'Subjects'),
