@@ -50,6 +50,12 @@ dependencies:
   shared_preferences: #Added by Nayan for storing the data locally
   flutter_staggered_animations: #Added By Ishita for Students List
   awesome_dialog: #Added By Ishita for Student List
+  file_picker:  #Added By Nayan for chat
+  file_picker_web:  #Added By Nayan for chat
+  dio:  #Added By Nayan for downloading files
+  path_provider:  #Added By Nayan for downloading files
+  permission_handler: #Added By Nayan for downloading files
+  url_launcher: #Added By Nayan for viewing files
   
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
