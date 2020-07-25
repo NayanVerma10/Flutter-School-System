@@ -11,7 +11,7 @@ class AppLogo extends StatelessWidget {
         children: <TextSpan>[
           TextSpan(text: 'Quiz', style: TextStyle(fontWeight: FontWeight.w600
               , color: Colors.black54)),
-          TextSpan(text: 'App', style: TextStyle(fontWeight: FontWeight.w600
+          TextSpan(text: 'Assignment', style: TextStyle(fontWeight: FontWeight.w600
               , color: Colors.blue)),
         ],
       ),

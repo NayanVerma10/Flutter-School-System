@@ -11,6 +11,7 @@ import './tutorials.dart';
 import '../Icons/iconsss_icons.dart';
 import './Discussions.dart';
 import './VideoChat.dart';
+import 'database.dart';
 
 class ClassDetails extends StatefulWidget {
   final String className, schoolCode, teachersId, classNumber, section, subject;
@@ -71,11 +72,17 @@ class _ClassDetailsState extends State<ClassDetails> {
               className, schoolCode, teachersId, classNumber, section, subject)
           : StudentsGrid(
               className, schoolCode, teachersId, classNumber, section, subject),
-      Tutorials(),
-      Assignments(),
+      EBookInfo(),
+      Home(),
+
       Attendance(
           className, schoolCode, teachersId, classNumber, section, subject)
     ];
+
+    db.subject=subject;
+    db.schoolCode=schoolCode;
+    db.classNumber=classNumber;
+    db.section=section;
     return Scaffold(
         appBar: AppBar(
           title: Text(

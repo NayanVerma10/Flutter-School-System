@@ -200,7 +200,7 @@ class _SubjectDetailsState extends State<SubjectDetails>
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => Tutorials()));
+                                          builder: (context) => EBookInfo()));
                                 });
                               },
                             ),
@@ -265,7 +265,7 @@ class _SubjectDetailsState extends State<SubjectDetails>
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => Assignments()));
+                                          builder: (context) => Home()));
                                 });
                               },
                             ),
