@@ -121,13 +121,19 @@ class _ListPageState extends State<ListPage> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          leading: CircleAvatar(
+        leading:(snapshot.data[index].data["url"]!=null)? CircleAvatar(
                             backgroundColor: Colors.black,
-                            child: Icon(
+       backgroundImage:
+         NetworkImage(snapshot.data[index].data["url"],),
+                          ):
+                          CircleAvatar(
+                            backgroundColor: Colors.black,
+                           child:   Icon(
                               Icons.person,
                               color: Colors.white,
                             ),
                           ),
+                    
                           onTap: () {
                             print("pressed");
                             //readData();
@@ -933,6 +939,7 @@ class MapScreenState extends State<ProfilePage>
       'gender': namecontrollerg.text,
       'designation': namecontrollerd.text,
       'qualification': namecontrollerq.text,
+      
     }, merge: true);
   }
 
