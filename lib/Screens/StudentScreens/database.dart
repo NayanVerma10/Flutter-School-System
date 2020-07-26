@@ -39,13 +39,13 @@ class DatabaseService {
 
   getQuestionData(String quizId) async{
     return await Firestore.instance
-        .collection("School")
+        .collection('School')
         .document(schoolCode)
-        .collection("Classes")
+        .collection('Classes')
         .document(classNumber + '_' + section + '_' + subject)
-        .collection("Quiz")
+        .collection('Quiz')
         .document(quizId)
-        .collection("QandA")
+        .collection('QandA')
         .getDocuments();
   }
 }

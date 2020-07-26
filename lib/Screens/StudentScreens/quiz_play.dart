@@ -23,29 +23,32 @@ int total = 0;
 Stream infoStream;
 
 class _QuizPlayState extends State<QuizPlay> {
-  QuerySnapshot questionSnaphot;
   DatabaseService databaseService = db;
+  QuerySnapshot questionSnapshot;
 
   bool isLoading = true;
 
   @override
   void initState() {
-    databaseService.getQuestionData(widget.quizId).then((value) {
-      questionSnaphot = value;
-      _notAttempted = questionSnaphot.documents.length;
+    databaseService.getQuestionData(widget.quizId).then((value)
+    {
+      questionSnapshot = value;
+      _notAttempted = questionSnapshot.documents.length;
       _correct = 0;
       _incorrect = 0;
       isLoading = false;
-      total = questionSnaphot.documents.length;
-      setState(() {});
-      print("init don $total ${widget.quizId} ");
+      total = questionSnapshot.documents.length;
+
+      setState(() {
+        print("$total this is total ${widget.quizId} ");
+      });
     });
 
     if(infoStream == null){
       infoStream = Stream<List<int>>.periodic(
-        Duration(milliseconds: 100), (x){
-          print("this is x $x");
-          return [_correct, _incorrect] ;
+          Duration(milliseconds: 100), (x){
+        print("this is x $x");
+        return [_correct, _incorrect] ;
       });
     }
 
@@ -101,46 +104,48 @@ class _QuizPlayState extends State<QuizPlay> {
         child: Center(child: CircularProgressIndicator()),
       )
           : SingleChildScrollView(
-            child: Container(
-                child: Column(
-                  children: [
-                    InfoHeader(
-                      length: questionSnaphot.documents.length,
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    questionSnaphot.documents == null
-                        ? Container(
-                      child: Center(child: Text("No Data"),),
-                    )
-                        : ListView.builder(
-                            itemCount: questionSnaphot.documents.length,
-                            shrinkWrap: true,
-                            physics: ClampingScrollPhysics(),
-                            itemBuilder: (context, index) {
-                              return QuizPlayTile(
-                                questionModel: getQuestionModelFromDatasnapshot(
-                                    questionSnaphot.documents[index]),
-                                index: index,
-                              );
-                            })
-                  ],
-                ),
+        child: Container(
+          child: Column(
+            children: [
+              InfoHeader(
+                length: questionSnapshot.documents.length,
               ),
+              SizedBox(
+                height: 10,
+              ),
+              questionSnapshot.documents == null
+                  ? Container(
+                child: Center(child: Text("No Data"),),
+              )
+                  : ListView.builder(
+                  itemCount: questionSnapshot.documents.length,
+                  shrinkWrap: true,
+                  physics: ClampingScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    return QuizPlayTile(
+                      questionModel: getQuestionModelFromDatasnapshot(
+                          questionSnapshot.documents[index]),
+                      index: index,
+                    );
+                  })
+            ],
           ),
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.check),
         onPressed: (){
           Navigator.pushReplacement(context, MaterialPageRoute(
-            builder: (context)=>Results(
-              correct: _correct,
-              incorrect: _incorrect,
-              total: total,
-            )
+              builder: (context)=>Results(
+                correct: _correct,
+                incorrect: _incorrect,
+                total: total,
+              )
           ));
         },
       ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+
     );
   }
 }
@@ -158,35 +163,35 @@ class _InfoHeaderState extends State<InfoHeader> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: infoStream,
-      builder: (context, snapshot){
-        return snapshot.hasData ? Container(
-          height: 40,
-          margin: EdgeInsets.only(left: 14),
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            shrinkWrap: true,
-            children: <Widget>[
-              NoOfQuestionTile(
-                text: "Total",
-                number: widget.length,
-              ),
-              NoOfQuestionTile(
-                text: "Correct",
-                number: _correct,
-              ),
-              NoOfQuestionTile(
-                text: "Incorrect",
-                number: _incorrect,
-              ),
-              NoOfQuestionTile(
-                text: "NotAttempted",
-                number: _notAttempted,
-              ),
-            ],
-          ),
-        ) : Container();
-      }
+        stream: infoStream,
+        builder: (context, snapshot){
+          return snapshot.hasData ? Container(
+            height: 40,
+            margin: EdgeInsets.only(left: 14),
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              shrinkWrap: true,
+              children: <Widget>[
+                NoOfQuestionTile(
+                  text: "Total",
+                  number: widget.length,
+                ),
+                NoOfQuestionTile(
+                  text: "Correct",
+                  number: _correct,
+                ),
+                NoOfQuestionTile(
+                  text: "Incorrect",
+                  number: _incorrect,
+                ),
+                NoOfQuestionTile(
+                  text: "NotAttempted",
+                  number: _notAttempted,
+                ),
+              ],
+            ),
+          ) : Container();
+        }
     );
   }
 }
@@ -213,12 +218,12 @@ class _QuizPlayTileState extends State<QuizPlayTile> {
         children: [
           Container(
             margin: EdgeInsets.symmetric(
-              horizontal: 20
+                horizontal: 20
             ),
             child: Text(
               "Q${widget.index + 1} ${widget.questionModel.question}",
               style:
-                  TextStyle(fontSize: 18, color: Colors.black.withOpacity(0.8)),
+              TextStyle(fontSize: 18, color: Colors.black.withOpacity(0.8)),
             ),
           ),
           SizedBox(

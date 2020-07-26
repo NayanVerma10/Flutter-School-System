@@ -39,7 +39,7 @@ class _HomeState extends State<Home> {
                       snapshot.data.documents[index].data['quizTitle'],
                       description:
                       snapshot.data.documents[index].data['quizDesc'],
-                      id: snapshot.data.documents[index].data["id"],
+                      id: snapshot.data.documents[index].data["quizId"],
                     );
                   });
             },

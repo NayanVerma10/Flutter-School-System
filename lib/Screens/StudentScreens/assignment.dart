@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
 import 'database.dart';
-import 'quiz_play.dart';
+import 'package:Schools/Screens/TeacherScreens/create_quiz.dart';
+import 'package:Schools/Screens/TeacherScreens/quiz_play.dart';
 import 'package:Schools/widgets/widget.dart';
 
 class Home extends StatefulWidget {
+
   @override
   _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
+
   Stream quizStream;
   DatabaseService databaseService = db;
 
+
   Widget quizList() {
-    return Container(
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical,
       child: Column(
         children: [
           StreamBuilder(
@@ -34,7 +39,7 @@ class _HomeState extends State<Home> {
                       snapshot.data.documents[index].data['quizTitle'],
                       description:
                       snapshot.data.documents[index].data['quizDesc'],
-                      id: snapshot.data.documents[index].data["id"],
+                      id: snapshot.data.documents[index].data["quizId"],
                     );
                   });
             },
@@ -59,12 +64,14 @@ class _HomeState extends State<Home> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: AppLogo(),
+        centerTitle: true,
         brightness: Brightness.light,
         elevation: 0.0,
         backgroundColor: Colors.transparent,
         //brightness: Brightness.li,
       ),
       body: quizList(),
+
 
     );
   }
@@ -90,7 +97,7 @@ class QuizTile extends StatelessWidget {
         ));
       },
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 24),
+        padding: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
         height: 150,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(8),
@@ -110,17 +117,17 @@ class QuizTile extends StatelessWidget {
                       Text(
                         title,
                         style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 26,
                             color: Colors.white,
-                            fontWeight: FontWeight.w600),
+                            fontWeight: FontWeight.w400),
                       ),
                       SizedBox(height: 4,),
                       Text(
                         description,
                         style: TextStyle(
-                            fontSize: 13,
+                            fontSize: 18,
                             color: Colors.white,
-                            fontWeight: FontWeight.w500),
+                            fontWeight: FontWeight.w300),
                       )
                     ],
                   ),

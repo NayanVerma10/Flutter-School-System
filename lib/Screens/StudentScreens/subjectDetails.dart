@@ -201,10 +201,10 @@ class _SubjectDetailsState extends State<SubjectDetails>
                               onTap: () {
                                 //                                  <-- onTap
                                 setState(() {
-                                 /* Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => TutorialView()));*/
+//                                  Navigator.push(
+//                                      context,
+//                                      MaterialPageRoute(
+//                                          builder: (context) => LoadFirbaseStoragePdf()));
                                 });
                               },
                             ),
@@ -266,10 +266,16 @@ class _SubjectDetailsState extends State<SubjectDetails>
                               onTap: () {
                                 //                                  <-- onTap
                                 setState(() {
+                                  db.subject=subject;
+                                  db.schoolCode=schoolCode;
+                                  db.classNumber=classNumber;
+                                  db.section=section;
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => Home()));
+                                          builder: (context) => Home(
+
+                                          )));
                                 });
                               },
                             ),
