@@ -201,10 +201,10 @@ class _SubjectDetailsState extends State<SubjectDetails>
                               onTap: () {
                                 //                                  <-- onTap
                                 setState(() {
-                                  Navigator.push(
+                                 /* Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => TutorialView()));
+                                          builder: (context) => TutorialView()));*/
                                 });
                               },
                             ),

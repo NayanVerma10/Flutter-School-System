@@ -1,3 +1,4 @@
+/*
 import 'package:flutter/material.dart';
 import 'package:flutter_plugin_pdf_viewer/flutter_plugin_pdf_viewer.dart';
 
@@ -32,4 +33,4 @@ class _TutorialViewState extends State<TutorialView> {
       body: _pdf == null ? Center(child: CircularProgressIndicator(),) : PDFViewer(document: _pdf,),
     );
   }
-}
+}*/

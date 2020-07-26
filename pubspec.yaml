@@ -31,22 +31,17 @@ dependencies:
   firebase_helpers:
   firebase_auth:  #Added by Nayan for Sign in
   google_sign_in: #Added by Nayan for Sign in
-  file_picker:
-  file_picker_web: any
-  flutter_spinkit:
-  flutter_plugin_pdf_viewer:
-  image:
-  
+
   # Other Dependencies
   grouped_buttons:
   image_picker:
   image_cropper:
-  flutter_speed_dial: 
+  flutter_speed_dial:
   table_calendar:
   font_awesome_flutter:
   random_string:
   jitsi_meet: #Added by Nayan for video chatting using jitsi
-  bubble:       #Added by Nayan for Chat/Discussions 
+  bubble:       #Added by Nayan for Chat/Discussions
   pie_chart:    #Added by Ishita for subject Details
   socket_io_client:   #Added by Ayush for Vo/Vicalling
   provider:           #Added by Ayush for Vo/Vicalling
@@ -55,7 +50,13 @@ dependencies:
   shared_preferences: #Added by Nayan for storing the data locally
   flutter_staggered_animations: #Added By Ishita for Students List
   awesome_dialog: #Added By Ishita for Student List
-  
+  file_picker:  #Added By Nayan for chat
+  file_picker_web:  #Added By Nayan for chat
+  dio:  #Added By Nayan for downloading files
+  path_provider:  #Added By Nayan for downloading files
+  permission_handler: #Added By Nayan for downloading files
+  url_launcher: #Added By Nayan for viewing files
+
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.3
@@ -78,7 +79,7 @@ flutter:
         - asset: fonts/Iconsss.ttf
     - family:  Iconssss
       fonts:
-        - asset: fonts/Iconssss.ttf     
+        - asset: fonts/Iconssss.ttf
     - family:  MyFlutterApp
       fonts:
         - asset: fonts/MyFlutterApp.ttf
@@ -115,7 +116,7 @@ flutter:
     - assets/images/mteacher2.jpg
     - assets/images/grades2.jpg
     - assets/images/tutorials2.jpg
-    
+
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
