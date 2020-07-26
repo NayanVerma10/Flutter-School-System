@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class AppLogo extends StatelessWidget {
+class ClassTutorial extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RichText(
@@ -9,9 +9,9 @@ class AppLogo extends StatelessWidget {
             fontSize: 28
         ),
         children: <TextSpan>[
-          TextSpan(text: 'Quiz', style: TextStyle(fontWeight: FontWeight.w600
+          TextSpan(text: 'Class', style: TextStyle(fontWeight: FontWeight.w600
               , color: Colors.black54)),
-          TextSpan(text: 'Assignments', style: TextStyle(fontWeight: FontWeight.w600
+          TextSpan(text: 'Tutorial', style: TextStyle(fontWeight: FontWeight.w600
               , color: Colors.black87)),
         ],
       ),

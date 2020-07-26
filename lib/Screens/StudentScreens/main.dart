@@ -3,7 +3,7 @@ import './profile.dart';
 import './subjects.dart';
 import './chat.dart';
 import './announcements.dart';
-import './timeTable.dart';
+import './StudentsTimeTable.dart';
 import '../Icons/iconssss_icons.dart';
 import 'package:universal_platform/universal_platform.dart';
 import '../LogoutTheUser.dart';
@@ -31,7 +31,7 @@ class _MyAppStudentState extends State<MyAppStudent> {
     super.initState();
     tabs = [
       Subjects(schoolCode, studentId),
-      TimeTable(),
+      StudentsTimeTable(),
       Announcements(),
       Chats(),
       Profile()

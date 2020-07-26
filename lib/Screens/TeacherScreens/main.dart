@@ -30,7 +30,7 @@ class _MyAppTeacherState extends State<MyAppTeacher> {
     super.initState();
     tabs = [
       Classes(schoolCode, teachersId),
-      Schedule(schoolCode, teachersId),
+      TeachersTimeTable(),
       AnnouncementDetailsPage(),
       Chats(schoolCode, teachersId),
       Profile1(schoolCode, teachersId)
