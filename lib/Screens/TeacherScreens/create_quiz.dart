@@ -34,6 +34,7 @@ class _CreateQuizState extends State<CreateQuiz> {
 
       Map<String, String> quizData = {
         "quizImgUrl" : quizImgUrl,
+        "quizId":quizId,
         "quizTitle" : quizTitle,
         "quizDesc" : quizDesc
       };
@@ -67,9 +68,10 @@ class _CreateQuizState extends State<CreateQuiz> {
       body: Form(
         key: _formKey,
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 24),
+          padding: EdgeInsets.symmetric(horizontal: 24,vertical: 0),
           child: Column(
             children: [
+              Spacer(),
             TextFormField(
               validator: (val) => val.isEmpty ? "Enter Quiz Image Url" : null,
               decoration: InputDecoration(
@@ -110,7 +112,7 @@ class _CreateQuizState extends State<CreateQuiz> {
                   padding: EdgeInsets.symmetric(
                       horizontal: 24, vertical: 20),
                   decoration: BoxDecoration(
-                      color: Colors.blue,
+                      color: Colors.black87,
                       borderRadius: BorderRadius.circular(30)),
                   child: Text(
                     "Create Quiz",

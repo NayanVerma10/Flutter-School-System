@@ -31,10 +31,10 @@ dependencies:
   firebase_helpers:
   firebase_auth:  #Added by Nayan for Sign in
   google_sign_in: #Added by Nayan for Sign in
-  flutter_plugin_pdf_viewer: #Added by Ayush for Tutorials
-  division:
   file_picker:
+  file_picker_web: any
   flutter_spinkit:
+  flutter_plugin_pdf_viewer:
   image:
   
   # Other Dependencies

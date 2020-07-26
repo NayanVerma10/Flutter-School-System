@@ -22,22 +22,25 @@ int total = 0;
 Stream infoStream;
 
 class _QuizPlayState extends State<QuizPlay> {
-  QuerySnapshot questionSnaphot;
   DatabaseService databaseService = db;
+  QuerySnapshot questionSnapshot;
 
   bool isLoading = true;
 
   @override
   void initState() {
-    databaseService.getQuestionData(widget.quizId).then((value) {
-      questionSnaphot = value;
-      _notAttempted = questionSnaphot.documents.length;
+    databaseService.getQuestionData(widget.quizId).then((value)
+    {
+      questionSnapshot = value;
+      _notAttempted = questionSnapshot.documents.length;
       _correct = 0;
       _incorrect = 0;
       isLoading = false;
-      total = questionSnaphot.documents.length;
-      setState(() {});
-      print("init don $total ${widget.quizId} ");
+      total = questionSnapshot.documents.length;
+
+      setState(() {
+        print("$total this is total ${widget.quizId} ");
+      });
     });
 
     if(infoStream == null){
@@ -104,23 +107,23 @@ class _QuizPlayState extends State<QuizPlay> {
                 child: Column(
                   children: [
                     InfoHeader(
-                      length: questionSnaphot.documents.length,
+                      length: questionSnapshot.documents.length,
                     ),
                     SizedBox(
                       height: 10,
                     ),
-                    questionSnaphot.documents == null
+                    questionSnapshot.documents == null
                         ? Container(
                       child: Center(child: Text("No Data"),),
                     )
                         : ListView.builder(
-                            itemCount: questionSnaphot.documents.length,
+                            itemCount: questionSnapshot.documents.length,
                             shrinkWrap: true,
                             physics: ClampingScrollPhysics(),
                             itemBuilder: (context, index) {
                               return QuizPlayTile(
                                 questionModel: getQuestionModelFromDatasnapshot(
-                                    questionSnaphot.documents[index]),
+                                    questionSnapshot.documents[index]),
                                 index: index,
                               );
                             })

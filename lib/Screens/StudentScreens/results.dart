@@ -37,7 +37,7 @@ class _ResultsState extends State<Results> {
                     color: Colors.blue,
                     borderRadius: BorderRadius.circular(30)
                   ),
-                  child: Text("Go to home", style: TextStyle(color: Colors.white, fontSize: 19),),
+                  child: Text("Go to Assignments Page", style: TextStyle(color: Colors.white, fontSize: 19),),
                 ),
               )
           ],),

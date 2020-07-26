@@ -72,7 +72,7 @@ class _ClassDetailsState extends State<ClassDetails> {
               className, schoolCode, teachersId, classNumber, section, subject)
           : StudentsGrid(
               className, schoolCode, teachersId, classNumber, section, subject),
-      EBookInfo(),
+      TutorialUpload(),
       Home(),
 
       Attendance(

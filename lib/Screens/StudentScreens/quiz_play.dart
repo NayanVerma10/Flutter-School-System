@@ -1,3 +1,4 @@
+import 'package:Schools/Screens/StudentScreens/results.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:Schools/models/question.dart';
@@ -128,6 +129,18 @@ class _QuizPlayState extends State<QuizPlay> {
                 ),
               ),
           ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.check),
+        onPressed: (){
+          Navigator.pushReplacement(context, MaterialPageRoute(
+            builder: (context)=>Results(
+              correct: _correct,
+              incorrect: _incorrect,
+              total: total,
+            )
+          ));
+        },
+      ),
     );
   }
 }

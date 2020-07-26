@@ -112,7 +112,7 @@ class QuizTile extends StatelessWidget {
                         style: TextStyle(
                             fontSize: 18,
                             color: Colors.white,
-                            fontWeight: FontWeight.w500),
+                            fontWeight: FontWeight.w600),
                       ),
                       SizedBox(height: 4,),
                       Text(

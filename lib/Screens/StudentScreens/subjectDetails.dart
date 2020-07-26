@@ -8,6 +8,7 @@ import './discussions.dart';
 import './tutorials.dart';
 import './grades.dart';
 import './VideoChat.dart';
+import './database.dart';
 
 import 'package:pie_chart/pie_chart.dart';
 
@@ -31,6 +32,8 @@ class _SubjectDetailsState extends State<SubjectDetails>
   final String schoolCode, studentId, classNumber, section, subject;
   _SubjectDetailsState(this.schoolCode, this.studentId, this.classNumber,
       this.section, this.subject);
+
+  
   String teacherName = '';
   List<Color> colorlist = [
     Colors.blue[900],
@@ -94,6 +97,7 @@ class _SubjectDetailsState extends State<SubjectDetails>
     dataMap.putIfAbsent("Present", () => 6);
     dataMap.putIfAbsent("Absent", () => 3);
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -200,7 +204,7 @@ class _SubjectDetailsState extends State<SubjectDetails>
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => EBookInfo()));
+                                          builder: (context) => TutorialView()));
                                 });
                               },
                             ),

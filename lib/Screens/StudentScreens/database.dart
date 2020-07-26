@@ -34,7 +34,7 @@ class DatabaseService {
   }
 
   getQuizData() async {
-    return await Firestore.instance.collection("School/" + schoolCode + "/Classes/"+classNumber + '_' + section + '_' + subject+"/Quiz").snapshots();
+    return Firestore.instance.collection("School/" + schoolCode + "/Classes/"+classNumber + '_' + section + '_' + subject+"/Quiz").snapshots();
   }
 
   getQuestionData(String quizId) async{

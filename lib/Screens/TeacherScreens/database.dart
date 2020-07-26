@@ -34,19 +34,19 @@ class DatabaseService {
   }
 
   getQuizData() async {
-    return await Firestore.instance.collection("School/" + schoolCode + "/Classes/"+classNumber + '_' + section + '_' + subject+"/Quiz").snapshots();
+    return Firestore.instance.collection("School/" + schoolCode + "/Classes/"+classNumber + '_' + section + '_' + subject+"/Quiz").snapshots();
   }
 
   getQuestionData(String quizId) async{
     return await Firestore.instance
-        .collection("School")
+        .collection('School')
         .document(schoolCode)
-        .collection("Classes")
+        .collection('Classes')
         .document(classNumber + '_' + section + '_' + subject)
-        .collection("Quiz")
+        .collection('Quiz')
         .document(quizId)
-        .collection("QandA")
-        .getDocuments();
+        .collection('QandA')
+         .getDocuments();
   }
 }
 DatabaseService db=new DatabaseService();

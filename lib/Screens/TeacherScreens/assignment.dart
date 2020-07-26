@@ -17,7 +17,8 @@ class _HomeState extends State<Home> {
 
 
   Widget quizList() {
-    return Container(
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical,
       child: Column(
         children: [
           StreamBuilder(
@@ -63,13 +64,19 @@ class _HomeState extends State<Home> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: AppLogo(),
+        centerTitle: true,
         brightness: Brightness.light,
         elevation: 0.0,
         backgroundColor: Colors.transparent,
         //brightness: Brightness.li,
       ),
       body: quizList(),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: Container(
+    height: 50.0,
+    width: 50.0,
+    child: FittedBox(
+    child:FloatingActionButton(
+      backgroundColor: Colors.black54,
         heroTag: null,
         child: Icon(Icons.add),
         onPressed: () {
@@ -77,6 +84,9 @@ class _HomeState extends State<Home> {
               context, MaterialPageRoute(builder: (context) => CreateQuiz()));
         },
       ),
+    ),
+      ),
+
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
 
 
@@ -104,7 +114,7 @@ class QuizTile extends StatelessWidget {
         ));
       },
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 24),
+        padding: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
         height: 150,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(8),
@@ -124,17 +134,17 @@ class QuizTile extends StatelessWidget {
                       Text(
                         title,
                         style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 26,
                             color: Colors.white,
-                            fontWeight: FontWeight.w500),
+                            fontWeight: FontWeight.w400),
                       ),
                       SizedBox(height: 4,),
                       Text(
                         description,
                         style: TextStyle(
-                            fontSize: 13,
+                            fontSize: 18,
                             color: Colors.white,
-                            fontWeight: FontWeight.w500),
+                            fontWeight: FontWeight.w300),
                       )
                     ],
                   ),
