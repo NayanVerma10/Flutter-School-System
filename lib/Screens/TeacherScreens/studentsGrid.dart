@@ -265,9 +265,9 @@ class _MyDialogState extends State<MyDialog> {
   _onExpansionChanged(bool val) {
     setState(() {
       if (val) {
-        _height = 270;
+        _height = 310;
       } else {
-        _height = 110;
+        _height = 150;
       }
 
       print(_height);
@@ -297,8 +297,7 @@ class _MyDialogState extends State<MyDialog> {
                   SizedBox(width: 50),
                   GestureDetector(
                       child: Container(
-                          height: 25,
-                          width: 75,
+                          padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.all(Radius.circular(20)),
                             color: Colors.black,
@@ -310,7 +309,7 @@ class _MyDialogState extends State<MyDialog> {
                           child: Text(
                             'View Profile',
                             style: TextStyle(
-                                fontSize: 14,
+                                fontSize: 12,
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold),
                           )),

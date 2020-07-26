@@ -189,8 +189,7 @@ class _StudentsListState extends State<StudentsList> {
                                                 ]),
                                                 GestureDetector(
                                                     child: Container(
-                                                        height: 30,
-                                                        width: 80,
+                                                        padding: EdgeInsets.symmetric(vertical:10,horizontal: 10),
                                                         decoration:
                                                             BoxDecoration(
                                                           borderRadius:
@@ -208,7 +207,7 @@ class _StudentsListState extends State<StudentsList> {
                                                         child: Text(
                                                           'View Profile',
                                                           style: TextStyle(
-                                                              fontSize: 15,
+                                                              fontSize: 12,
                                                               color:
                                                                   Colors.white,
                                                               fontWeight:
@@ -342,8 +341,8 @@ class _StudentsListState extends State<StudentsList> {
                                             Center(
                                                 child: GestureDetector(
                                                     child: Container(
-                                                        height: 30,
-                                                        width: 50,
+                                                        height: 40,
+                                                        width: 70,
                                                         alignment:
                                                             Alignment.center,
                                                         margin: EdgeInsets.only(
@@ -360,7 +359,7 @@ class _StudentsListState extends State<StudentsList> {
                                                         child: Text(
                                                           'Save',
                                                           style: TextStyle(
-                                                              fontSize: 15,
+                                                              fontSize: 14,
                                                               color:
                                                                   Colors.white,
                                                               fontWeight:

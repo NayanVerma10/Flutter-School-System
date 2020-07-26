@@ -230,90 +230,6 @@ var fromPicker = await ImagePickerWeb.getImage(  outputType: ImageType.file);
                     child: new Column(
                       children: <Widget>[
                         
-
-
-                        //web      
-                        
-                        
-                        (isWeb==true) ?Padding(
-                          padding: EdgeInsets.only(top: 20.0),
-                          child:
-                          new Stack(fit: StackFit.loose, children: <Widget>[
-                          new Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                new Container(
-                                    width: 140.0,
-                                    height: 140.0,
-                                    child: 
-                                    CircleAvatar(    
-                                    backgroundColor: Colors.black87,                                      
-                                      /*url==null?Image.asset('assets/images/dev.jpg' ,fit: BoxFit.cover,height: 100,width:100.0,):*/
-                                  child:(_image!=null)?Image.file(_image,fit:BoxFit.cover,height: 100,width:100.0,):
-                                   (link=='#')?(Image.asset("assets/images/dev.jpg",
-                                     fit: BoxFit.cover,height: 100,width:100.0,)):(Image.network(link,
-                                     fit: BoxFit.cover,height: 100,width:100.0,)),
-                                     ),
-                                    ),
-                              ],
-                            ),
-                            Padding(
-                                padding:
-                                    EdgeInsets.only(top: 90.0, right: 100.0),
-                                child: new Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    GestureDetector(
-                                      child: new CircleAvatar(
-                                        backgroundColor: Colors.black87,
-                                        radius: 25.0,
-                                        child: new Icon(
-                                          Icons.camera_alt,
-                                          color: Colors.white,
-                                        ),
-                                      ), 
-                                      onTap:(){                                      
-                                     // (isWeb==true)?getImageWeb():
-                                      getImage(); 
-                                        //print(_image);
-                                      },
-                                    ),
-                                  ],
-                                ),
-                                ),
-                                Padding(
-                                padding: EdgeInsets.only(top: 120.0, left: 50.0),
-                                child: new Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    GestureDetector(
-                                      child: new CircleAvatar(
-                                        backgroundColor: Colors.black87,
-                                        radius: 25.0,
-                                        child: new Icon(
-                                          Icons.save,
-                                          color: Colors.white,
-                                        ),
-                                      ), 
-                                      onTap:(){                                      
-                                        //(isWeb)?uploadPicWeb(context):
-                                        uploadPic(context);
-
-                                        //print(_image);
-                                      },
-                                    )
-                                  ],
-                                )
-                                ),
-                          ]),
-                        ):
-                        
-                        
-
-
-
-                        
                         
                         //ye andorid le ffd
                         Padding(
@@ -321,7 +237,6 @@ var fromPicker = await ImagePickerWeb.getImage(  outputType: ImageType.file);
                           child:
                           new Stack(fit: StackFit.loose, children: <Widget>[
                           new Row(
- 
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
@@ -329,7 +244,15 @@ var fromPicker = await ImagePickerWeb.getImage(  outputType: ImageType.file);
                                     width: 140.0,
                                     height: 140.0,
                                     child: 
-                                    CircleAvatar(    
+                                    (_image!=null)?CircleAvatar(    
+                                    backgroundColor: Colors.black87,                                      
+                                      /*url==null?Image.asset('assets/images/dev.jpg' ,fit: BoxFit.cover,height: 100,width:100.0,):*/
+                                    child:(_image!=null)?Image.file(_image,fit:BoxFit.cover,height: 100,width:100.0,):
+                                   (link=='#')?(Image.asset("assets/images/dev.jpg",
+                                     fit: BoxFit.cover,height: 100,width:100.0,)):(Image.network(link,
+                                     fit: BoxFit.cover,height: 100,width:100.0,)),
+                                     ):
+                                     CircleAvatar(    
                                     backgroundColor: Colors.black87,                                      
                                       /*url==null?Image.asset('assets/images/dev.jpg' ,fit: BoxFit.cover,height: 100,width:100.0,):*/
                                   child:(_image!=null)?Image.file(_image,fit:BoxFit.cover,height: 100,width:100.0,):
@@ -337,6 +260,7 @@ var fromPicker = await ImagePickerWeb.getImage(  outputType: ImageType.file);
                                      fit: BoxFit.cover,height: 100,width:100.0,)):(Image.network(link,
                                      fit: BoxFit.cover,height: 100,width:100.0,)),
                                      ),
+
                                     ),
                               ],
                             ),

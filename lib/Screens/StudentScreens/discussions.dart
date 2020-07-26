@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'dart:ui' as ui;
-
+import 'dart:ui';
+import 'dart:io';
 import 'package:universal_html/html.dart' show IFrameElement;
 
 import 'package:bubble/bubble.dart';
@@ -9,7 +9,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/foundation.dart';
 
-import './VideoChat.dart';
+import '../../ChatNecessary/UploadFile.dart';
+import 'package:dio/dio.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import '../../ChatNecessary/URLLauncher.dart';
 
 class User {
   String className, schoolCode, userId, classNumber, section, subject, userName;
@@ -52,29 +56,29 @@ class _DiscussionsState extends State<Discussions> {
   TextEditingController messageController = TextEditingController();
   ScrollController scrollController = ScrollController();
 
-  Future<void> callback() async {
-    if (messageController.text.length > 0) {
-      limitOfMessages++;
-      await _firestore
-          .collection('School')
-          .document(schoolCode)
-          .collection('Classes')
-          .document(classNumber + '_' + section + '_' + subject)
-          .collection('Discussions')
-          .add({
-        'text': messageController.text,
-        'from': user.userName,
-        'fromId': user.userId,
-        'isTeacher': user.isTeacher,
-        'date': DateTime.now().toIso8601String().toString(),
-      });
-      messageController.clear();
-      scrollController.animateTo(
-        scrollController.position.maxScrollExtent,
-        curve: Curves.easeOut,
-        duration: const Duration(milliseconds: 200),
-      );
-    }
+  Future<void> callback(String type, String text, {String fileURL = ''}) async {
+    limitOfMessages++;
+    messageController.clear();
+    await _firestore
+        .collection('School')
+        .document(schoolCode)
+        .collection('Classes')
+        .document(classNumber + '_' + section + '_' + subject)
+        .collection('Discussions')
+        .add({
+      'text': text,
+      'from': user.userName,
+      'fromId': user.userId,
+      'type': type,
+      'isTeacher': user.isTeacher,
+      'fileURL': fileURL,
+      'date': DateTime.now().toIso8601String().toString(),
+    });
+    scrollController.animateTo(
+      scrollController.position.maxScrollExtent,
+      curve: Curves.easeOut,
+      duration: const Duration(milliseconds: 200),
+    );
   }
 
   @override
@@ -136,11 +140,14 @@ class _DiscussionsState extends State<Discussions> {
 
                   List<Widget> messages = docs
                       .map((doc) => Message(
+                            key: UniqueKey(),
                             from: doc.data['from'],
                             text: doc.data['text'],
                             fromId: doc.data['fromId'],
                             isTeacher: doc.data['isTeacher'],
+                            type: doc.data['type'],
                             date: doc.data['date'],
+                            fileURL: doc.data['fileURL'],
                             me: studentId == doc.data['fromId'],
                           ))
                       .toList();
@@ -169,7 +176,10 @@ class _DiscussionsState extends State<Discussions> {
                 children: <Widget>[
                   Expanded(
                     child: TextField(
-                      onSubmitted: (value) => callback(),
+                      onSubmitted: (value) =>
+                          messageController.text.trim().length > 0
+                              ? callback('text', messageController.text)
+                              : null,
                       decoration: InputDecoration(
                         hintText: "Enter a Message...",
                         border: OutlineInputBorder(
@@ -185,32 +195,17 @@ class _DiscussionsState extends State<Discussions> {
                   FloatingActionButton(
                     elevation: 0,
                     tooltip: 'Start Meeting',
-                    child: Icon(Icons.videocam),
+                    child: Icon(Icons.attach_file),
                     heroTag: null,
-                    onPressed: () {
-                      if (!kIsWeb)  // This is to check Web nor not
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => MyApp(
-                                      schoolCode: schoolCode,
-                                      className: className,
-                                      classNumber: classNumber,
-                                      section: section,
-                                      subject: subject,
-                                      studentId: studentId,
-                                    )));
-                      else
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => WebJitsiMeet(schoolCode +
-                                    '-' +
-                                    classNumber +
-                                    '-' +
-                                    section +
-                                    '-' +
-                                    subject,className)));
+                    onPressed: () async {
+                      List<File> files = await attachment();
+                      files.forEach((file) async {
+                        List<String> fileData = await uploadToFirebase(
+                            '$schoolCode/$classNumber/$section/$subject/',
+                            file);
+                        await callback('File', fileData[1],
+                            fileURL: fileData[0]);
+                      });
                     },
                   ),
                   SizedBox(
@@ -218,7 +213,11 @@ class _DiscussionsState extends State<Discussions> {
                   ),
                   SendButton(
                     text: "Send",
-                    callback: callback,
+                    callback: () {
+                      messageController.text.trim().length > 0
+                          ? callback('Text', messageController.text)
+                          : null;
+                    },
                   )
                 ],
               ),
@@ -229,6 +228,12 @@ class _DiscussionsState extends State<Discussions> {
     );
   }
 }
+
+// attachment() async{
+//     Map<String,String> paths;
+//     List<File> files;
+//     files = await FilePicker.getMultiFile();
+//   }
 
 class SendButton extends StatelessWidget {
   final String text;
@@ -252,15 +257,18 @@ class Message extends StatelessWidget {
   final String fromId;
   final String date;
   final bool isTeacher;
-
+  final String fileURL;
+  final String type;
   final bool me;
 
   const Message(
       {Key key,
       this.from,
+      this.type,
       this.text,
       this.me,
       this.isTeacher,
+      this.fileURL,
       this.date,
       this.fromId})
       : super(key: key);
@@ -294,9 +302,11 @@ class Message extends StatelessWidget {
                 crossAxisAlignment:
                     me ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    text,
-                  ),
+                  type == 'File'
+                      ? fileWidget(context)
+                      : Text(
+                          text,
+                        ),
                   Text(
                     date.split('T')[0] +
                         ' ' +
@@ -309,6 +319,99 @@ class Message extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Future<bool> downloadFile(String url, BuildContext context) async {
+    Dio dio = Dio();
+    try {
+      var dirs = await getExternalStorageDirectories();
+      var dir = dirs[0];
+      print(dir.path);
+      var status = await Permission.storage.status;
+      if (!status.isGranted) {
+        await Permission.storage.request();
+      }
+      await dio.download(url, "/storage/emulated/0/MySchools/$text",
+          onReceiveProgress: (rec, total) {
+        print("Rec: $rec , Total: $total");
+      });
+      Scaffold.of(context)
+          .showSnackBar(SnackBar(content: Text('$text downloaded')));
+      print("Download completed");
+    } catch (e) {
+      print(e);
+    }
+    return true;
+  }
+
+  fileWidget(BuildContext context) {
+    String fileExtention = text.split('.').last;
+    List<String> imageExtensions = [
+      'jpg',
+      'jpeg',
+      'jpe',
+      'jif',
+      'jfif',
+      'jfi',
+      'png',
+      'gif',
+      'webp',
+      'tiff',
+      'tif '
+    ];
+
+    return Column(
+      children: [
+        imageExtensions.contains(fileExtention)
+            ? Column(
+                children: [
+                  Image.network(
+                    fileURL,
+                    key: UniqueKey(),
+                    scale: 0.2,
+                  ),
+                  ListTile(
+                    onTap: () {
+                      URLLauncher(fileURL);
+                    },
+                    title: Text(
+                      text,
+                      style: TextStyle(fontSize: 12),
+                    ),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.file_download),
+                      onPressed: () async {
+                        await downloadFile(fileURL, context);
+                      },
+                    ),
+                  )
+                ],
+              )
+            : ListTile(
+                onTap: () {
+                  URLLauncher(fileURL);
+                },
+                title: Text(
+                  text,
+                  style: TextStyle(fontSize: 12),
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Offstage(
+                      offstage: false,
+                      child: IconButton(
+                        icon: const Icon(Icons.file_download),
+                        onPressed: () async {
+                          await downloadFile(fileURL, context);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+      ],
     );
   }
 }

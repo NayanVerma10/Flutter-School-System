@@ -32,7 +32,7 @@ class _StaffState extends State<Staff> {
               color: Colors.white,
             ),
             title: Text(
-              "Teachers ",
+              "TEACHERS ",
               style: TextStyle(color: Colors.white),
             ),
             backgroundColor: Colors.white,
