@@ -74,6 +74,7 @@ class _AddQuestionState extends State<AddQuestion> {
           ? Container(
               child: Center(child: CircularProgressIndicator()),
             )
+
           : Form(
               key: _formKey,
               child: Container(
@@ -147,7 +148,7 @@ class _AddQuestionState extends State<AddQuestion> {
                             padding: EdgeInsets.symmetric(
                                 horizontal: 24, vertical: 20),
                             decoration: BoxDecoration(
-                                color: Colors.blue,
+                                color: Colors.black,
                                 borderRadius: BorderRadius.circular(30)),
                             child: Text(
                               "Submit",
@@ -169,7 +170,7 @@ class _AddQuestionState extends State<AddQuestion> {
                             padding: EdgeInsets.symmetric(
                                 horizontal: 24, vertical: 20),
                             decoration: BoxDecoration(
-                                color: Colors.blue,
+                                color: Colors.black,
                                 borderRadius: BorderRadius.circular(30)),
                             child: Text(
                               "Add Question",

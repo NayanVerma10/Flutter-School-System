@@ -46,7 +46,7 @@ class DatabaseService {
         .collection('Quiz')
         .document(quizId)
         .collection('QandA')
-         .getDocuments();
+        .getDocuments();
   }
 }
 DatabaseService db=new DatabaseService();
