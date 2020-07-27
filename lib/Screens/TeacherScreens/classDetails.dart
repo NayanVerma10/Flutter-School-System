@@ -7,7 +7,7 @@ import './behavior.dart';
 import '../Icons/iconssss_icons.dart';
 import '../Icons/my_flutter_app_icons.dart';
 import './students.dart';
-import './tutorials.dart';
+import './tutorials_web.dart';
 import '../Icons/iconsss_icons.dart';
 import './Discussions.dart';
 import './VideoChat.dart';
