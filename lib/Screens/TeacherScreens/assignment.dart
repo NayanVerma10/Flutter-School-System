@@ -31,6 +31,8 @@ class _HomeState extends State<Home> {
                   physics: ClampingScrollPhysics(),
                   itemCount: snapshot.data.documents.length,
                   itemBuilder: (context, index) {
+                    print(snapshot.data.documents[index].data);
+                    Duration(seconds: 2);
                     return QuizTile(
                       noOfQuestions: snapshot.data.documents.length,
                       imageUrl:

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import './profile.dart';
 import './subjects.dart';
-import './chat.dart';
+import '../../Chat/ChatInitialScreen.dart';
 import './announcements.dart';
 import './StudentsTimeTable.dart';
 import '../Icons/iconssss_icons.dart';
@@ -33,7 +33,7 @@ class _MyAppStudentState extends State<MyAppStudent> {
       Subjects(schoolCode, studentId),
       StudentsTimeTable(),
       Announcements(),
-      Chats(),
+      MainChat(schoolCode, studentId, false),
       Profile()
     ];
   }
