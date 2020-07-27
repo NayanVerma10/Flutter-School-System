@@ -1,9 +1,5 @@
 import 'dart:async';
 import 'dart:ui';
-import 'dart:io';
-// ignore: avoid_web_libraries_in_flutter
-import 'package:universal_html/html.dart' show IFrameElement;
-
 
 import 'package:bubble/bubble.dart';
 import 'package:flutter/foundation.dart';
@@ -13,11 +9,8 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../ChatNecessary/UploadFile.dart';
-import 'package:dio/dio.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import '../../ChatNecessary/URLLauncher.dart';
-
+import '../../ChatNecessary/DownloadFile.dart';
 
 class User {
   String className, schoolCode, userId, classNumber, section, subject, userName;
@@ -25,6 +18,8 @@ class User {
   User(this.userName, this.className, this.schoolCode, this.userId,
       this.classNumber, this.section, this.subject, this.isTeacher);
 }
+
+double pad = 0;
 
 class Discussions extends StatefulWidget {
   String className, schoolCode, teachersId, classNumber, section, subject;
@@ -89,6 +84,11 @@ class _DiscussionsState extends State<Discussions> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    pad = kIsWeb &&
+            MediaQuery.of(context).size.width >
+                MediaQuery.of(context).size.height
+        ? MediaQuery.of(context).size.width / 2 - 300
+        : 0;
     setState(() {
       Firestore.instance
           .collection('School')
@@ -120,112 +120,115 @@ class _DiscussionsState extends State<Discussions> {
         ],
       ),
       body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-                stream: _firestore
-                    .collection('School')
-                    .document(schoolCode)
-                    .collection('Classes')
-                    .document(classNumber + '_' + section + '_' + subject)
-                    .collection('Discussions')
-                    .orderBy('date', descending: true)
-                    .limit(limitOfMessages)
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData)
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  List<DocumentSnapshot> docs = snapshot.data.documents;
-                  print(limitOfMessages);
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: pad),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Expanded(
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: _firestore
+                      .collection('School')
+                      .document(schoolCode)
+                      .collection('Classes')
+                      .document(classNumber + '_' + section + '_' + subject)
+                      .collection('Discussions')
+                      .orderBy('date', descending: true)
+                      .limit(limitOfMessages)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData)
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    List<DocumentSnapshot> docs = snapshot.data.documents;
+                    print(limitOfMessages);
 
-                  List<Widget> messages = docs
-                      .map((doc) => Message(
-                            from: doc.data['from'],
-                            text: doc.data['text'],
-                            fromId: doc.data['fromId'],
-                            isTeacher: doc.data['isTeacher'],
-                            type: doc.data['type'],
-                            date: doc.data['date'],
-                            fileURL: doc.data['fileURL'],
-                            me: teachersId == doc.data['fromId'],
-                          ))
-                      .toList();
-                  List<Widget> reversedMessages = messages.reversed
-                      .toList(); // This is Important because the data is captured in decending order
-                  Timer(
-                      Duration(milliseconds: 200),
-                      () => scrollController.animateTo(
-                            scrollController.position.maxScrollExtent,
-                            curve: Curves.easeOut,
-                            duration: const Duration(milliseconds: 200),
-                          ));
-                  return ListView(
-                    controller: scrollController,
-                    children: <Widget>[
-                      ...reversedMessages,
-                    ],
-                  );
-                },
+                    List<Widget> messages = docs
+                        .map((doc) => Message(
+                              from: doc.data['from'],
+                              text: doc.data['text'],
+                              fromId: doc.data['fromId'],
+                              isTeacher: doc.data['isTeacher'],
+                              type: doc.data['type'],
+                              date: doc.data['date'],
+                              fileURL: doc.data['fileURL'],
+                              me: teachersId == doc.data['fromId'],
+                            ))
+                        .toList();
+                    List<Widget> reversedMessages = messages.reversed
+                        .toList(); // This is Important because the data is captured in decending order
+                    Timer(
+                        Duration(milliseconds: 200),
+                        () => scrollController.animateTo(
+                              scrollController.position.maxScrollExtent,
+                              curve: Curves.easeOut,
+                              duration: const Duration(milliseconds: 200),
+                            ));
+                    return ListView(
+                      controller: scrollController,
+                      children: <Widget>[
+                        ...reversedMessages,
+                      ],
+                    );
+                  },
+                ),
               ),
-            ),
-            Container(
-              decoration: BoxDecoration(color: Colors.transparent),
-              padding: EdgeInsets.symmetric(horizontal: 2, vertical: 2),
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: TextField(
-                      onSubmitted: (value) =>
-                          messageController.text.trim().length > 0
-                              ? callback('text', messageController.text)
-                              : null,
-                      decoration: InputDecoration(
-                        hintText: "Enter a Message...",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(70),
+              Container(
+                decoration: BoxDecoration(color: Colors.transparent),
+                padding: EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: TextField(
+                        onSubmitted: (value) =>
+                            messageController.text.trim().length > 0
+                                ? callback('text', messageController.text)
+                                : null,
+                        decoration: InputDecoration(
+                          hintText: "Enter a Message...",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(70),
+                          ),
                         ),
+                        controller: messageController,
                       ),
-                      controller: messageController,
                     ),
-                  ),
-                  SizedBox(
-                    width: 1,
-                  ),
-                  FloatingActionButton(
-                    elevation: 0,
-                    tooltip: 'Start Meeting',
-                    child: Icon(Icons.attach_file),
-                    heroTag: null,
-                    onPressed: () async {
-                      List<File> files = await attachment();
-                      files.forEach((file) async {
-                        List<String> fileData = await uploadToFirebase(
-                            '$schoolCode/$classNumber/$section/$subject/',
-                            file);
-                        await callback('File', fileData[1],
-                            fileURL: fileData[0]);
-                      });
-                    },
-                  ),
-                  SizedBox(
-                    width: 1,
-                  ),
-                  SendButton(
-                    text: "Send",
-                    callback: () {
-                      messageController.text.trim().length > 0
-                          ? callback('Text', messageController.text)
-                          : null;
-                    },
-                  )
-                ],
+                    SizedBox(
+                      width: 1,
+                    ),
+                    FloatingActionButton(
+                      elevation: 0,
+                      tooltip: 'Start Meeting',
+                      child: Icon(Icons.attach_file),
+                      heroTag: null,
+                      onPressed: () async {
+                        await attachment()
+                            .then((files) => files.forEach((file) async {
+                                  List<String> fileData = await uploadToFirebase(
+                                      '$schoolCode/$classNumber/$section/$subject/',
+                                      file);
+                                  await callback('File', fileData[1],
+                                      fileURL: fileData[0]);
+                                }));
+                      },
+                    ),
+                    SizedBox(
+                      width: 1,
+                    ),
+                    SendButton(
+                      text: "Send",
+                      callback: () {
+                        messageController.text.trim().length > 0
+                            ? callback('Text', messageController.text)
+                            : null;
+                      },
+                    )
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -235,9 +238,8 @@ class _DiscussionsState extends State<Discussions> {
 class SendButton extends StatelessWidget {
   final String text;
   final VoidCallback callback;
-  
-  const SendButton({Key key, this.text, this.callback})
-      : super(key: key);
+
+  const SendButton({Key key, this.text, this.callback}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
@@ -293,7 +295,7 @@ class Message extends StatelessWidget {
             elevation: 2,
             child: Container(
               constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.7,
+                maxWidth: (MediaQuery.of(context).size.width - (2 * pad)) * 0.7,
               ),
               padding: EdgeInsets.symmetric(vertical: 1.0, horizontal: 5.0),
               child: Column(
@@ -318,29 +320,6 @@ class Message extends StatelessWidget {
         ],
       ),
     );
-  }
-
-Future<bool> downloadFile(String url, BuildContext context) async {
-    Dio dio = Dio();
-    try {
-      var dirs = await getExternalStorageDirectories();
-      var dir = dirs[0];
-      print(dir.path);
-      var status = await Permission.storage.status;
-      if (!status.isGranted) {
-        await Permission.storage.request();
-      }
-      await dio.download(url, "/storage/emulated/0/MySchools/$text",
-          onReceiveProgress: (rec, total) {
-        print("Rec: $rec , Total: $total");
-      });
-      Scaffold.of(context)
-          .showSnackBar(SnackBar(content: Text('$text downloaded')));
-      print("Download completed");
-    } catch (e) {
-      print(e);
-    }
-    return true;
   }
 
   fileWidget(BuildContext context) {
@@ -380,7 +359,7 @@ Future<bool> downloadFile(String url, BuildContext context) async {
                     trailing: IconButton(
                       icon: const Icon(Icons.file_download),
                       onPressed: () async {
-                        await downloadFile(fileURL, context);
+                        await downloadFile(fileURL, text, context);
                       },
                     ),
                   )
@@ -402,7 +381,7 @@ Future<bool> downloadFile(String url, BuildContext context) async {
                       child: IconButton(
                         icon: const Icon(Icons.file_download),
                         onPressed: () async {
-                          await downloadFile(fileURL, context);
+                          await downloadFile(fileURL, text, context);
                         },
                       ),
                     ),

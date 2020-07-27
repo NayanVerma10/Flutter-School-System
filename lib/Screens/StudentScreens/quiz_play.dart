@@ -32,6 +32,7 @@ class _QuizPlayState extends State<QuizPlay> {
   void initState() {
     databaseService.getQuestionData(widget.quizId).then((value) {
       questionSnaphot = value;
+      print(questionSnaphot);
       _notAttempted = questionSnaphot.documents.length;
       _correct = 0;
       _incorrect = 0;
