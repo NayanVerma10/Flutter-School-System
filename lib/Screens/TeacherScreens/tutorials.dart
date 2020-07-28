@@ -203,13 +203,13 @@ class _TutorialUploadState extends State<TutorialUpload> {
                     new Builder(
                       builder: (BuildContext context) => _loadingPath
                           ? Padding(
-                          padding: const EdgeInsets.only(bottom: 10.0),
-                          child: const CircularProgressIndicator())
+                           padding: const EdgeInsets.only(bottom: 10.0),
+                           child: const CircularProgressIndicator())
                           : _path != null || _paths != null
                           ? new Container(
-                        padding: const EdgeInsets.only(bottom: 30.0),
-                        height: MediaQuery.of(context).size.height * 0.50,
-                        child: new Scrollbar(
+                           padding: const EdgeInsets.only(bottom: 30.0),
+                           height: MediaQuery.of(context).size.height * 0.50,
+                           child: new Scrollbar(
                             child: new ListView.separated(
                               itemCount: _paths != null && _paths.isNotEmpty
                                   ? _paths.length
