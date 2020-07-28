@@ -26,7 +26,8 @@ class _ChatBoxState extends State<ChatBox> {
   _ChatBoxState(this.schoolCode, this.sender_docId, this.sender_isTeacher,
       this.reciever_docId, this.reciever_isTeacher);
 
-  Map<String, dynamic> reciever, sender;
+  static Map<String, dynamic> reciever={'first name': ' ' ,'last name': ' '};
+  static Map<String,dynamic> sender={'first name': ' ' ,'last name': ' '};
   bool loading = true;
   final _firestore = Firestore.instance;
   int limitOfMessages = 40;
@@ -81,9 +82,8 @@ class _ChatBoxState extends State<ChatBox> {
         'name': (sender['first name'] ?? '') + ' ' + (sender['last name']),
         'fromId': sender_docId,
         'date': date,
-
         'isTeacher': sender_isTeacher,
-        'url' : sender['url'],
+        'url': sender['url'],
       },
       merge: true,
     );
@@ -101,9 +101,8 @@ class _ChatBoxState extends State<ChatBox> {
         'name': (reciever['first name'] ?? '') + ' ' + (reciever['last name']),
         'fromId': sender_docId,
         'date': date,
-
         'isTeacher': reciever_isTeacher,
-        'url' : reciever['url'],
+        'url': reciever['url'],
       },
       merge: true,
     );
@@ -141,12 +140,7 @@ class _ChatBoxState extends State<ChatBox> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    pad = kIsWeb &&
-            MediaQuery.of(context).size.width >
-                MediaQuery.of(context).size.height
-        ? MediaQuery.of(context).size.width / 2 - 300
-        : 0;
-    
+
     scrollController.addListener(() {
       if (scrollController.offset >=
           scrollController.position.maxScrollExtent) {
@@ -161,10 +155,18 @@ class _ChatBoxState extends State<ChatBox> {
 
   @override
   Widget build(BuildContext context) {
-    if (loading)
-      return Center(
-        child: CircularProgressIndicator(),
-      );
+    setState(() {
+      pad = kIsWeb &&
+              MediaQuery.of(context).size.width >
+                  MediaQuery.of(context).size.height
+          ? MediaQuery.of(context).size.width / 2 - 300
+          : 0;
+    });
+
+    // if (loading)
+    //   return Center(
+    //     child: CircularProgressIndicator(),
+    //   );
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,

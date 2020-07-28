@@ -6,6 +6,8 @@ import 'package:path/path.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 
 class Profile extends StatefulWidget {
   final String schoolCode;
@@ -15,7 +17,7 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  File _image;
+  // File _image;
   String schoolCode;
   School school = School("", "", "", "", "", "");
   TextEditingController _schoolNameController = TextEditingController();
@@ -26,28 +28,32 @@ class _ProfileState extends State<Profile> {
   TextEditingController _schoolAboutController = TextEditingController();
 
   _ProfileState(this.schoolCode);
+  final databaseReference = Firestore.instance;
+
+ 
 
   @override
   Widget build(BuildContext context) {
-    Future getImage() async {
-      var image = await ImagePicker.pickImage(source: ImageSource.gallery);
-      setState(() {
-        _image = image;
-        print('Image Path $_image');
-      });
-    }
+    // Future getImage() async {
+    //   var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    //   setState(() {
+    //     _image = image;
+    //     print('Image Path $_image');
+    //   });
+    // }
 
-    Future uploadPic(BuildContext context) async {
-      String fileName = basename(_image.path);
-      StorageReference firebaseStorageRef =
-          FirebaseStorage.instance.ref().child(fileName);
-      StorageUploadTask uploadTask = firebaseStorageRef.putFile(_image);
-      StorageTaskSnapshot taskSnapshot = await uploadTask.onComplete;
-      setState(() {
-        print("Profile picture Uploaded");
-        // Scaffold.of(context).showSnackBar(Snackbar(content: Text('Profile Picture Uploaded')));
-      });
-    }
+
+    // Future uploadPic(BuildContext context) async {
+    //   String fileName = basename(_image.path);
+    //   StorageReference firebaseStorageRef =
+    //       FirebaseStorage.instance.ref().child(fileName);
+    //   StorageUploadTask uploadTask = firebaseStorageRef.putFile(_image);
+    //   StorageTaskSnapshot taskSnapshot = await uploadTask.onComplete;
+    //   setState(() {
+    //     print("Profile picture Uploaded");
+    //     // Scaffold.of(context).showSnackBar(Snackbar(content: Text('Profile Picture Uploaded')));
+    //   });
+    // }
 
     return SingleChildScrollView(
       child: Container(
@@ -66,113 +72,398 @@ class _ProfileState extends State<Profile> {
     );
   }
 
+ File _coverImage;
+ File _profImage;
+bool isProf=false;
+bool isCover=false;
+  final picker = ImagePicker();
+  File _selectedProfFile;
+  File _selectedCoverFile;
+  bool _inProcess = false;
+      Future getImageFromGallery() async {
+    this.setState(() {
+      _inProcess = true;
+    });
+    final pickedProfFile = await picker.getImage(source: ImageSource.gallery);
+    _profImage = File(pickedProfFile.path);
+
+
+    if (_profImage != null) {
+      File croppedProf = await ImageCropper.cropImage(
+          sourcePath: _profImage.path,
+          aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
+          compressQuality: 100,
+          maxWidth: 700,
+          maxHeight: 700,
+          compressFormat: ImageCompressFormat.jpg,
+          androidUiSettings: AndroidUiSettings(
+            toolbarColor: Colors.white,
+            toolbarTitle: "Crop profile image",
+            statusBarColor: Colors.orange,
+            backgroundColor: Colors.white,
+          ));
+
+      this.setState(() {
+        _selectedProfFile = croppedProf;
+        _inProcess = false;
+      });
+    } else {
+      this.setState(() {
+        _inProcess = false;
+      });
+    }
+  }
+
+   Future getCoverFromGallery() async {
+    this.setState(() {
+      _inProcess = true;
+    });
+   
+
+     final pickedCoverFile = await picker.getImage(source: ImageSource.gallery);
+    _coverImage = File(pickedCoverFile.path);
+
+    if (_coverImage != null) {
+      File croppedCover = await ImageCropper.cropImage(
+          sourcePath: _coverImage.path,
+          aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
+          compressQuality: 100,
+          maxWidth: 700,
+          maxHeight: 700,
+          compressFormat: ImageCompressFormat.jpg,
+          androidUiSettings: AndroidUiSettings(
+            toolbarColor: Colors.white,
+            toolbarTitle: "Crop cover image",
+            statusBarColor: Colors.orange,
+            backgroundColor: Colors.white,
+          ));
+
+      this.setState(() {
+        _selectedCoverFile = croppedCover;
+        _inProcess = false;
+      });
+    } else {
+      this.setState(() {
+        _inProcess = false;
+      });
+    }
+  }
+   Widget editImage() {
+    return Container(
+        height: 100,
+        width: 100,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            FlatButton(
+                child: Text('Add image',
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                onPressed: () {
+                  isProf=true;
+                  getImageFromGallery();
+                }),
+            FlatButton(
+                child: Text(
+                  'Remove Image',
+                  textAlign: TextAlign.left,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                onPressed: null)
+          ],
+        ));
+  }
+
+   Widget editCoverImage() {
+    return Container(
+        height: 100,
+        width: 100,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            FlatButton(
+                child: Text('Add cover image',
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                onPressed: () {
+                  getCoverFromGallery();
+                }),
+            FlatButton(
+                child: Text(
+                  'Remove cover image',
+                  textAlign: TextAlign.left,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                onPressed: null)
+          ],
+        ));
+  }
+
   Widget displayUserInformation(context, snapshot) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Column(
           children: <Widget>[
-            Padding(padding: const EdgeInsets.all(10)),
-            Align(
-              alignment: Alignment.center,
-              child: CircleAvatar(
-                radius: 70,
-                backgroundColor: Color(0x8A000000),
-                child: ClipOval(
-                  child: SizedBox(
-                    width: 180.0,
-                    height: 180.0,
-                    child: (_image != null)
-                        ? Image.file(_image)
-                        : Image.network('', fit: BoxFit.fill),
-                  ),
+                Padding(
+              padding: EdgeInsets.only(top: 0),
+              child: new Stack(fit: StackFit.loose, children: <Widget>[
+                Container(
+                 // color: Colors.white,
+                  width: MediaQuery.of(context).size.width,
+                  height: 170,
+                   decoration: new BoxDecoration(
+                     color: Colors.white,
+                          image: new DecorationImage(
+                              image: _selectedCoverFile != null
+                                  ? FileImage(_selectedCoverFile)
+                                  :
+                                  // Image.file(_selectedFile) :
+                                  ExactAssetImage('assets/images/coverimage.jpg'),
+                              fit: BoxFit.cover))
                 ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 5.0),
-              child: IconButton(
-                icon: Icon(
-                  FontAwesomeIcons.camera,
-                  size: 20.0,
+               
+                new Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    new Container(
+                      margin: EdgeInsets.only(top: 100),
+                      width: 130.0,
+                      height: 130.0,
+                      decoration: new BoxDecoration(
+                       border: Border.all(color: Colors.white,
+                       width: 5
+                       ),
+                          shape: BoxShape.circle,
+                          image: new DecorationImage(
+                              image: _selectedProfFile != null
+                                  ? FileImage(_selectedProfFile)
+                                  :
+                                  // Image.file(_selectedFile) :
+                                  ExactAssetImage('assets/images/profile.jpg'),
+                              fit: BoxFit.cover)),
+                    )
+                  ],
                 ),
-                onPressed: () {},
-              ),
+                Padding(
+                    padding: EdgeInsets.only(top: 180.0, left: 90.0),
+                    child: new Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        new CircleAvatar(
+                          backgroundColor: Colors.grey[800],
+                          radius: 22.0,
+                          child: new IconButton(
+                            icon: Icon(Icons.camera_alt,
+                            size: 25,
+                            ),
+                            onPressed: () {
+                              showDialog(
+                                  context: context,
+                                  builder: (_) => AlertDialog(
+                                        title: Text(
+                                          'Edit Photo',
+                                          style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        content: editImage(),
+                                      ));
+                              // getImageFromGallery();
+                            },
+                            color: Colors.white,
+                          ),
+                        )
+                      ],
+                    )),
+                    GestureDetector(
+                  child: Container(
+                      // alignment: Alignment.center,
+                       decoration: BoxDecoration(
+             borderRadius: BorderRadius.only(topLeft:Radius.circular(5)),
+             color:const Color(0xFFFFFF).withOpacity(0.5),
+             ),
+                  margin: EdgeInsets.only(top:134,left: 290),
+                  // color:const Color(0xFFFFFF).withOpacity(0.5),
+                  height: 38,
+                  width:80,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                     Icon(Icons.camera_alt,
+                            size: 25),
+                            SizedBox(width: 5,),
+                            Text('Edit',
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold
+                            ),
+                            )
+                  ],),
+                ),
+                onTap: () {
+                              showDialog(
+                                  context: context,
+                                  builder: (_) => AlertDialog(
+                                        title: Text(
+                                          'Edit Photo',
+                                          style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        content: editCoverImage(),
+                                      ));
+                }
+                ),
+              
+              ]),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                "${school.schoolname}",
-                style: DefaultTextStyle.of(context)
-                    .style
-                    .apply(fontSizeFactor: 2.5),
-              ),
-            ),
-            SizedBox(height: 15),
           ],
-        ),
+        ),      
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 5,vertical: 5),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(
+                child: Row(
+                  children:[
+                    Icon(Icons.school,
+                    size: 22),
+                    SizedBox(width: 10,),
+                Text(
                   "Board: ${school.schoolboard}",
-                  style:
-                      DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2),
-                ),
+                  style:TextStyle(fontSize: 17,
+                  fontWeight: FontWeight.bold
+                  )
+                      
+                    )]),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(
+                child: Row(
+                  children:[
+                    Icon(Icons.phone,
+                    size: 22),
+                    SizedBox(width: 10,),
+                 Text(
                   "School Number: ${school.schoolno}",
                   style:
-                      DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2),
-                ),
+                     TextStyle(fontSize: 17,
+                  fontWeight: FontWeight.bold
+                  )
+                )]),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(
+                child:  Row(
+                  children:[
+                    Icon(Icons.email,
+                    size: 22),
+                    SizedBox(width: 10,),
+                Text(
                   "Email: ${school.schoolemail}",
-                  style:
-                      DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2),
-                ),
+                  style:TextStyle(fontSize: 17,
+                  fontWeight: FontWeight.bold
+                  )
+                  // style:
+                  //     DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2),
+                )]),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  "About Us: ${school.about}",
-                  style: DefaultTextStyle.of(context)
-                      .style
-                      .apply(fontSizeFactor: 1.8),
+                child:  Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children:[
+                    Icon(Icons.person,
+                    size: 22
+                    ),
+                    SizedBox(width: 10,),
+                     Text(
+                  "About Us: ",
+                  style:TextStyle(fontSize: 17,
+                  fontWeight: FontWeight.bold
+                  )
+                 
                 ),
+                
+                   Expanded(
+                    
+                   child:  Text(
+                  "${school.about}",
+                  style:TextStyle(fontSize: 17,
+                  fontWeight: FontWeight.bold
+                  ),
+                   overflow: TextOverflow.ellipsis,
+                   maxLines: 20,
+                   textAlign: TextAlign.left,
+                  // style: DefaultTextStyle.of(context)
+                  //     .style
+                  //     .apply(fontSizeFactor: 1.8),
+                )
+                )
+                ]),
               ),
             ],
           ),
         ),
-        Padding(padding: const EdgeInsets.all(10)),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 20),
-              child: RaisedButton(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18.0),
-                    side: BorderSide(color: Colors.black)),
-                child: Text("Edit Details",
-                    style: DefaultTextStyle.of(context)
-                        .style
-                        .apply(fontSizeFactor: 2)),
-                onPressed: () {
-                  _schoolEditBottomSheet(context);
-                },
-              ),
-            )
-          ],
-        )
+        SizedBox(height: 20,),
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children:[
+          GestureDetector(
+               child: Container(
+                  decoration: BoxDecoration(
+             borderRadius: BorderRadius.all(Radius.circular(40)),
+              color: Colors.black,
+             ),
+             padding: EdgeInsets.symmetric(horizontal: 20,vertical: 20),
+                
+                // margin: EdgeInsets.only(top:210,left: 260),
+                  // color:const Color(0xFFFFFF).withOpacity(0.5),
+                  
+               // padding: EdgeInsets.zero,
+                 child: Row(
+                   mainAxisAlignment: MainAxisAlignment.center,
+                   children: [
+                   Icon(Icons.edit,
+                   size: 18,
+                   color: Colors.white,),
+                   SizedBox(width: 5,),
+                   Text('Edit Profile',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white)
+                   )
+                 ],)),
+                 onTap:(){ _schoolEditBottomSheet(context);}
+              )]))
+      //  Padding(padding: const EdgeInsets.all(10)),
+        // Column(
+        //   crossAxisAlignment: CrossAxisAlignment.center,
+        //   children: [
+        //     Padding(
+        //       padding: const EdgeInsets.only(left: 20),
+        //       child: RaisedButton(
+        //         shape: RoundedRectangleBorder(
+        //             borderRadius: BorderRadius.circular(18.0),
+        //             side: BorderSide(color: Colors.black)),
+        //         child: Text("Edit Details",
+        //             style: DefaultTextStyle.of(context)
+        //                 .style
+        //                 .apply(fontSizeFactor: 2)),
+        //         onPressed: () {
+        //           _schoolEditBottomSheet(context);
+        //         },
+        //       ),
+        //     )
+        //   ],
+        // )
       ],
     );
   }
@@ -270,12 +561,12 @@ class _ProfileState extends State<Profile> {
                         child: TextFormField(
                           controller: _schoolNoController,
                           validator: (value) => (value.isEmpty)
-                              ? "Please Enter your School's Affiliation Code"
+                              ? "Please Enter your School's Mobile Number"
                               : null,
                           decoration: InputDecoration(
                               contentPadding: new EdgeInsets.symmetric(
                                   vertical: 0.0, horizontal: 10.0),
-                              labelText: "School's Affiliation Code",
+                              labelText: "School's Mobile Number",
                               filled: true,
                               fillColor: Colors.white54,
                               focusColor: Colors.white,

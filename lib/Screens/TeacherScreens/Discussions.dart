@@ -82,11 +82,6 @@ class _DiscussionsState extends State<Discussions> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    pad = kIsWeb &&
-            MediaQuery.of(context).size.width >
-                MediaQuery.of(context).size.height
-        ? MediaQuery.of(context).size.width / 2 - 300
-        : 0;
     setState(() {
       Firestore.instance
           .collection('School')
@@ -105,6 +100,15 @@ class _DiscussionsState extends State<Discussions> {
 
   @override
   Widget build(BuildContext context) {
+    setState(() {
+      pad = kIsWeb &&
+            MediaQuery.of(context).size.width >
+                MediaQuery.of(context).size.height
+        ? MediaQuery.of(context).size.width / 2 - 300
+        : 0;
+    
+    });
+    
     return Scaffold(
       appBar: AppBar(
         title: Text(className + ' Discussions'),

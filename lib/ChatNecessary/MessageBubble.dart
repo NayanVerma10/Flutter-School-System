@@ -90,7 +90,7 @@ class Message extends StatelessWidget {
       'gif',
       'webp',
       'tiff',
-      'tif '
+      'tif ',
     ];
 
     return Column(

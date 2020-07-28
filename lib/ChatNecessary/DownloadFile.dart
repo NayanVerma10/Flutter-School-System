@@ -31,6 +31,7 @@ Future<bool> downloadFile(String url, String text, BuildContext context) async {
 
       // html.AnchorElement anchorElement = new html.AnchorElement(href: url)
       //   ..setAttribute("download", text)
+      //   ..target='_blank'
       //   ..click();
 
     }
