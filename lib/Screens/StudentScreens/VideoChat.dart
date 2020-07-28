@@ -313,36 +313,26 @@ class WebJitsiMeet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print(meetId);
-//     ui.platformViewRegistry.registerViewFactory(
-//         'hello-world-html',
-//         (int viewId) => IFrameElement()
-//           ..allow = "camera *;microphone *"
-//           ..width = '640'
-//           ..height = '360'
-//           ..src = 'https://meet.jit.si/' + meetId
-//           ..style.border = 'none');
 
-    final IFrameElement iframeElement = IFrameElement();
-    iframeElement.height = MediaQuery.of(context).size.height.toString();
+    // final IFrameElement iframeElement = IFrameElement();
+    // iframeElement.height = MediaQuery.of(context).size.height.toString();
 
-    iframeElement.width = MediaQuery.of(context).size.width.toString();
-    iframeElement.src =
-        'https://meet.jit.si/' + meetId;
-    iframeElement.style.border = 'none';
-    iframeElement.allow="camera *;microphone *";
-    iframeElement.allowFullscreen=true;
-    final wrapper = DivElement()
-      ..style.width = '100%'
-      ..style.height = '100%';
-    wrapper.append(iframeElement);
-    ui.platformViewRegistry.registerViewFactory(
-      'hello-world-html',
-          (int viewId) => wrapper,
-    );
+    // iframeElement.width = MediaQuery.of(context).size.width.toString();
+    // iframeElement.src = 'https://meet.jit.si/' + meetId;
+    // iframeElement.style.border = 'none';
+    // iframeElement.allow = "camera *;microphone *";
+    // iframeElement.allowFullscreen = true;
+    // final wrapper = DivElement()
+    //   ..style.width = '100%'
+    //   ..style.height = '100%';
+    // wrapper.append(iframeElement);
+    // ui.platformViewRegistry.registerViewFactory(
+    //   'hello-world-html',
+    //   (int viewId) => wrapper,
+    // );
 
     return Scaffold(
       backgroundColor: Colors.black87,
-
       appBar: AppBar(
         title: Text(className + ' Discussions'),
         actions: <Widget>[
@@ -354,7 +344,8 @@ class WebJitsiMeet extends StatelessWidget {
           )
         ],
       ),
-      body: Builder(builder: (context) =>HtmlElementView(viewType: 'hello-world-html')),
+      body: Builder(
+          builder: (context) => HtmlElementView(viewType: 'hello-world-html')),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.red,
         hoverColor: Colors.red[900],
@@ -365,7 +356,6 @@ class WebJitsiMeet extends StatelessWidget {
         child: const Icon(Icons.call_end),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-
     );
   }
 }
