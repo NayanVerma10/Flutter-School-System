@@ -1,16 +1,14 @@
 import 'dart:async';
 import 'dart:ui';
 
-import 'package:bubble/bubble.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/foundation.dart';
 
 import '../../ChatNecessary/UploadFile.dart';
-import '../../ChatNecessary/URLLauncher.dart';
-import '../../ChatNecessary/DownloadFile.dart';
+import '../../ChatNecessary/MessageBubble.dart';
+
 
 class User {
   String className, schoolCode, userId, classNumber, section, subject, userName;
@@ -154,6 +152,7 @@ class _DiscussionsState extends State<Discussions> {
                               date: doc.data['date'],
                               fileURL: doc.data['fileURL'],
                               me: teachersId == doc.data['fromId'],
+                              pad: pad,
                             ))
                         .toList();
                     List<Widget> reversedMessages = messages.reversed
@@ -247,148 +246,6 @@ class SendButton extends StatelessWidget {
       tooltip: text,
       child: Icon(Icons.send),
       onPressed: callback,
-    );
-  }
-}
-
-class Message extends StatelessWidget {
-  final String from;
-  final String text;
-  final String fromId;
-  final String date;
-  final bool isTeacher;
-  final String fileURL;
-  final String type;
-  final bool me;
-
-  const Message(
-      {Key key,
-      this.from,
-      this.type,
-      this.text,
-      this.me,
-      this.isTeacher,
-      this.fileURL,
-      this.date,
-      this.fromId})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 5, vertical: 7),
-      child: Column(
-        crossAxisAlignment:
-            me ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            from,
-            style: TextStyle(
-              fontSize: 8,
-              fontWeight: isTeacher ? FontWeight.bold : FontWeight.normal,
-            ),
-          ),
-          Bubble(
-            color: me ? Colors.green[100] : Colors.deepPurple[100],
-            nip: me ? BubbleNip.rightTop : BubbleNip.leftTop,
-            nipWidth: 12,
-            elevation: 2,
-            child: Container(
-              constraints: BoxConstraints(
-                maxWidth: (MediaQuery.of(context).size.width - (2 * pad)) * 0.7,
-              ),
-              padding: EdgeInsets.symmetric(vertical: 1.0, horizontal: 5.0),
-              child: Column(
-                crossAxisAlignment:
-                    me ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-                children: [
-                  type == 'File'
-                      ? fileWidget(context)
-                      : Text(
-                          text,
-                        ),
-                  Text(
-                    date.split('T')[0] +
-                        ' ' +
-                        date.split('T')[1].substring(0, 5),
-                    style: TextStyle(fontSize: 6),
-                  )
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  fileWidget(BuildContext context) {
-    String fileExtention = text.split('.').last;
-    List<String> imageExtensions = [
-      'jpg',
-      'jpeg',
-      'jpe',
-      'jif',
-      'jfif',
-      'jfi',
-      'png',
-      'gif',
-      'webp',
-      'tiff',
-      'tif '
-    ];
-
-    return Column(
-      children: [
-        imageExtensions.contains(fileExtention)
-            ? Column(
-                children: [
-                  Image.network(
-                    fileURL,
-                    key: UniqueKey(),
-                    scale: 0.2,
-                  ),
-                  ListTile(
-                    onTap: () {
-                      URLLauncher(fileURL);
-                    },
-                    title: Text(
-                      text,
-                      style: TextStyle(fontSize: 12),
-                    ),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.file_download),
-                      onPressed: () async {
-                        await downloadFile(fileURL, text, context);
-                      },
-                    ),
-                  )
-                ],
-              )
-            : ListTile(
-                onTap: () {
-                  URLLauncher(fileURL);
-                },
-                title: Text(
-                  text,
-                  style: TextStyle(fontSize: 12),
-                ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Offstage(
-                      offstage: false,
-                      child: IconButton(
-                        icon: const Icon(Icons.file_download),
-                        onPressed: () async {
-                          await downloadFile(fileURL, text, context);
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-      ],
     );
   }
 }

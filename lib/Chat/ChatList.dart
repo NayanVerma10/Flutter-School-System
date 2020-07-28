@@ -61,13 +61,13 @@ class _ChatListState extends State<ChatList> {
         .getDocuments()
         .then((value) => value.documents.forEach((element) {
               users.add(User(
-                mobile: element.data['mobile'],
+                mobile: (element.data['mobile']??''),
                 id: element.documentID,
-                name: element.data['first name'] +
+                name: (element.data['first name']??'') +
                     ' ' +
-                    element.data['last name'],
-                classNumber: element.data['class'],
-                section: element.data['section'],
+                    (element.data['last name']??''),
+                classNumber: element.data['class']??'',
+                section: element.data['section']??'',
                 isTeacher: false,
                 imgURL: element.data['url'],
               ));
@@ -80,11 +80,11 @@ class _ChatListState extends State<ChatList> {
         .getDocuments()
         .then((value) => value.documents.forEach((element) {
               users.add(User(
-                mobile: element.data['mobile'],
+                mobile: element.data['mobile']??'',
                 id: element.documentID,
-                name: element.data['first name'] +
+                name: (element.data['first name'] ??'')+
                     ' ' +
-                    element.data['last name'],
+                    (element.data['last name']??''),
                 classNumber: element.data['classteacher']!=null?element.data['classteacher']['class']:'',
                 section: element.data['classteacher']!=null?element.data['classteacher']['section']:'',
                 isTeacher: true,
@@ -146,19 +146,22 @@ class _ChatListState extends State<ChatList> {
                 ),
                 Expanded(
                   child: ListView.builder(
-                    padding: EdgeInsets.all(10.0),
+                    padding: EdgeInsets.all(0),
                     itemCount: filteredUsers.length,
                     itemBuilder: (BuildContext context, int index) {
                       return Card(
-                        margin: EdgeInsets.symmetric(vertical: 5),
+                        margin: EdgeInsets.symmetric(vertical: 0),
                         elevation: 0,
                         child: Padding(
                             padding: EdgeInsets.all(3.0),
                             child: ListTile(
-                              leading: CircleAvatar(
-                                backgroundColor: Colors.black12,
-                                backgroundImage: NetworkImage(filteredUsers[index].imgURL != null
-                                    ? filteredUsers[index].imgURL :''),
+                              leading: filteredUsers[index].imgURL != null ?CircleAvatar(
+                                backgroundColor: Colors.grey[300],
+                                backgroundImage: NetworkImage(filteredUsers[index].imgURL),
+                              ):CircleAvatar(
+                                backgroundColor: Colors.grey[300],
+                                foregroundColor: Colors.black54,
+                                child:Text(filteredUsers[index].name.split('')[0][0].toUpperCase()+filteredUsers[index].name.split(' ')[1][0].toUpperCase()),
                               ),
                               title: Text(
                                 filteredUsers[index].name.toUpperCase(),
