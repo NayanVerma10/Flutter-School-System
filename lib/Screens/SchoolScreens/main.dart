@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'academics.dart';
 import 'classes.dart';
 import 'management.dart';
@@ -32,7 +33,23 @@ class MyAppSchool extends StatefulWidget {
 class _MyAppSchoolState extends State<MyAppSchool> {
   // This widget is the root of your application.
   String schoolCode;
+  String schoolName='';
   _MyAppSchoolState(this.schoolCode);
+  
+  Future<void> loadData() async{
+    return Firestore.instance.collection('School').document(schoolCode).get().then((doc) {
+      setState(() {
+        schoolName = doc.data['schoolname'];
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    loadData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +58,7 @@ class _MyAppSchoolState extends State<MyAppSchool> {
         "add_event": (_) => AddEventPage(),
         "add_announcement": (_) => AddAnnouncementPage(),
       },
-      title: 'SCHOOL NAME',
+      title: schoolName,
       theme: ThemeData(primaryColor: Colors.black, accentColor: Colors.black),
       debugShowCheckedModeBanner: false,
       home: DefaultTabController(
@@ -94,7 +111,7 @@ class _MyAppSchoolState extends State<MyAppSchool> {
                 ],
               ),
               title: Text(
-                'SCHOOL NAME',
+                schoolName,
                 style: TextStyle(fontSize: 20),
               ),
               actions: <Widget>[

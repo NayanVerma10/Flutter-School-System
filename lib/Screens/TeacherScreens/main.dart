@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import './announcements.dart';
 import './classes.dart';
 import './profile.dart';
@@ -21,13 +22,22 @@ class MyAppTeacher extends StatefulWidget {
 }
 
 class _MyAppTeacherState extends State<MyAppTeacher> {
-  String schoolCode, teachersId;
+  String schoolCode, teachersId, teachersName='';
   _MyAppTeacherState(this.schoolCode, this.teachersId);
   List<Widget> tabs;
+
+  Future<void> loadData(){
+    Firestore.instance.collection('School').document(schoolCode).collection('Teachers').document(teachersId).get().then((doc) {
+      setState(() {
+        teachersName = doc['first name']+' '+doc.data['last name'];
+      });
+    });
+  }
 
   @override
   void initState() {
     super.initState();
+    loadData();
     tabs = [
       Classes(schoolCode, teachersId),
       TeachersTimeTable(),
@@ -47,7 +57,7 @@ class _MyAppTeacherState extends State<MyAppTeacher> {
       home = Scaffold(
           appBar: AppBar(
             title: Text(
-              "TEACHER NAME",
+              teachersName,
               style: TextStyle(
                   color: Colors.white,
                   fontSize: 20,
@@ -165,7 +175,7 @@ class _MyAppTeacherState extends State<MyAppTeacher> {
               ],
             ),
             title: Text(
-              'Teacher Name',
+              teachersName,
               style: TextStyle(fontSize: 20),
             ),
             actions: <Widget>[

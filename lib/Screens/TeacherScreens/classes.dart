@@ -17,24 +17,53 @@ class _ClassesState extends State<Classes> {
   _ClassesState(this.schoolCode, this.teachersId);
 
   List<dynamic> classList = [];
+  List<int> noOfStdInClass = [];
   bool hasClass = true;
 
-  void loadData() {
-    Firestore.instance
+  void loadData() async {
+    await Firestore.instance
         .collection('School')
         .document(schoolCode)
         .collection('Teachers')
         .document(teachersId)
         .get()
-        .then((value) {
+        .then((value) async {
       List<dynamic> classes = value.data['classes'];
+      await Future.forEach(classes ,(element) async {
+        int numberOfStudents = await loadNumberOfStudents(
+            element['Class'], element['Section'], element['Subject']);
+            noOfStdInClass.add(numberOfStudents);
+        return true;
+      });
+      return classes;
+      
+    }).then((classes) {
+      if(noOfStdInClass.length==classes.length)
       setState(() {
-        if (classes != null && classes.isNotEmpty)
+        if (classes != null && classes.isNotEmpty) {
           classList = classes;
-        else
+        } else
           hasClass = false;
       });
     });
+  }
+
+  Future<int> loadNumberOfStudents(
+      String classno, String section, String subject) async {
+    int no;
+    await Firestore.instance
+        .collection('School')
+        .document(schoolCode)
+        .collection('Student')
+        .where('class', isEqualTo: classno)
+        .where('section', isEqualTo: section)
+        .where('subjects', arrayContains: subject)
+        .getDocuments()
+        .then((docs) {
+      if (docs.documents.isNotEmpty) no = docs.documents.length;
+      print(no);
+    });
+    return no;
   }
 
   @override
@@ -54,7 +83,7 @@ class _ClassesState extends State<Classes> {
         //itemCount: 10,s
         itemCount: classList.length,
         itemBuilder: (context, index) {
-          int noOfStd = 4;
+          int noOfStd = noOfStdInClass!=null ?noOfStdInClass[index]: 0;
           String className = classList[index]['Class'] +
               ' ' +
               classList[index]['Section'] +

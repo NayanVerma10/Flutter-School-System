@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import './profile.dart';
 import './subjects.dart';
 import '../../Chat/ChatInitialScreen.dart';
@@ -23,18 +24,34 @@ class _MyAppStudentState extends State<MyAppStudent> {
   String schoolCode, studentId;
   _MyAppStudentState(this.schoolCode, this.studentId);
   List<Widget> tabs;
+  String studentName = '';
+
+  Future<void> loadData() {
+    Firestore.instance
+        .collection('School')
+        .document(schoolCode)
+        .collection('Student')
+        .document(studentId)
+        .get()
+        .then((doc) {
+      setState(() {
+        studentName = doc.data['first name'] + ' ' + doc.data['last name'];
+      });
+    });
+  }
 
   int _currentIndex = 0;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    loadData();
     tabs = [
       Subjects(schoolCode, studentId),
       StudentsTimeTable(),
       Announcements(),
       MainChat(schoolCode, studentId, false),
-      Profile1(schoolCode,studentId),
+      Profile1(schoolCode, studentId),
     ];
   }
 
@@ -45,7 +62,7 @@ class _MyAppStudentState extends State<MyAppStudent> {
       home = Scaffold(
           appBar: AppBar(
             title: Text(
-              "STUDENT NAME",
+              studentName,
               style: TextStyle(
                   color: Colors.white,
                   fontSize: 20,
@@ -171,7 +188,7 @@ class _MyAppStudentState extends State<MyAppStudent> {
               ],
             ),
             title: Text(
-              'Student Name',
+              studentName,
               style: TextStyle(fontSize: 20),
             ),
             actions: <Widget>[
