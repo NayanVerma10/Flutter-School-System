@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import '../ChatNecessary/UploadFile.dart';
 
 import './ChatList.dart';
 import './ChatBox.dart';
@@ -111,7 +110,10 @@ class _MainChatState extends State<MainChat> {
                     },
                   ),
                   Divider(
-                    indent: 80,
+                    indent: 85,
+                    color: Colors.black,
+                    endIndent: 15,
+                    thickness: 0.1,
                   ),
                 ],
               );

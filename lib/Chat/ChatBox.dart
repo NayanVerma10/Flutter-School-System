@@ -170,8 +170,8 @@ class _ChatBoxState extends State<ChatBox> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        leadingWidth: 30,
-        titleSpacing: 5,
+        leadingWidth: 35,
+        titleSpacing: 0,
         title: Row(
           children: <Widget>[
             reciever['url'] != null

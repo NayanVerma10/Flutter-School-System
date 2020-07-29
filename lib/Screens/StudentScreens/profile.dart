@@ -153,6 +153,7 @@ var val=Firestore.instance.collection('School').document(schoolCode).
     String rt,rt1,rt2;
   bool isWeb=UniversalPlatform.isWeb;
 //   bool isWeb = UniversalPlatform.isWeb;
+
   Future<void> _addPathToDatabase(String text) async {
     try {
       // Get image URL from firebase
@@ -182,7 +183,7 @@ var val=Firestore.instance.collection('School').document(schoolCode).
   });
 } */
 
-  Future uploadPic(BuildContext context) async {    
+  Future<void> uploadPic(BuildContext context) async {    
    String fileName=_image.path;
    StorageReference storageReference = FirebaseStorage.instance    
        .ref()    
@@ -199,7 +200,7 @@ var val=Firestore.instance.collection('School').document(schoolCode).
      });
  }  
 
-Future getImage() async 
+Future getImage(BuildContext context) async 
 {
       var image = await ImagePicker().getImage(source: ImageSource.gallery);
       setState(() {
@@ -208,6 +209,10 @@ Future getImage() async
    //   print("g"+_images.path);
       print('Image path $_image');                                    
     });
+
+    await uploadPic(context);
+
+
 }
 /*Future getImageWeb() async 
 {
@@ -275,7 +280,7 @@ var fromPicker = await ImagePickerWeb.getImage(  outputType: ImageType.file);
                             ),
                             Padding(
                                 padding:
-                                    EdgeInsets.only(top: 90.0, right: 100.0),
+                                    EdgeInsets.only(top: 90.0, left: 100.0),
                                 child: new Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: <Widget>[
@@ -290,37 +295,14 @@ var fromPicker = await ImagePickerWeb.getImage(  outputType: ImageType.file);
                                       ), 
                                       onTap:(){                                      
                                      // (isWeb==true)?getImageWeb():
-                                      getImage(); 
+                                      getImage(context); 
                                         //print(_image);
                                       },
                                     ),
                                   ],
                                 ),
                                 ),
-                                Padding(
-                                padding: EdgeInsets.only(top: 120.0, left: 50.0),
-                                child: new Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    GestureDetector(
-                                      child: new CircleAvatar(
-                                        backgroundColor: Colors.black87,
-                                        radius: 25.0,
-                                        child: new Icon(
-                                          Icons.save,
-                                          color: Colors.white,
-                                        ),
-                                      ), 
-                                      onTap:(){                                      
-                                        //(isWeb)?uploadPicWeb(context):
-                                        uploadPic(context);
-
-                                        //print(_image);
-                                      },
-                                    )
-                                  ],
-                                )
-                                ),
+                                
                           ]),
                         )
                       ],

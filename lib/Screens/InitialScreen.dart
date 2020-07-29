@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 import 'SchoolLogin.dart';
@@ -11,7 +13,10 @@ class InitialScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Our App'),
+        leading: CircleAvatar(child: Image.asset('assets/images/LOGO.jpeg'),),
+        leadingWidth: 40,
+        centerTitle: false,
+        title: Text('Aatmanirbhar Institutes'),
       ),
       body: SingleChildScrollView(
               child: Container(
