@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:ui' as ui;
 // ignore: avoid_web_libraries_in_flutter
-import 'package:universal_html/html.dart' show IFrameElement;
+import 'package:universal_html/html.dart' show DivElement, IFrameElement;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
@@ -313,7 +313,9 @@ class WebJitsiMeet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print(meetId);
-    // ignore : undefined_prefixed_name
+
+    
+    // ignore:undefined_prefixed_name
     // ui.platformViewRegistry.registerViewFactory(
     //     'hello-world-html',
     //     (int viewId) => IFrameElement()
@@ -323,7 +325,26 @@ class WebJitsiMeet extends StatelessWidget {
     //       ..src = 'https://meet.jit.si/' + meetId
     //       ..style.border = 'none');
 
+
+    // final IFrameElement iframeElement = IFrameElement();
+    // iframeElement.height = MediaQuery.of(context).size.height.toString();
+
+    // iframeElement.width = MediaQuery.of(context).size.width.toString();
+    // iframeElement.src = 'https://meet.jit.si/' + meetId;
+    // iframeElement.style.border = 'none';
+    // iframeElement.allow = "camera *;microphone *";
+    // iframeElement.allowFullscreen = true;
+    // final wrapper = DivElement()
+    //   ..style.width = '100%'
+    //   ..style.height = '100%';
+    // wrapper.append(iframeElement);
+    // ui.platformViewRegistry.registerViewFactory(
+    //   'hello-world-html',
+    //   (int viewId) => wrapper,
+    // );
+
     return Scaffold(
+      backgroundColor: Colors.black87,
       appBar: AppBar(
         title: Text(className + ' Discussions'),
         actions: <Widget>[
@@ -335,7 +356,18 @@ class WebJitsiMeet extends StatelessWidget {
           )
         ],
       ),
-      body: Builder(builder: (context) =>HtmlElementView(viewType: 'hello-world-html')),
+      body: Builder(
+          builder: (context) => HtmlElementView(viewType: 'hello-world-html')),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.red,
+        hoverColor: Colors.red[900],
+        elevation: 0,
+        onPressed: () {
+          Navigator.of(context).popUntil((route) => route.isFirst);
+        },
+        child: const Icon(Icons.call_end),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }

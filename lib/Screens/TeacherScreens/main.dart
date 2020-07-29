@@ -3,7 +3,7 @@ import './announcements.dart';
 import './classes.dart';
 import './profile.dart';
 import './schedule.dart';
-import './chats.dart';
+import '../../Chat/ChatInitialScreen.dart';
 import '../Icons/iconssss_icons.dart';
 import 'package:universal_platform/universal_platform.dart';
 import '../LogoutTheUser.dart';
@@ -30,9 +30,9 @@ class _MyAppTeacherState extends State<MyAppTeacher> {
     super.initState();
     tabs = [
       Classes(schoolCode, teachersId),
-      Schedule(schoolCode, teachersId),
+      TeachersTimeTable(),
       AnnouncementDetailsPage(),
-      Chats(schoolCode, teachersId),
+      MainChat(schoolCode, teachersId, true),
       Profile1(schoolCode, teachersId)
     ];
   }

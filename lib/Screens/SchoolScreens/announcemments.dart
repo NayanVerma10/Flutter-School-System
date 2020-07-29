@@ -59,10 +59,18 @@ void initState() {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  ..._announcements.map((announcement) => ListTile(
-                        title: Text(announcement.title
+                  ..._announcements.map((announcement) => Card(
+            child:ListTile(
+                    subtitle: Text(announcement.date.toString()),
+
+              leading: Icon(Icons.calendar_today),
+              trailing: Icon(Icons.more_vert),
+
+
+
+              title: Text(announcement.title
                         ,style: DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2),),
-                        onTap: () {
+                       onTap: () {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -71,7 +79,7 @@ void initState() {
                                       )));
                         },
                       )),
-                ],
+                  ) ],
               ),
             );
           }),

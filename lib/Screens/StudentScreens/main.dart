@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import './profile.dart';
 import './subjects.dart';
-import './chat.dart';
+import '../../Chat/ChatInitialScreen.dart';
 import './announcements.dart';
-import './timeTable.dart';
+import './StudentsTimeTable.dart';
 import '../Icons/iconssss_icons.dart';
 import 'package:universal_platform/universal_platform.dart';
 import '../LogoutTheUser.dart';
@@ -31,10 +31,15 @@ class _MyAppStudentState extends State<MyAppStudent> {
     super.initState();
     tabs = [
       Subjects(schoolCode, studentId),
-      TimeTable(),
+      StudentsTimeTable(),
       Announcements(),
+<<<<<<< HEAD
       Chats(),
       Profile1(schoolCode,studentId),
+=======
+      MainChat(schoolCode, studentId, false),
+      Profile()
+>>>>>>> a4eb606c2e31fceb16ec30d40f3f21d1d0f04ec7
     ];
   }
 

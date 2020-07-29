@@ -1,25 +1,28 @@
 import 'package:flutter/material.dart';
+import 'database.dart';
 import 'package:Schools/widgets/widget.dart';
-import 'service.dart';
-
 class AddQuestion extends StatefulWidget {
   final String quizId;
   AddQuestion(this.quizId);
 
   @override
-  _AddQuestionState createState() => _AddQuestionState();
+  _AddQuestionState createState() => _AddQuestionState(quizId);
 }
 
 class _AddQuestionState extends State<AddQuestion> {
-  DatabaseService databaseService = new DatabaseService();
+  DatabaseService databaseService = db;
   final _formKey = GlobalKey<FormState>();
 
   bool isLoading = false;
 
   String question = "", option1 = "", option2 = "", option3 = "", option4 = "";
 
+  _AddQuestionState(String quizId);
+
   uploadQuizData() {
+
     if (_formKey.currentState.validate()) {
+
       setState(() {
         isLoading = true;
       });
@@ -42,10 +45,13 @@ class _AddQuestionState extends State<AddQuestion> {
         setState(() {
           isLoading = false;
         });
-      }).catchError((e) {
+
+      }).catchError((e){
         print(e);
       });
-    } else {
+
+
+    }else{
       print("error is happening ");
     }
   }
@@ -68,6 +74,7 @@ class _AddQuestionState extends State<AddQuestion> {
           ? Container(
               child: Center(child: CircularProgressIndicator()),
             )
+
           : Form(
               key: _formKey,
               child: Container(
@@ -98,8 +105,8 @@ class _AddQuestionState extends State<AddQuestion> {
                     TextFormField(
                       validator: (val) => val.isEmpty ? "Option2 " : null,
                       decoration: InputDecoration(hintText: "Option2"),
-                      onChanged: (val) {
-                        option2 = val;
+                      onChanged: (val){
+                       option2 = val;
                       },
                     ),
                     SizedBox(
@@ -108,8 +115,9 @@ class _AddQuestionState extends State<AddQuestion> {
                     TextFormField(
                       validator: (val) => val.isEmpty ? "Option3 " : null,
                       decoration: InputDecoration(hintText: "Option3"),
-                      onChanged: (val) {
+                      onChanged: (val){
                         option3 = val;
+
                       },
                     ),
                     SizedBox(
@@ -118,7 +126,7 @@ class _AddQuestionState extends State<AddQuestion> {
                     TextFormField(
                       validator: (val) => val.isEmpty ? "Option4 " : null,
                       decoration: InputDecoration(hintText: "Option4"),
-                      onChanged: (val) {
+                      onChanged: (val){
                         option4 = val;
                       },
                     ),
@@ -130,7 +138,9 @@ class _AddQuestionState extends State<AddQuestion> {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            Navigator.pop(context);
+
+                           Navigator.pop(context);
+
                           },
                           child: Container(
                             alignment: Alignment.center,
@@ -138,7 +148,7 @@ class _AddQuestionState extends State<AddQuestion> {
                             padding: EdgeInsets.symmetric(
                                 horizontal: 24, vertical: 20),
                             decoration: BoxDecoration(
-                                color: Colors.blue,
+                                color: Colors.black,
                                 borderRadius: BorderRadius.circular(30)),
                             child: Text(
                               "Submit",
@@ -160,7 +170,7 @@ class _AddQuestionState extends State<AddQuestion> {
                             padding: EdgeInsets.symmetric(
                                 horizontal: 24, vertical: 20),
                             decoration: BoxDecoration(
-                                color: Colors.blue,
+                                color: Colors.black,
                                 borderRadius: BorderRadius.circular(30)),
                             child: Text(
                               "Add Question",

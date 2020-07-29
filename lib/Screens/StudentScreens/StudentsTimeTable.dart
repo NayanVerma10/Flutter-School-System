@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
-class TeachersTimeTable extends StatefulWidget {
+class StudentsTimeTable extends StatefulWidget {
   final Color color;
   final bool edit;
 
-  TeachersTimeTable({this.color, this.edit = false});
+  StudentsTimeTable({this.color, this.edit = false});
 
-  _TeachersTimeTableState createState() => _TeachersTimeTableState();
+  _StudentsTimeTableState createState() => _StudentsTimeTableState();
 }
 
-class _TeachersTimeTableState extends State<TeachersTimeTable> {
+class _StudentsTimeTableState extends State<StudentsTimeTable> {
   bool edit = false;
   @override
   Widget build(BuildContext context) {
@@ -68,19 +68,19 @@ class _TeachersTimeTableState extends State<TeachersTimeTable> {
                 ),
                 !edit
                     ? Text(
-                  "Standard ${index + 1}A",
+                  "Teacher ${index + 1}",
                   style: TextStyle(fontWeight: FontWeight.w500),
                 )
                     : TextField(
                   maxLines: 1,
                   expands: false,
-                  controller: TextEditingController(text: 'Standard'),
+                  controller: TextEditingController(text: 'Teacher name'),
                   enableInteractiveSelection: true,
                   keyboardType: TextInputType.text,
                   autocorrect: true,
                   textInputAction: TextInputAction.done,
                   decoration: InputDecoration(
-                    labelText: 'Standard + Div',
+                    labelText: 'Teacher name',
                     labelStyle: TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
