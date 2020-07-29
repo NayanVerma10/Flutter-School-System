@@ -34,7 +34,7 @@ class _MyAppStudentState extends State<MyAppStudent> {
       TimeTable(),
       Announcements(),
       Chats(),
-      Profile()
+      Profile1(schoolCode,studentId),
     ];
   }
 
