@@ -33,13 +33,8 @@ class _MyAppStudentState extends State<MyAppStudent> {
       Subjects(schoolCode, studentId),
       StudentsTimeTable(),
       Announcements(),
-<<<<<<< HEAD
-      Chats(),
-      Profile1(schoolCode,studentId),
-=======
       MainChat(schoolCode, studentId, false),
-      Profile()
->>>>>>> a4eb606c2e31fceb16ec30d40f3f21d1d0f04ec7
+      Profile1(schoolCode,studentId),
     ];
   }
 
