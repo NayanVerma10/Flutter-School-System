@@ -11,8 +11,8 @@
     <application
         tools:replace="android:label"
         android:name="io.flutter.app.FlutterApplication"
-        android:label="Schools"
-        android:icon="@mipmap/ic_launcher">
+        android:label="Aatmanirbhar Institutions"
+        android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
