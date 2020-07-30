@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -6,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'StudentRegistration.dart';
 import './StudentScreens/main.dart';
+import './Policies.dart';
 
 class StudentLogin extends StatefulWidget {
   @override
@@ -225,7 +227,7 @@ class _StudentLoginState extends State<StudentLogin> {
                       Row(
                         children: <Widget>[
                           Text(
-                            'New to our app ',
+                            'New ',
                             style: TextStyle(fontSize: 12),
                           ),
                           FlatButton(
@@ -242,7 +244,17 @@ class _StudentLoginState extends State<StudentLogin> {
                                   fontSize: 12,
                                   decoration: TextDecoration.underline),
                             ),
-                          )
+                          ),
+                          RichText(
+                            text: TextSpan(
+                              style: DefaultTextStyle.of(context).style.merge(TextStyle(fontSize: 12,fontWeight: FontWeight.bold,decoration: TextDecoration.underline)),
+                              text: 'Policies',
+                              recognizer: TapGestureRecognizer()..onTap= () {
+                                Navigator.push(context, MaterialPageRoute(builder: (context)=>Policies()));
+
+                              }
+                            ),
+                          ),
                         ],
                       ),
                       SizedBox(height: 50),

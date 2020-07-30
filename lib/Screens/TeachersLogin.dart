@@ -1,9 +1,11 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import './Policies.dart';
 import 'TeachersRegistration.dart';
 import './TeacherScreens/main.dart';
 
@@ -246,7 +248,18 @@ class _TeachersLoginState extends State<TeachersLogin> {
                                   fontSize: 12,
                                   decoration: TextDecoration.underline),
                             ),
-                          )
+                          ),
+                          RichText(
+                            text: TextSpan(
+                              style: DefaultTextStyle.of(context).style.merge(TextStyle(fontSize: 12,fontWeight: FontWeight.bold,decoration: TextDecoration.underline)),
+                              text: 'Policies',
+                              recognizer: TapGestureRecognizer()
+                              ..onTap= () {
+                                Navigator.push(context, MaterialPageRoute(builder: (context)=>Policies()));
+
+                              }
+                            ),
+                          ),
                         ],
                       ),
                       SizedBox(height: 50),
