@@ -71,19 +71,19 @@ When you register for an Account, we may ask for your contact information, inclu
                     text:
                         '''\nWe use the information we collect in various ways, including to:
 
-\t•\tProvide, operate, and maintain our webste
+ • Provide, operate, and maintain our webste
 
-\t•\tImprove, personalize, and expand our webste
+ • Improve, personalize, and expand our webste
 
-\t•\tUnderstand and analyze how you use our webste
+ • Understand and analyze how you use our webste
 
-\t•\tDevelop new products, services, features, and functionality
+ • Develop new products, services, features, and functionality
 
-\t•\tCommunicate with you, either directly or through one of our partners, including for customer service, to provide you with updates and other information relating to the webste, and for marketing and promotional purposes
+ • Communicate with you, either directly or through one of our partners, including for customer service, to provide you with updates and other information relating to the webste, and for marketing and promotional purposes
 
-\t•\tSend you emails
+ • Send you emails
 
-\t•\tFind and prevent fraud 
+ • Find and prevent fraud 
 \n'''),
                 TextSpan(
                   text: '''Log Files\n''',
