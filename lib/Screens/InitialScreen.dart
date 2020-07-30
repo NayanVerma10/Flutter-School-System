@@ -13,6 +13,7 @@ class InitialScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: CircleAvatar(
+          backgroundColor: Colors.transparent,
           child: Image.asset('assets/images/LOGO.jpeg'),
         ),
         leadingWidth: 40,

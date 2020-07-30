@@ -227,7 +227,7 @@ class _StudentLoginState extends State<StudentLogin> {
                       Row(
                         children: <Widget>[
                           Text(
-                            'New ',
+                            'New User',
                             style: TextStyle(fontSize: 12),
                           ),
                           FlatButton(

@@ -12,6 +12,7 @@ class Policies extends StatelessWidget {
         title: Row(
           children: [
             CircleAvatar(
+              backgroundColor: Colors.transparent,
               child: Image.asset('assets/images/LOGO.jpeg'),
             ),
             SizedBox(width: 10,),

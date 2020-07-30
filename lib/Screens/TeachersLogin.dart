@@ -231,7 +231,7 @@ class _TeachersLoginState extends State<TeachersLogin> {
                       Row(
                         children: <Widget>[
                           Text(
-                            'New to our app ',
+                            'New User',
                             style: TextStyle(fontSize: 12),
                           ),
                           FlatButton(
