@@ -11,6 +11,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
+
 import 'package:firebase_storage/firebase_storage.dart';
 
 // import 'package:file_picker_web/file_picker_web.dart';
@@ -79,30 +80,31 @@ Future<void> ReadCSVTeacher (File file,String schoolCode ){
     String location = row[8];
     String password = row[9];
     String qualification = row[10];
+    print(schoolCode);
 
     print('$firstName, $lastName, $mobile,$address,$designation,$dob,$email,$gender,$location,$password,$qualification');
-         Firestore.instance
-        .collection("Schools")
-        .document(schoolCode)
-             .collection("Teachers")
-         .document(mobile)
+    //      Firestore.instance
+    //     .collection("School")
+    //     .document(schoolCode)
+    //          .collection("Teachers")
+    //      .document()
 
-        .setData(
-        {
-          "first name" : "$firstName",
-          "last name": "$lastName",
-          "address":"$address",
-          "designation":"$designation",
-          "dob":"$dob",
-          "email":"$email",
-          "gender":"$gender",
-          "mobile":"$mobile",
-          "qualification":"$qualification",
-        "location":"$location",
-        "password":"$password"
-        },merge : true).then((_){
-      print("success!");
-    });
+    //     .setData(
+    //     {
+    //       "first name" : "$firstName",
+    //       "last name": "$lastName",
+    //       "address":"$address",
+    //       "designation":"$designation",
+    //       "dob":"$dob",
+    //       "email":"$email",
+    //       "gender":"$gender",
+    //       "mobile":"$mobile",
+    //       "qualification":"$qualification",
+    //     "location":"$location",
+    //     "password":"$password"
+    //     },merge : true).then((_){
+    //   print("success!");
+    // });
   },
 
       onDone: () { print('File is now closed.'); },

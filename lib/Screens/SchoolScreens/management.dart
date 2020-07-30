@@ -117,11 +117,12 @@ class Management extends StatefulWidget {
 
 
 class _ManagementState extends State<Management> {
-  _ManagementState(String schoolCode);
+  String schoolCode;
+
+  _ManagementState(this.schoolCode);
   @override
   Widget build(BuildContext context) {
-    String schoolCode;
-
+    
     return SafeArea(
       child: Scaffold(
 
