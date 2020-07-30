@@ -2,6 +2,8 @@ import 'package:Schools/Screens/SchoolScreens/calendar.dart';
 import 'package:Schools/widgets/ColumnReusableCardButton.dart';
 import 'package:Schools/widgets/RowReusableCardButton.dart';
 import 'package:flutter/material.dart';
+import './AddCSVStudents.dart';
+import './AddCSVteachers.dart';
 import 'announcemments.dart';
 import 'calendar.dart';
 
@@ -207,7 +209,12 @@ class _ManagementState extends State<Management> {
                             label: 'Teachers DB',
                             tileColor: Colors.black87,
                             icon:Icons.add_circle_outline,
-                            onPressed: () {}
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => AddCSVTeachers(schoolCode)));
+                            }
                           ),
                           SizedBox(
                             width: 5,
@@ -217,6 +224,10 @@ class _ManagementState extends State<Management> {
                             tileColor: Colors.black87,
                             icon: Icons.add_circle,
                             onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => AddCSVStudents(schoolCode)));
                             },
                           ),
                         ],
