@@ -101,7 +101,8 @@ class _MainChatState extends State<MainChat> {
                                           ? 'File : '
                                           : '',
                                     )
-                                  : WidgetSpan(
+                                  : 
+                                  WidgetSpan(
                                       style: TextStyle(fontSize: 16),
                                       child: doc.data['type'] == 'File'
                                           ? Icon(Icons.attach_file, size: 16)

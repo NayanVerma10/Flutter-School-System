@@ -47,7 +47,6 @@ class _TeachersLoginState extends State<TeachersLogin> {
           'Logged in',
         )));
         await logInTheUser();
-
       } else {
         Scaffold.of(context).showSnackBar(SnackBar(
           content: Icon(
@@ -251,14 +250,19 @@ class _TeachersLoginState extends State<TeachersLogin> {
                           ),
                           RichText(
                             text: TextSpan(
-                              style: DefaultTextStyle.of(context).style.merge(TextStyle(fontSize: 10,fontWeight: FontWeight.bold,decoration: TextDecoration.underline)),
-                              text: 'Policies',
-                              recognizer: TapGestureRecognizer()
-                              ..onTap= () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=>Policies()));
-
-                              }
-                            ),
+                                style: DefaultTextStyle.of(context).style.merge(
+                                    TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w600,
+                                        decoration: TextDecoration.underline)),
+                                text: 'Policies',
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => Policies()));
+                                  }),
                           ),
                         ],
                       ),
@@ -281,7 +285,6 @@ class _TeachersLoginState extends State<TeachersLogin> {
                           ),
                           label: Text('Sign in with Google'),
                           color: Theme.of(context).primaryColor,
-                          
                           padding: EdgeInsets.symmetric(
                               horizontal: 20, vertical: 10),
                         ),

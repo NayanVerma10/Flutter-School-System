@@ -250,7 +250,7 @@ class _StudentLoginState extends State<StudentLogin> {
                                 style: DefaultTextStyle.of(context).style.merge(
                                     TextStyle(
                                         fontSize: 10,
-                                        fontWeight: FontWeight.bold,
+                                        fontWeight: FontWeight.w600,
                                         decoration: TextDecoration.underline)),
                                 text: 'Policies',
                                 recognizer: TapGestureRecognizer()

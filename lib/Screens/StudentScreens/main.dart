@@ -214,7 +214,7 @@ class _MyAppStudentScaffoldState extends State<MyAppStudentScaffold> {
                   },
                   child: Text(
                     'Logout',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: Theme.of(context).accentColor),
                   )),
             ],
           ),
