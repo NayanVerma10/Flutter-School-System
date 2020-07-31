@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import '../../ChatNecessary/UploadFile.dart';
 
 
@@ -12,29 +13,112 @@ class AddCSVStudents extends StatefulWidget {
 
 class _AddCSVStudentsState extends State<AddCSVStudents> {
   String schoolCode;
-
   _AddCSVStudentsState(this.schoolCode);
+
+  callback()async{
+    await attachment().then((files) {
+      print(files);
+      files.forEach((file) async{
+        print('+++');
+        ReadCSVTeacher(file, schoolCode);
+
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Excel'),
+        title: Text('Create Entries Using Spreadsheet'),
       ),
-      body: Container(
-        child: Column(
-          children: [
-            Text('TODO Sample Excel'),
-            RaisedButton.icon(onPressed: (){
-              attachment().then((files) {
-                files.forEach((file) {
-                  ReadCSVStudents(file, schoolCode);
+      body: Stack(
+        children: <Widget>[
+          Container(
+            height: 380,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(20.0),
+                    bottomRight: Radius.circular(20.0)),
 
-                });
-              });
-            }, icon: Icon(Icons.file_upload), label: Text('Upload Excel')),
-          ],
+                gradient: LinearGradient(
+                    colors: [Colors.black38, Colors.white10],
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter)),
+          ),
+          Container(
+            margin: const EdgeInsets.only(top: 80),
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Center(
+                    child: Text(
+                      "Download Spreadsheet Template tapping the below icon, fill respective columns and upload it to create Students's Database",
+                      style: TextStyle(
+                          color: Colors.black87,
+                          fontSize: 28,
+
+                          fontStyle: FontStyle.normal
+                      ),
+                      textAlign:TextAlign.center,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20.0),
+                Expanded(
+                  child: Stack(
+                    children: <Widget>[
+                      Container(
+//                        height: double.infinity,
+                        margin: const EdgeInsets.only(
+                            left: 30.0, right: 30.0, top: 10.0),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20.0),
+                          child: InkWell(
+                            child:
+                            Image.asset('images/sheet.png'),
+
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+
+        ],
+
+
+      ),
+      floatingActionButton: Container(
+        height: 80.0,
+        width: 80.0,
+        child: FittedBox(
+          child:FloatingActionButton(
+            backgroundColor: Colors.black54,
+            tooltip: 'Upload Entries to Database',
+            heroTag: null,
+            child: Icon(Icons.cloud_upload),
+            onPressed: () {
+
+            },
+          ),
         ),
       ),
+
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+
+
+
     );
+
+
+
   }
 }
+
+

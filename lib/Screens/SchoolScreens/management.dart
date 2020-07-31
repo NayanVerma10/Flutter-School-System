@@ -209,7 +209,7 @@ class _ManagementState extends State<Management> {
                           RowReusableCardButton(
                             label: 'Teachers DB',
                             tileColor: Colors.black87,
-                            icon:Icons.add_circle_outline,
+                            icon:Icons.tag_faces,
                             onPressed: () {
                               Navigator.push(
                                   context,
@@ -223,7 +223,7 @@ class _ManagementState extends State<Management> {
                           RowReusableCardButton(
                             label: 'Students DB',
                             tileColor: Colors.black87,
-                            icon: Icons.add_circle,
+                            icon: Icons.face,
                             onPressed: () {
                               Navigator.push(
                                   context,
@@ -234,18 +234,7 @@ class _ManagementState extends State<Management> {
                         ],
                       ),
                     ),
-                    ColumnReusableCardButton(
-                      label: 'Employee DB',
-                      height: 70,
-                      tileColor: Colors.black54,
-                      icon: Icons.add,
-                      onPressed: () {
-                        /* Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => Profile(schoolCode)));*/
-                      },
-                    ),
+
 
 
                         ],

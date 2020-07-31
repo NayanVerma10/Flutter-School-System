@@ -61,7 +61,7 @@ class _StudentsTimeTableState extends State<StudentsTimeTable>  with SingleTicke
                       child: Text(
                         tabNames[index].toUpperCase(),
                         style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w600),
+                            fontSize: 14, fontWeight: FontWeight.w600),
                       ),
                     ),
                   );
