@@ -77,7 +77,6 @@ var val=Firestore.instance.collection('School').document(schoolCode).
     if(link==null)
     link='#';
       });
-
 }
 
  Future<String>getD() async
@@ -258,7 +257,21 @@ var fromPicker = await ImagePickerWeb.getImage(  outputType: ImageType.file);
                                     width: 140.0,
                                     height: 140.0,
                                     child: 
-                                    (_image!=null)?CircleAvatar(    
+          (_image!=null )?CircleAvatar(
+                            backgroundColor: Colors.black,
+       backgroundImage: FileImage(_image),
+        // NetworkImage(_image,),
+                          ):((link=='#')?CircleAvatar(
+                            backgroundColor: Colors.black,
+       backgroundImage: AssetImage('assets/images/dev.jpg'),
+        // NetworkImage(_image,),
+                          ):CircleAvatar(
+                            backgroundColor: Colors.black,
+       backgroundImage: NetworkImage(link),
+        // NetworkImage(_image,),
+                          ))
+
+                                    /*(_image!=null)?CircleAvatar(    
                                     backgroundColor: Colors.black87,                                      
                                       /*url==null?Image.asset('assets/images/dev.jpg' ,fit: BoxFit.cover,height: 100,width:100.0,):*/
                                     child:(_image!=null)?Image.file(_image,fit:BoxFit.cover,height: 100,width:100.0,):
@@ -274,7 +287,7 @@ var fromPicker = await ImagePickerWeb.getImage(  outputType: ImageType.file);
                                      fit: BoxFit.cover,height: 101,width:101.0,)):(Image.network(link,
                                      fit: BoxFit.cover,height: 101,width:101.0,)),
                                      ),
-
+*/
                                     ),
                               ],
                             ),
