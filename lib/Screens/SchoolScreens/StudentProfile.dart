@@ -112,6 +112,7 @@ class _StudentProfileState extends State<StudentProfile> {
                 children: <Widget>[
                   CircleAvatar(
                     maxRadius: 70,
+                    
                     backgroundImage: studentData['url']!=null?NetworkImage(studentData['url']):null,
                     backgroundColor: Colors.grey[200],
                     child: studentData['url']==null?Icon(Icons.person,color: Colors.grey,size: 90,):null,
