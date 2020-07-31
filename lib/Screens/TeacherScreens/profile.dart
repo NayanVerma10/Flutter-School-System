@@ -66,13 +66,12 @@ String link="#";
 void check()
 {
 var val=Firestore.instance.collection('School').document(schoolCode).
-      collection('Teachers').document(teacherId).get().then((value){
+      collection("Teachers").document(teacherId).get().then((value){
     //if(value.data['url'])
     link=value.data['url'];
     if(link==null)
     link='#';
       });
-
 }
 
  Future<String>getD() async
@@ -88,7 +87,7 @@ var val=Firestore.instance.collection('School').document(schoolCode).
    check();
       String stored=getD().toString();
     DocumentReference dc=Firestore.instance.collection('School').document(schoolCode).
-    collection('Teachers').document(teacherId);
+    collection("Teachers").document(teacherId);
  
     dc.get().then((datas)  
     {
@@ -144,6 +143,7 @@ var val=Firestore.instance.collection('School').document(schoolCode).
     String rt,rt1,rt2;
   bool isWeb=UniversalPlatform.isWeb;
 //   bool isWeb = UniversalPlatform.isWeb;
+
   Future<void> _addPathToDatabase(String text) async {
     try {
       // Get image URL from firebase
@@ -152,7 +152,7 @@ var val=Firestore.instance.collection('School').document(schoolCode).
 
       // Add location and url to database
       await Firestore.instance.collection('School').document(schoolCode).
-      collection('Teachers').document(teacherId).setData({'url':imageString , 'location':text},merge: true);
+      collection("Teachers").document(teacherId).setData({'url':imageString , 'location':text},merge: true);
     }catch(e){
       print(e.message);
       showDialog(
@@ -173,7 +173,7 @@ var val=Firestore.instance.collection('School').document(schoolCode).
   });
 } */
 
-  Future uploadPic(BuildContext context) async {    
+  Future<void> uploadPic(BuildContext context) async {    
    String fileName=_image.path;
    StorageReference storageReference = FirebaseStorage.instance    
        .ref()    
@@ -186,11 +186,10 @@ var val=Firestore.instance.collection('School').document(schoolCode).
    //    getUrl();
    _addPathToDatabase("teachers/${namecontroller2.text}");
     Scaffold.of(context).showSnackBar(SnackBar(content: Text('Profile Picture Uploaded')));
-       
      });
  }  
 
-Future getImage() async 
+Future getImage(BuildContext context) async 
 {
       var image = await ImagePicker().getImage(source: ImageSource.gallery);
       setState(() {
@@ -199,6 +198,10 @@ Future getImage() async
    //   print("g"+_images.path);
       print('Image path $_image');                                    
     });
+
+    await uploadPic(context);
+
+
 }
 /*Future getImageWeb() async 
 {
@@ -211,7 +214,7 @@ var fromPicker = await ImagePickerWeb.getImage(  outputType: ImageType.file);
     });
 }*/
     DocumentReference dc=Firestore.instance.collection('School').document(schoolCode).
-    collection('Teachers').document(teacherId);
+    collection("Teachers").document(teacherId);
     dc.get().then((datas){
     rt = datas.data['first name'];
     rt1=datas.data['email'];
@@ -244,7 +247,21 @@ var fromPicker = await ImagePickerWeb.getImage(  outputType: ImageType.file);
                                     width: 140.0,
                                     height: 140.0,
                                     child: 
-                                    (_image!=null)?CircleAvatar(    
+          (_image!=null )?CircleAvatar(
+                            backgroundColor: Colors.black,
+       backgroundImage: FileImage(_image),
+        // NetworkImage(_image,),
+                          ):((link=='#')?CircleAvatar(
+                            backgroundColor: Colors.black,
+       backgroundImage: AssetImage('assets/images/dev.jpg'),
+        // NetworkImage(_image,),
+                          ):CircleAvatar(
+                            backgroundColor: Colors.black,
+       backgroundImage: NetworkImage(link),
+        // NetworkImage(_image,),
+                          ))
+
+                                    /*(_image!=null)?CircleAvatar(    
                                     backgroundColor: Colors.black87,                                      
                                       /*url==null?Image.asset('assets/images/dev.jpg' ,fit: BoxFit.cover,height: 100,width:100.0,):*/
                                     child:(_image!=null)?Image.file(_image,fit:BoxFit.cover,height: 100,width:100.0,):
@@ -253,20 +270,20 @@ var fromPicker = await ImagePickerWeb.getImage(  outputType: ImageType.file);
                                      fit: BoxFit.cover,height: 100,width:100.0,)),
                                      ):
                                      CircleAvatar(    
-                                    backgroundColor: Colors.black87,                                      
+                                    backgroundColor: Colors.grey,                                      
                                       /*url==null?Image.asset('assets/images/dev.jpg' ,fit: BoxFit.cover,height: 100,width:100.0,):*/
                                   child:(_image!=null)?Image.file(_image,fit:BoxFit.cover,height: 100,width:100.0,):
-                                   (link=='#')?(Image.asset("assets/images/dev.jpg",
-                                     fit: BoxFit.cover,height: 100,width:100.0,)):(Image.network(link,
-                                     fit: BoxFit.cover,height: 100,width:100.0,)),
+                                   (link=='#')?(Image.asset("assets/images/mteacher2.jpg",
+                                     fit: BoxFit.cover,height: 101,width:101.0,)):(Image.network(link,
+                                     fit: BoxFit.cover,height: 101,width:101.0,)),
                                      ),
-
+*/
                                     ),
                               ],
                             ),
                             Padding(
                                 padding:
-                                    EdgeInsets.only(top: 90.0, right: 100.0),
+                                    EdgeInsets.only(top: 90.0, left: 100.0),
                                 child: new Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: <Widget>[
@@ -281,43 +298,20 @@ var fromPicker = await ImagePickerWeb.getImage(  outputType: ImageType.file);
                                       ), 
                                       onTap:(){                                      
                                      // (isWeb==true)?getImageWeb():
-                                      getImage(); 
+                                      getImage(context); 
                                         //print(_image);
                                       },
                                     ),
                                   ],
                                 ),
                                 ),
-                                Padding(
-                                padding: EdgeInsets.only(top: 120.0, left: 50.0),
-                                child: new Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    GestureDetector(
-                                      child: new CircleAvatar(
-                                        backgroundColor: Colors.black87,
-                                        radius: 25.0,
-                                        child: new Icon(
-                                          Icons.save,
-                                          color: Colors.white,
-                                        ),
-                                      ), 
-                                      onTap:(){                                      
-                                        //(isWeb)?uploadPicWeb(context):
-                                        uploadPic(context);
-
-                                        //print(_image);
-                                      },
-                                    )
-                                  ],
-                                )
-                                ),
+                                
                           ]),
                         )
                       ],
                     ),
                   ),
-                  StreamBuilder<Object>(
+                          StreamBuilder<Object>(
                       stream: null,
                       builder: (context, snapshot) {
                         return new Container(
@@ -666,6 +660,7 @@ var fromPicker = await ImagePickerWeb.getImage(  outputType: ImageType.file);
                                         ),
                                       ],
                                     )),
+                       
                                 !_status
                                     ? Padding(
                                         padding: EdgeInsets.only(
