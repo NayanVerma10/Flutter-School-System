@@ -18,13 +18,12 @@ class AnnouncementDetailsPage extends StatelessWidget {
           ),
           children: <TextSpan>[
             TextSpan(text: announcement.date.toString(), style: TextStyle(fontWeight: FontWeight.w600
-                , color: Colors.white70,fontFamily:'Montserrat')),
+                , color: Theme.of(context).accentColor,fontFamily:'Montserrat')),
           ],
         ),
       ),
         centerTitle: true,
-        backgroundColor: Colors.black87,
-
+        
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),

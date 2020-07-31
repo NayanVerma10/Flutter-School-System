@@ -26,8 +26,8 @@ class Item {
 class _AddStdState extends State<AddStd> {
   TextEditingController textAddingController = new TextEditingController();
   TextEditingController textDeletingController = new TextEditingController();
-  bool isAddClassEnabled=true;
-  bool isDeleteClassEnabled=true;
+  bool isAddClassEnabled = true;
+  bool isDeleteClassEnabled = true;
 
 //  _formKey and _autoValidate
   final String schoolCode;
@@ -199,8 +199,7 @@ class _AddStdState extends State<AddStd> {
         ));
   }
 
-  onSaveClasses(BuildContext context) async{
-
+  onSaveClasses(BuildContext context) async {
     _newClass = textAddingController.text;
     getClass = textDeletingController.text;
 
@@ -246,18 +245,18 @@ class _AddStdState extends State<AddStd> {
           print("class added");
         }
       }
-    } 
-
+    }
 
     await saveListOfClasses();
   }
 
-  Future<void> saveListOfClasses()async{
-    List<dynamic> listToSave=classes.getRange(1, classes.length).toList();
+  Future<void> saveListOfClasses() async {
+    List<dynamic> listToSave = classes.getRange(1, classes.length).toList();
     print(listToSave[0].runtimeType);
-    await Firestore.instance.collection('School').document(schoolCode).setData(
-      {'arrayClasses': listToSave},merge: true
-    );
+    await Firestore.instance
+        .collection('School')
+        .document(schoolCode)
+        .setData({'arrayClasses': listToSave}, merge: true);
   }
 
   Future<void> loadClasses() {
@@ -288,15 +287,11 @@ class _AddStdState extends State<AddStd> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            title: Text(
-              'ADD NEW STUDENT',
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold),
-            ),
-            backgroundColor: Colors.black,
-            iconTheme: new IconThemeData(color: Colors.white)),
+          title: Text(
+            'ADD NEW STUDENT',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+        ),
         body: SingleChildScrollView(
             child: Container(
                 child: Column(
@@ -600,7 +595,8 @@ class _AddStdState extends State<AddStd> {
                                                       child: Container(
                                                           width: 200,
                                                           child: TextFormField(
-                                                            enabled: isAddClassEnabled,
+                                                            enabled:
+                                                                isAddClassEnabled,
                                                             decoration: const InputDecoration(
                                                                 labelText:
                                                                     'Add Class',
@@ -627,7 +623,8 @@ class _AddStdState extends State<AddStd> {
                                                       child: Container(
                                                           width: 200,
                                                           child: TextFormField(
-                                                            enabled: isDeleteClassEnabled,
+                                                            enabled:
+                                                                isDeleteClassEnabled,
                                                             decoration: const InputDecoration(
                                                                 labelText:
                                                                     'Delete Class',

@@ -20,7 +20,10 @@ class _StudentProfileState extends State<StudentProfile> {
     if (value.runtimeType == String)
       return ListTile(
         title: Text(key.toUpperCase(),style: TextStyle(fontWeight: FontWeight.bold,)),
-        subtitle: Text(value),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top :5.0),
+          child: SingleChildScrollView(scrollDirection: Axis.horizontal,child: Text(value)),
+        ),
         onTap: () {
           _showDialog(context, key, value);
         },
@@ -28,7 +31,10 @@ class _StudentProfileState extends State<StudentProfile> {
     else /*if (value.runtimeType == List) */{
       return ListTile(
         title: Text(key.toUpperCase(),style: TextStyle(fontWeight: FontWeight.bold,)),
-        subtitle: Text(value.toString()),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top : 5.0),
+          child: SingleChildScrollView(scrollDirection: Axis.horizontal,child: Text(value.toString(),overflow: TextOverflow.ellipsis,)),
+        ),
       );
     }
   }
@@ -101,15 +107,19 @@ class _StudentProfileState extends State<StudentProfile> {
             var keys = studentData.keys.toList();
 
             return Container(
-              margin: EdgeInsets.symmetric(vertical: 50, horizontal: 20),
+              margin: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
               child: Column(
                 children: <Widget>[
-                  Icon(
-                    Iconss.user_graduate,
-                    size: 100,
+                  CircleAvatar(
+                    maxRadius: 70,
+                    backgroundImage: studentData['url']!=null?NetworkImage(studentData['url']):null,
+                    backgroundColor: Colors.grey[200],
+                    child: studentData['url']==null?Icon(Icons.person,color: Colors.grey,size: 90,):null,
                   ),
+                  SizedBox(height:40,),
                   Expanded(
                     child: ListView.builder(
+
                       itemExtent: 80.0,
                       itemCount: keys.length,
                       itemBuilder: (context, index) {

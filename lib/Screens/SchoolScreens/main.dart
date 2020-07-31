@@ -59,7 +59,7 @@ class _MyAppSchoolState extends State<MyAppSchool> {
         "add_announcement": (_) => AddAnnouncementPage(),
       },
       title: 'Aatmanirbhar Institutions',
-      theme: ThemeData(primaryColor: Colors.black, accentColor: Colors.black),
+      theme: ThemeData(primaryColor: Colors.white, accentColor: Colors.black),
       debugShowCheckedModeBanner: false,
       home: DefaultTabController(
         length: 5, // Number of Tabs you want
@@ -114,7 +114,7 @@ class _MyAppSchoolState extends State<MyAppSchool> {
                 style: TextStyle(fontSize: 20),
               ),
               actions: <Widget>[
-                FlatButton(onPressed: (){logoutTheUser();}, child: Text('Logout',style: TextStyle(color: Colors.white),)),
+                FlatButton(onPressed: (){logoutTheUser();}, child: Text('Logout',style: TextStyle(color:Theme.of(context).accentColor,))),
               ],
             ),
             body: TabBarView(
