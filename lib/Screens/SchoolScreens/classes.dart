@@ -46,14 +46,15 @@ class Studnets extends StatefulWidget {
 
 class _StudnetsState extends State<Studnets> {
   String schoolCode;
+  bool loading=true;
   final _debouncer = Debouncer(milliseconds: 500);
   List<User> users = List();
   List<User> filteredUsers = List();
 
   _StudnetsState(this.schoolCode);
 
-  void loadData(){
-    Firestore.instance
+  void loadData()async{
+    await Firestore.instance
         .collection('School')
         .document(schoolCode)
         .collection('Student')
@@ -71,6 +72,7 @@ class _StudnetsState extends State<Studnets> {
             }))
         .then((value) {
       setState(() {
+        loading=false;
         filteredUsers = users;
       });
     });
@@ -83,7 +85,7 @@ class _StudnetsState extends State<Studnets> {
 
   @override
   Widget build(BuildContext context) {
-    if(users.isNotEmpty)
+    if(!loading)
     return Scaffold(
       body: Column(
         children: <Widget>[

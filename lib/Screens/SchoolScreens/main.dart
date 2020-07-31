@@ -58,7 +58,7 @@ class _MyAppSchoolState extends State<MyAppSchool> {
         "add_event": (_) => AddEventPage(),
         "add_announcement": (_) => AddAnnouncementPage(),
       },
-      title: schoolName,
+      title: 'Aatmanirbhar Institutions',
       theme: ThemeData(primaryColor: Colors.black, accentColor: Colors.black),
       debugShowCheckedModeBanner: false,
       home: DefaultTabController(

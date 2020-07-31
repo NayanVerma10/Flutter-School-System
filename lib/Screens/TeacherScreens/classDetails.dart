@@ -11,6 +11,7 @@ import './tutorials.dart';
 import '../Icons/iconsss_icons.dart';
 import './Discussions.dart';
 import './VideoChat.dart';
+import '../../ChatNecessary/WebJitsiMeet.dart';
 import 'database.dart';
 
 class ClassDetails extends StatefulWidget {

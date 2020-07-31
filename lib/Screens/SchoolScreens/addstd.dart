@@ -7,6 +7,8 @@ import 'dart:async';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 // import 'package:flutter_image_compress/flutter_image_compress.dart';
+// import 'package:fluttertoast/fluttertoast.dart';
+import 'package:toast/toast.dart';
 
 class AddStd extends StatefulWidget {
   final String schoolCode;
@@ -22,6 +24,11 @@ class Item {
 }
 
 class _AddStdState extends State<AddStd> {
+  TextEditingController textAddingController = new TextEditingController();
+  TextEditingController textDeletingController = new TextEditingController();
+  bool isAddClassEnabled=true;
+  bool isDeleteClassEnabled=true;
+
 //  _formKey and _autoValidate
   final String schoolCode;
   _AddStdState(this.schoolCode);
@@ -38,6 +45,8 @@ class _AddStdState extends State<AddStd> {
   String _rollno;
   String _fathername;
   String _mothername;
+  String _newClass = "A";
+  String getClass = "B";
 
   AnimationController _controller;
   // ImagePickerHandler imagePicker;
@@ -119,31 +128,49 @@ class _AddStdState extends State<AddStd> {
     );
   }
 
-  Item selectedclass;
+  String selectedclass;
   Item selectedsection;
-  List<Item> classs = <Item>[
-    const Item('LKG'),
-    const Item('UKG'),
-    const Item('I'),
-    const Item('II'),
-    const Item('III'),
-    const Item('IV'),
-    const Item('V'),
-    const Item('VI'),
-    const Item('VII'),
-    const Item('VIII'),
-    const Item('IX'),
-    const Item('X'),
-    const Item('XI'),
-    const Item('XII'),
-  ];
+  // List<Item> classs = <Item>[
+  //  Item('Add/Delete Class'),
+  //   Item('LKG'),
+  //  Item('UKG'),
+  //    Item('I'),
+  //    Item('II'),
+  //   Item('III'),
+  //  Item('IV'),
+  //   Item('V'),
+  //    Item('VI'),
+  //    Item('VII'),
+  //    Item('VIII'),
+  //    Item('IX'),
+  //    Item('X'),
+  //    Item('XI'),
+  //   Item('XII'),
+  //   Item('XIII'),
+  // ];
+
   List<String> subjects = [];
+  static List<dynamic> classes = [
+    'Add/Delete Class',
+  ];
 
   int value = 1;
 
   _addItem() {
     setState(() {
       value = value + 1;
+    });
+  }
+
+  _addClass() {
+    setState(() {
+      classes.add(_newClass);
+    });
+  }
+
+  _deleteClass() {
+    setState(() {
+      classes.remove(getClass);
     });
   }
 
@@ -170,6 +197,91 @@ class _AddStdState extends State<AddStd> {
                 onPressed: null)
           ],
         ));
+  }
+
+  onSaveClasses(BuildContext context) async{
+
+    _newClass = textAddingController.text;
+    getClass = textDeletingController.text;
+
+    if (getClass != '') {
+      if (classes.contains(getClass)) {
+        print('djslkfajd');
+        _deleteClass();
+        Toast.show("Class $getClass Deleted", context,
+            backgroundColor: Colors.white,
+            textColor: Colors.black,
+            duration: 5,
+            gravity: Toast.TOP);
+      } else {
+        Toast.show("$getClass doesnot exists", context,
+            backgroundColor: Colors.white,
+            textColor: Colors.black,
+            duration: 5,
+            gravity: Toast.TOP);
+      }
+    }
+    if (_newClass != '') {
+      if (classes.contains(_newClass)) {
+        Toast.show("$_newClass already exists", context,
+            backgroundColor: Colors.white,
+            textColor: Colors.black,
+            duration: 5,
+            gravity: Toast.TOP);
+      } else {
+        //print(_newClass.toUpperCase());
+        if (_newClass != _newClass.toUpperCase()) {
+          Toast.show("Please enter the class name in UpperCase", context,
+              backgroundColor: Colors.white,
+              textColor: Colors.black,
+              duration: 2,
+              gravity: Toast.TOP);
+        } else {
+          _addClass();
+          Toast.show("Class $_newClass Added", context,
+              backgroundColor: Colors.white,
+              textColor: Colors.black,
+              duration: 5,
+              gravity: Toast.TOP);
+          print("class added");
+        }
+      }
+    } 
+
+
+    await saveListOfClasses();
+  }
+
+  Future<void> saveListOfClasses()async{
+    List<dynamic> listToSave=classes.getRange(1, classes.length).toList();
+    print(listToSave[0].runtimeType);
+    await Firestore.instance.collection('School').document(schoolCode).setData(
+      {'arrayClasses': listToSave},merge: true
+    );
+  }
+
+  Future<void> loadClasses() {
+    Firestore.instance
+        .collection('School')
+        .document(schoolCode)
+        .get()
+        .then((doc) {
+      if (doc.data['arrayClasses'] != null) {
+        print(doc.data['arrayClasses']);
+
+        setState(() {
+          classes = doc.data['arrayClasses'];
+          classes.insert(0, 'Add/Delete Class');
+        });
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    loadClasses();
   }
 
   @override
@@ -457,26 +569,167 @@ class _AddStdState extends State<AddStd> {
                                 color: Colors.grey[350],
                                 borderRadius: BorderRadius.circular(10)),
 
-                            child: DropdownButton<Item>(
+                            child: DropdownButton<String>(
                               focusColor: Colors.grey[300],
                               hint: Text(
                                 "Select class",
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                               value: selectedclass,
-                              onChanged: (Item value) {
+                              onChanged: (String value) {
                                 setState(() {
-                                  selectedclass = value;
+                                  if (value == classes[0]) {
+                                    selectedclass = value;
+
+                                    showDialog(
+                                        context: context,
+                                        builder: (_) {
+                                          return Dialog(
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10)),
+                                              elevation: 16,
+                                              child: Container(
+                                                height: 250,
+                                                width: 50,
+
+                                                child: Column(children: [
+                                                  //Row(children: [
+                                                  Flexible(
+                                                      child: Container(
+                                                          width: 200,
+                                                          child: TextFormField(
+                                                            enabled: isAddClassEnabled,
+                                                            decoration: const InputDecoration(
+                                                                labelText:
+                                                                    'Add Class',
+                                                                hoverColor:
+                                                                    Colors
+                                                                        .black,
+                                                                focusColor:
+                                                                    Colors
+                                                                        .black),
+                                                            keyboardType:
+                                                                TextInputType
+                                                                    .text,
+                                                            cursorColor:
+                                                                Colors.black,
+                                                            style: TextStyle(
+                                                                height: 1.5,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold),
+                                                            controller:
+                                                                textAddingController,
+                                                          ))),
+                                                  Flexible(
+                                                      child: Container(
+                                                          width: 200,
+                                                          child: TextFormField(
+                                                            enabled: isDeleteClassEnabled,
+                                                            decoration: const InputDecoration(
+                                                                labelText:
+                                                                    'Delete Class',
+                                                                hoverColor:
+                                                                    Colors
+                                                                        .black,
+                                                                focusColor:
+                                                                    Colors
+                                                                        .black),
+                                                            keyboardType:
+                                                                TextInputType
+                                                                    .text,
+                                                            cursorColor:
+                                                                Colors.black,
+                                                            style: TextStyle(
+                                                                height: 1.5,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold),
+                                                            controller:
+                                                                textDeletingController,
+                                                          ))),
+                                                  SizedBox(
+                                                    height: 20,
+                                                  ),
+                                                  Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        FlatButton(
+                                                          color: Colors.black,
+                                                          child: Text("Save",
+                                                              style: TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  fontSize: 15,
+                                                                  color: Colors
+                                                                      .white)),
+                                                          onPressed: () {
+                                                            // setState(() {
+                                                            onSaveClasses(
+                                                                context);
+                                                          },
+                                                        ),
+                                                        SizedBox(
+                                                          width: 10,
+                                                        ),
+                                                        FlatButton(
+                                                            padding:
+                                                                EdgeInsets.zero,
+                                                            color: Colors.black,
+                                                            child: Text(
+                                                                "Cancel",
+                                                                style: TextStyle(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    fontSize:
+                                                                        15,
+                                                                    color: Colors
+                                                                        .white)),
+                                                            onPressed: () {
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop();
+                                                            })
+                                                      ]),
+                                                  //SizedBox(height: 20,)
+                                                ]),
+                                                //   child: CheckboxGroup(
+                                                // labels: <String>[
+                                                //   "Sunday",
+                                                //   "Monday",
+                                                //   "Tuesday",
+                                                //   "Wednesday",
+                                                //   "Thursday",
+                                                //   "Friday",
+                                                //   "Saturday",
+                                                //   //"Sunday",
+                                                // ],
+                                                // onSelected: (List<String> checked) => print(checked.toString())
+                                                // )
+                                              ));
+                                        });
+                                    //classes.add(_newClass);
+
+                                  } else {
+                                    selectedclass = value;
+                                    print(selectedclass.toString());
+                                  }
                                 });
                               },
-                              items: classs.map((Item classs) {
-                                return DropdownMenuItem<Item>(
-                                  value: classs,
+                              items: classes.map((dynamic classes) {
+                                return DropdownMenuItem<String>(
+                                  value: classes,
                                   child: Row(
                                     children: <Widget>[
                                       SizedBox(width: 10),
                                       Text(
-                                        classs.name,
+                                        classes,
                                         style: TextStyle(
                                             color: Colors.black,
                                             fontWeight: FontWeight.bold),
@@ -806,7 +1059,7 @@ class _AddStdState extends State<AddStd> {
       'last name': _lastname,
       'rollno': _rollno,
       'gender': _gender,
-      'class': selectedclass.name,
+      'class': selectedclass,
       'section': section.toUpperCase(),
       'email': _email.toLowerCase(),
       'mobile': _mobile,
@@ -814,12 +1067,13 @@ class _AddStdState extends State<AddStd> {
       'mother \'s name': _mothername,
       'dob': _dob,
       'address': _address,
-      'subjects': subjects
+      'subjects': subjects,
+      'classes': classes
     }).whenComplete(() {
       print('Student added');
-      subjects=[]; // So that when the form is filled again old values dont mix up , because they did;
-      }
-      );
+      subjects =
+          []; // So that when the form is filled again old values dont mix up , because they did;
+    });
   }
 
   _buildRow(int index) {

@@ -11,11 +11,11 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
-
 import 'package:firebase_storage/firebase_storage.dart';
 
 // import 'package:file_picker_web/file_picker_web.dart';
-// import 'package:universal_html/html.dart' show File;
+// import 'package:http/http.dart';
+// import 'package:universal_html/html.dart';
 // import 'package:firebase/firebase.dart' as fb;
 
 
@@ -56,6 +56,20 @@ Future<List<String>> uploadToFirebase(String path, File file) async {
 // }
 
 
+
+/*-------------------------------------CSV/Excel------------------------------------------------- */
+
+/*---For Web  */
+// Future<void> ReadCSVTeacher(File file,String schoolCode){
+//   readBytes(file).then((value) => print(value.toString()));
+//   FileReader();
+// }
+
+// Future<void> ReadCSVStudents (File file,String schoolCode ){
+
+// }
+
+/*--For Mobile */
 
 Future<void> ReadCSVTeacher (File file,String schoolCode ){
 

@@ -211,6 +211,7 @@ class _MyAppStudentState extends State<MyAppStudent> {
     return MaterialApp(
       theme: ThemeData(primaryColor: Colors.black, accentColor: Colors.black),
       debugShowCheckedModeBanner: false,
+      title: 'Aatmanirbhar Institutions',
       home: home,
     );
   }
