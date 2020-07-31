@@ -23,6 +23,33 @@ class MyAppStudent extends StatefulWidget {
 class _MyAppStudentState extends State<MyAppStudent> {
   String schoolCode, studentId;
   _MyAppStudentState(this.schoolCode, this.studentId);
+
+  @override
+  Widget build(BuildContext context) {
+    Widget home;
+    return MaterialApp(
+      theme: ThemeData(primaryColor: Colors.white, accentColor: Colors.black),
+      debugShowCheckedModeBanner: false,
+      title: 'Aatmanirbhar Institutions',
+      home: MyAppStudentScaffold(schoolCode,studentId),
+    );
+  }
+}
+
+class MyAppStudentScaffold extends StatefulWidget {
+  String schoolCode, studentId;
+
+  MyAppStudentScaffold(this.schoolCode, this.studentId);
+
+  @override
+  _MyAppStudentScaffoldState createState() =>
+      _MyAppStudentScaffoldState(schoolCode, studentId);
+}
+
+class _MyAppStudentScaffoldState extends State<MyAppStudentScaffold> {
+  String schoolCode, studentId;
+  _MyAppStudentScaffoldState(this.schoolCode, this.studentId);
+
   List<Widget> tabs;
   String studentName = '';
 
@@ -57,15 +84,12 @@ class _MyAppStudentState extends State<MyAppStudent> {
 
   @override
   Widget build(BuildContext context) {
-    Widget home;
     if (UniversalPlatform.isAndroid) {
-      home = Scaffold(
+      return Scaffold(
           appBar: AppBar(
             title: Text(
               studentName,
-              style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             actions: <Widget>[
               FlatButton(
@@ -74,18 +98,14 @@ class _MyAppStudentState extends State<MyAppStudent> {
                   },
                   child: Text(
                     'Logout',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: Theme.of(context).accentColor),
                   )),
             ],
           ),
           body: tabs[_currentIndex],
           bottomNavigationBar: BottomNavigationBar(
             currentIndex: _currentIndex,
-            backgroundColor: Colors.black,
-            selectedFontSize: 15,
-            unselectedFontSize: 13,
-            selectedItemColor: Colors.white,
-            unselectedItemColor: Colors.grey,
+            selectedItemColor: Theme.of(context).accentColor,
             type: BottomNavigationBarType.fixed, //static bar
             iconSize: 20, //iconsze
             items: [
@@ -156,7 +176,7 @@ class _MyAppStudentState extends State<MyAppStudent> {
             },
           ));
     } else if (UniversalPlatform.isWeb) {
-      home = DefaultTabController(
+      return DefaultTabController(
         length: 5, // Number of Tabs you want
         child: Scaffold(
           appBar: AppBar(
@@ -204,11 +224,5 @@ class _MyAppStudentState extends State<MyAppStudent> {
         ),
       );
     }
-    return MaterialApp(
-      theme: ThemeData(primaryColor: Colors.black, accentColor: Colors.black),
-      debugShowCheckedModeBanner: false,
-      title: 'Aatmanirbhar Institutions',
-      home: home,
-    );
   }
 }
