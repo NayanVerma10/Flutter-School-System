@@ -22,31 +22,25 @@ class _StaffState extends State<Staff> {
       body: tabs[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        backgroundColor: Colors.black,
         type: BottomNavigationBarType.fixed,
+        selectedItemColor: Theme.of(context).accentColor,
         items: [
           BottomNavigationBarItem(
             icon: Icon(
               Icons.person,
               size: 25,
-              color: Colors.white,
             ),
             title: Text(
               "TEACHERS ",
-              style: TextStyle(color: Colors.white),
             ),
-            backgroundColor: Colors.white,
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.person,
-              color: Colors.white,
             ),
             title: Text(
               "Employees",
-              style: TextStyle(color: Colors.white),
             ),
-            backgroundColor: Colors.white,
           ),
         ],
         onTap: (index) {

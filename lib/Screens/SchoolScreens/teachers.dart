@@ -5,23 +5,20 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 //import 'pro.dart';
 import 'dart:async';
 
-class Pagin extends StatefulWidget 
-{
+class Pagin extends StatefulWidget {
   final String schoolCode;
   Pagin(this.schoolCode);
   @override
   _PaginState createState() => _PaginState(schoolCode);
 }
 
-class _PaginState extends State<Pagin> 
-{
+class _PaginState extends State<Pagin> {
   String schoolCode;
   String name;
   _PaginState(this.schoolCode);
   @override
   Widget build(BuildContext context) {
-      return Scaffold(
-      backgroundColor: Colors.white,
+    return Scaffold(
       body: ListPage(schoolCode),
     );
   }
@@ -29,22 +26,6 @@ class _PaginState extends State<Pagin>
 
 String schoolname;
 String classTeacher;
-/*readData ()
-{
-   DocumentReference documentReference =Firestore.instance.collection("School").document("0147");
-documentReference.get().then((datasnapshot)
-{   
-  schoolname=datasnapshot.data["schoolname"];
-  classTeacher=datasnapshot.data["schoolboard"];
-  print(datasnapshot.data["schoolname"]);
-  print(datasnapshot.data["schoolemail"]);
-  print(datasnapshot.data["schoolcode"]);
-  print(datasnapshot.data["password"]);
-  print(datasnapshot.data["schoolno"]);
-  print(datasnapshot.data["schoolboard"]);
-}
-);
-}*/
 
 class ListPage extends StatefulWidget {
   String schoolCode;
@@ -84,10 +65,8 @@ class _ListPageState extends State<ListPage> {
       Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => ProfilePage(
-                  post: post,
-                  schoolCode:schoolCode
-                )),
+            builder: (context) =>
+                ProfilePage(post: post, schoolCode: schoolCode)),
       );
     }
 
@@ -102,8 +81,7 @@ class _ListPageState extends State<ListPage> {
                     style: TextStyle(fontSize: 20, color: Colors.black),
                   ),
                 );
-              } 
-              else {
+              } else {
                 return Container(
                   child: new RefreshIndicator(
                     key: _refreshIndicatorkey,
@@ -121,19 +99,21 @@ class _ListPageState extends State<ListPage> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-        leading:(snapshot.data[index].data["url"]!=null)? CircleAvatar(
-                            backgroundColor: Colors.black,
-       backgroundImage:
-         NetworkImage(snapshot.data[index].data["url"],),
-                          ):
-                          CircleAvatar(
-                            backgroundColor: Colors.black,
-                           child:   Icon(
-                              Icons.person,
-                              color: Colors.white,
-                            ),
-                          ),
-                    
+                          leading: (snapshot.data[index].data["url"] != null)
+                              ? CircleAvatar(
+                                  backgroundColor: Colors.black,
+                                  backgroundImage: NetworkImage(
+                                    snapshot.data[index].data["url"],
+                                  ),
+                                )
+                              : CircleAvatar(
+                                  backgroundColor: Colors.black,
+                                  child: Icon(
+                                    Icons.person,
+                                    color: Colors.white,
+                                  ),
+                                ),
+
                           onTap: () {
                             print("pressed");
                             //readData();
@@ -159,60 +139,16 @@ class _ListPageState extends State<ListPage> {
             }));
   }
 }
-
-/*
-ListView _buildListView(BuildContext context)
-{
-  return ListView.builder(
-    itemCount: 10,
-
-    
-    itemBuilder: (_,index){
-      return Container(
-           child: ListTile(
-          //hoverColor: Colors.blue,
-         //isThreeLine: true,
-    
-            onTap: ()
-            {
-            print("pressed");
-            readData();
-            Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ProfilePage()),
-            );
-           },        
-
-          title:Text("$schoolname",style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,),
-          ),
-          leading: CircleAvatar(      
-          backgroundColor: Colors.black,
-          child: Icon(Icons.person,color: Colors.white,),
-          ),
-          subtitle: Text("$classTeacher",style: TextStyle(color: Colors.black,),
-          ),
-          trailing: Icon(Icons.arrow_right,size: 40,color: Colors.black,
-          ),
-          ),
-      );
-    },
-    );
-}
-*/
-
-//profile
-
 class ProfilePage extends StatefulWidget {
   String schoolCode;
   @override
   final DocumentSnapshot post;
-  ProfilePage({this.post,this.schoolCode});
+  ProfilePage({this.post, this.schoolCode});
   MapScreenState createState() => MapScreenState(schoolCode);
 }
 
 class MapScreenState extends State<ProfilePage>
     with SingleTickerProviderStateMixin {
-
   String schoolCode;
   MapScreenState(this.schoolCode);
   bool _status = true;
@@ -264,7 +200,6 @@ class MapScreenState extends State<ProfilePage>
     return new Scaffold(
         appBar: AppBar(
           title: Text("Profile"),
-          backgroundColor: Colors.black,
         ),
         body: new Container(
           color: Colors.white,
@@ -939,7 +874,6 @@ class MapScreenState extends State<ProfilePage>
       'gender': namecontrollerg.text,
       'designation': namecontrollerd.text,
       'qualification': namecontrollerq.text,
-      
     }, merge: true);
   }
 
