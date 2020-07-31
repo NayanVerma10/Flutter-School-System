@@ -76,7 +76,7 @@ class _MyAppStudentScaffoldState extends State<MyAppStudentScaffold> {
     tabs = [
       Subjects(schoolCode, studentId),
       StudentsTimeTable(),
-      Announcements(),
+      Announcements(schoolCode),
       MainChat(schoolCode, studentId, false),
       Profile1(schoolCode, studentId),
     ];
