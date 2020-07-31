@@ -64,12 +64,9 @@ class _MyAppStudentState extends State<MyAppStudent> {
             title: Text(
               studentName,
               style: TextStyle(
-                  color: Colors.white,
                   fontSize: 20,
                   fontWeight: FontWeight.bold),
             ),
-            iconTheme: new IconThemeData(color: Colors.black),
-            backgroundColor: Colors.black,
             actions: <Widget>[
               FlatButton(
                   onPressed: () {
@@ -163,7 +160,6 @@ class _MyAppStudentState extends State<MyAppStudent> {
         length: 5, // Number of Tabs you want
         child: Scaffold(
           appBar: AppBar(
-            backgroundColor: Colors.black,
             bottom: TabBar(
               isScrollable: true,
               tabs: [

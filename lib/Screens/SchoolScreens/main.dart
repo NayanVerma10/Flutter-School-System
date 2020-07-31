@@ -66,7 +66,6 @@ class _MyAppSchoolState extends State<MyAppSchool> {
         child: Builder(
           builder: (context) => Scaffold(
             appBar: AppBar(
-              backgroundColor: Colors.black,
               bottom: TabBar(
                 isScrollable: true,
                 tabs: [

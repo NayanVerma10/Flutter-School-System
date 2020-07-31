@@ -63,8 +63,6 @@ class _MyAppTeacherState extends State<MyAppTeacher> {
                   fontSize: 20,
                   fontWeight: FontWeight.bold),
             ),
-            iconTheme: new IconThemeData(color: Colors.black),
-            backgroundColor: Colors.black,
             actions: <Widget>[
               FlatButton(
                   onPressed: () {
@@ -150,7 +148,6 @@ class _MyAppTeacherState extends State<MyAppTeacher> {
         length: 5, // Number of Tabs you want
         child: Scaffold(
           appBar: AppBar(
-            backgroundColor: Colors.black,
             bottom: TabBar(
               isScrollable: true,
               tabs: [

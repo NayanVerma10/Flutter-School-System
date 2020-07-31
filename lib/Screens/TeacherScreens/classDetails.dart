@@ -135,16 +135,12 @@ class _ClassDetailsState extends State<ClassDetails> {
                     textColor: Colors.white,
                   ),
                 ],
-          iconTheme: new IconThemeData(color: Colors.white),
-          backgroundColor: Colors.black,
         ),
         body: tabs[_currentIndex],
         floatingActionButton: FloatingActionButton(
           child: Icon(
             Icons.chat,
-            color: Colors.white,
           ),
-          backgroundColor: Colors.black,
           onPressed: () {
             Navigator.push(
                 context,

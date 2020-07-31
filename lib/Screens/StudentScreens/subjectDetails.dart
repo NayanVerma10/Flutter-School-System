@@ -106,29 +106,25 @@ class _SubjectDetailsState extends State<SubjectDetails>
       appBar: AppBar(
         title: Text(
           subject,
-          style: TextStyle(
-              color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         actions: <Widget>[
           FlatButton.icon(
             label: Text('Join Class'),
             icon: Icon(
               Icons.videocam,
-              color: Colors.white,
             ),
             onPressed: videoChat,
             textColor: Colors.white,
           ),
         ],
-        iconTheme: new IconThemeData(color: Colors.white),
-        backgroundColor: Colors.black,
+        // iconTheme: new IconThemeData(color: Colors.white),
+        // backgroundColor: Colors.black,
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(
           Icons.chat,
-          color: Colors.white,
         ),
-        backgroundColor: Colors.black,
         onPressed: () {
           Navigator.push(
               context,
