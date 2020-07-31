@@ -9,8 +9,24 @@ class StudentsTimeTable extends StatefulWidget {
   _StudentsTimeTableState createState() => _StudentsTimeTableState();
 }
 
-class _StudentsTimeTableState extends State<StudentsTimeTable> {
+const List<String> tabNames = const <String>[
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thrusday',
+  'Friday',
+  'Saturday'
+];
+
+class _StudentsTimeTableState extends State<StudentsTimeTable>  with SingleTickerProviderStateMixin {
+  TabController _tabController;
   bool edit = false;
+  @override
+  void initState() {
+    super.initState();
+    _tabController =
+        TabController(vsync: this, initialIndex: 0, length: tabNames.length);
+  }
   @override
   Widget build(BuildContext context) {
     edit = widget.edit;
@@ -22,6 +38,41 @@ class _StudentsTimeTableState extends State<StudentsTimeTable> {
           itemCount: 8,
           itemBuilder: (context, index) => buildListTile(index),
         ),
+
+      ),
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+
+          Container(),
+          AnimatedCrossFade(
+            firstChild: Material(
+              color: Theme.of(context).primaryColor,
+              child: TabBar(
+                indicatorColor: Colors.white,
+                controller: _tabController,
+                isScrollable: true,
+                tabs: List.generate(tabNames.length, (index) {
+                  return Container(
+                    height: 50,
+                    child: Center(
+                      child: Text(
+                        tabNames[index].toUpperCase(),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  );
+                }),
+              ),
+            ),
+            secondChild: Container(),
+            crossFadeState: CrossFadeState.showFirst,
+            duration: const Duration(milliseconds: 300),
+          ),
+        ],
       ),
     );
   }

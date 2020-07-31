@@ -12,6 +12,7 @@ import '../Icons/iconsss_icons.dart';
 import './Discussions.dart';
 import './VideoChat.dart';
 import '../../ChatNecessary/WebJitsiMeet.dart';
+import 'assignment_web.dart';
 import 'database.dart';
 
 class ClassDetails extends StatefulWidget {
@@ -74,7 +75,9 @@ class _ClassDetailsState extends State<ClassDetails> {
           : StudentsGrid(
               className, schoolCode, teachersId, classNumber, section, subject),
       TutorialUpload(),
-      Home(),
+      if (!kIsWeb)
+      Assignment()
+      else AssignmentWeb(),
 
       Attendance(
           className, schoolCode, teachersId, classNumber, section, subject)

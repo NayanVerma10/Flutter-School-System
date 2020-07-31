@@ -13,6 +13,8 @@ import './database.dart';
 
 import 'package:pie_chart/pie_chart.dart';
 
+import 'assignment_web.dart';
+
 class SubjectDetails extends StatefulWidget {
   final String schoolCode, studentId, classNumber, section, subject;
   SubjectDetails(
@@ -267,12 +269,22 @@ class _SubjectDetailsState extends State<SubjectDetails>
                                   db.schoolCode=schoolCode;
                                   db.classNumber=classNumber;
                                   db.section=section;
+                                  if (!kIsWeb)
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => Home(
+
+                                          builder: (context) => Assignment(
 
                                           )));
+                                  else
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+
+                                            builder: (context) => AssignmentWeb(
+
+                                            )));
                                 });
                               },
                             ),

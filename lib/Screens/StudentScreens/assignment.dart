@@ -4,13 +4,13 @@ import 'package:Schools/Screens/TeacherScreens/create_quiz.dart';
 import 'package:Schools/Screens/TeacherScreens/quiz_play.dart';
 import 'package:Schools/widgets/widget.dart';
 
-class Home extends StatefulWidget {
+class Assignment extends StatefulWidget {
 
   @override
-  _HomeState createState() => _HomeState();
+  _AssignmentState createState() => _AssignmentState();
 }
 
-class _HomeState extends State<Home> {
+class _AssignmentState extends State<Assignment> {
 
   Stream quizStream;
   DatabaseService databaseService = db;
@@ -31,6 +31,8 @@ class _HomeState extends State<Home> {
                   physics: ClampingScrollPhysics(),
                   itemCount: snapshot.data.documents.length,
                   itemBuilder: (context, index) {
+                    print(snapshot.data.documents[index].data);
+                    Duration(seconds: 2);
                     return QuizTile(
                       noOfQuestions: snapshot.data.documents.length,
                       imageUrl:
@@ -71,6 +73,8 @@ class _HomeState extends State<Home> {
         //brightness: Brightness.li,
       ),
       body: quizList(),
+
+
 
 
     );

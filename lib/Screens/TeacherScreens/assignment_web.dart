@@ -4,19 +4,25 @@ import 'package:Schools/Screens/TeacherScreens/create_quiz.dart';
 import 'package:Schools/Screens/TeacherScreens/quiz_play.dart';
 import 'package:Schools/widgets/widget.dart';
 
-class Assignment extends StatefulWidget {
+class AssignmentWeb extends StatefulWidget {
 
   @override
-  _AssignmentState createState() => _AssignmentState();
+  _AssignmentWebState createState() => _AssignmentWebState();
 }
 
-class _AssignmentState extends State<Assignment> {
+class _AssignmentWebState extends State<AssignmentWeb> {
 
   Stream quizStream;
   DatabaseService databaseService = db;
 
 
   Widget quizList() {
+    var size = MediaQuery.of(context).size;
+    /*24 is for notification bar on Android*/
+    final double itemHeight = (size.height - kToolbarHeight - 24) / 2;
+    final double itemWidth = size.width / 2;
+
+
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Column(
@@ -26,9 +32,15 @@ class _AssignmentState extends State<Assignment> {
             builder: (context, snapshot) {
               return snapshot.data == null
                   ? Container()
-                  : ListView.builder(
+                  : GridView.builder(
                   shrinkWrap: true,
                   physics: ClampingScrollPhysics(),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 4,
+                    childAspectRatio: (itemWidth / itemHeight),
+                    crossAxisSpacing: 3.0,
+                    mainAxisSpacing: 3.0,
+                  ),
                   itemCount: snapshot.data.documents.length,
                   itemBuilder: (context, index) {
                     print(snapshot.data.documents[index].data);
@@ -74,22 +86,23 @@ class _AssignmentState extends State<Assignment> {
       ),
       body: quizList(),
       floatingActionButton: Container(
-    height: 50.0,
-    width: 50.0,
-    child: FittedBox(
-    child:FloatingActionButton(
-      backgroundColor: Colors.black54,
-        heroTag: null,
-        child: Icon(Icons.add),
-        onPressed: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => CreateQuiz()));
-        },
-      ),
-    ),
+        height: 50.0,
+        width: 50.0,
+        child: FittedBox(
+          child:FloatingActionButton(
+            backgroundColor: Colors.black54,
+            heroTag: null,
+            tooltip: 'Add Quiz',
+            child: Icon(Icons.assignment),
+            onPressed: () {
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => CreateQuiz()));
+            },
+          ),
+        ),
       ),
 
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterFloat,
 
 
     );
