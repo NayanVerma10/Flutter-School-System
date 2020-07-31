@@ -89,7 +89,7 @@ class _ClassDetailsState extends State<ClassDetails> {
           title: Text(
             className,
             style: TextStyle(
-                color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                 fontSize: 20, fontWeight: FontWeight.bold),
           ),
           actions: _currentIndex == 0
               ? <Widget>[
@@ -98,7 +98,7 @@ class _ClassDetailsState extends State<ClassDetails> {
                           size: 20,
                           //color: Colors.white,
 
-                          color: v == 0 ? Colors.white : Colors.grey),
+                          color: v == 0 ? Theme.of(context).accentColor : Colors.grey),
                       onPressed: () {
                         setState(() {
                           v = 0;
@@ -108,7 +108,7 @@ class _ClassDetailsState extends State<ClassDetails> {
                       icon: Icon(Iconssss.th_thumb,
                           // color: Colors.white,
                           size: 20,
-                          color: v == 1 ? Colors.white : Colors.grey),
+                          color: v == 1 ? Theme.of(context).accentColor : Colors.grey),
                       onPressed: () {
                         setState(() {
                           v = 1;
@@ -118,10 +118,9 @@ class _ClassDetailsState extends State<ClassDetails> {
                     label: Text('Join Class'),
                     icon: Icon(
                       Icons.videocam,
-                      color: Colors.white,
                     ),
                     onPressed: videoChat,
-                    textColor: Colors.white,
+                    textColor: Theme.of(context).accentColor,
                   ),
                 ]
               : <Widget>[
@@ -129,10 +128,10 @@ class _ClassDetailsState extends State<ClassDetails> {
                     label: Text('Join Class'),
                     icon: Icon(
                       Icons.videocam,
-                      color: Colors.white,
+                      
                     ),
                     onPressed: videoChat,
-                    textColor: Colors.white,
+                    textColor: Theme.of(context).accentColor,
                   ),
                 ],
         ),
@@ -156,11 +155,7 @@ class _ClassDetailsState extends State<ClassDetails> {
         ),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _currentIndex,
-          backgroundColor: Colors.black,
-          selectedFontSize: 15,
-          unselectedFontSize: 13,
-          selectedItemColor: Colors.white,
-          unselectedItemColor: Colors.grey,
+          selectedItemColor: Theme.of(context).accentColor,
           type: BottomNavigationBarType.fixed, //static bar
           iconSize: 20, //iconsze
           items: [

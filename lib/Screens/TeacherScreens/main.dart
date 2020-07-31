@@ -14,16 +14,37 @@ void main(schoolCode, teachersId) {
 }
 
 class MyAppTeacher extends StatefulWidget {
-  String schoolCode, teachersId;
-  MyAppTeacher(this.schoolCode, this.teachersId);
+  String schoolCode,teachersId;
+  MyAppTeacher(this.schoolCode,this.teachersId);
   @override
-  _MyAppTeacherState createState() =>
-      _MyAppTeacherState(schoolCode, teachersId);
+  _MyAppTeacherState createState() => _MyAppTeacherState(schoolCode,teachersId);
 }
 
 class _MyAppTeacherState extends State<MyAppTeacher> {
+  String schoolCode,teachersId;
+  _MyAppTeacherState(this.schoolCode,this.teachersId);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+        theme: ThemeData(primaryColor: Colors.white, accentColor: Colors.black),
+        debugShowCheckedModeBanner: false,
+        title: 'Aatmanirbhar Institutions',
+        home: MyAppTeacherScaffold(schoolCode,teachersId));
+  }
+}
+
+class MyAppTeacherScaffold extends StatefulWidget {
+  String schoolCode, teachersId;
+  MyAppTeacherScaffold(this.schoolCode, this.teachersId);
+  @override
+  _MyAppTeacherScaffoldState createState() =>
+      _MyAppTeacherScaffoldState(schoolCode, teachersId);
+}
+
+class _MyAppTeacherScaffoldState extends State<MyAppTeacherScaffold> {
   String schoolCode, teachersId, teachersName='';
-  _MyAppTeacherState(this.schoolCode, this.teachersId);
+  _MyAppTeacherScaffoldState(this.schoolCode, this.teachersId);
   List<Widget> tabs;
 
   Future<void> loadData(){
@@ -51,15 +72,12 @@ class _MyAppTeacherState extends State<MyAppTeacher> {
 
   @override
   Widget build(BuildContext context) {
-    Widget home;
-
     if (UniversalPlatform.isAndroid) {
-      home = Scaffold(
+      return Scaffold(
           appBar: AppBar(
             title: Text(
               teachersName,
               style: TextStyle(
-                  color: Colors.white,
                   fontSize: 20,
                   fontWeight: FontWeight.bold),
             ),
@@ -70,7 +88,7 @@ class _MyAppTeacherState extends State<MyAppTeacher> {
                   },
                   child: Text(
                     'Logout',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: Theme.of(context).accentColor),
                   )),
             ],
           ),
@@ -78,11 +96,7 @@ class _MyAppTeacherState extends State<MyAppTeacher> {
           bottomNavigationBar: Builder(
             builder: (context) => BottomNavigationBar(
               currentIndex: _currentIndex,
-              backgroundColor: Colors.black,
-              selectedFontSize: 15,
-              unselectedFontSize: 13,
-              selectedItemColor: Colors.white,
-              unselectedItemColor: Colors.grey,
+              selectedItemColor: Theme.of(context).accentColor,
               type: BottomNavigationBarType.fixed, //static bar
               iconSize: 20, //iconsze
               items: [
@@ -144,7 +158,7 @@ class _MyAppTeacherState extends State<MyAppTeacher> {
             ),
           ));
     } else if (UniversalPlatform.isWeb) {
-      home = DefaultTabController(
+      return DefaultTabController(
         length: 5, // Number of Tabs you want
         child: Scaffold(
           appBar: AppBar(
@@ -182,7 +196,7 @@ class _MyAppTeacherState extends State<MyAppTeacher> {
                   },
                   child: Text(
                     'Logout',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: Theme.of(context).accentColor),
                   )),
             ],
           ),
@@ -192,10 +206,6 @@ class _MyAppTeacherState extends State<MyAppTeacher> {
         ),
       );
     }
-    return MaterialApp(
-        theme: ThemeData(primaryColor: Colors.black, accentColor: Colors.black),
-        debugShowCheckedModeBanner: false,
-        title: 'Aatmanirbhar Institutions',
-        home: home);
+    
   }
 }

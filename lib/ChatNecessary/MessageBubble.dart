@@ -44,7 +44,7 @@ class Message extends StatelessWidget {
             ),
           ),
           Bubble(
-            color: Colors.grey[50],//me ? Colors.green[100] : Colors.deepPurple[100],
+            color: Colors.white,//me ? Colors.green[100] : Colors.deepPurple[100],
             nip: me ? BubbleNip.rightTop : BubbleNip.leftTop,
             nipWidth: 12,
             elevation: 2,
