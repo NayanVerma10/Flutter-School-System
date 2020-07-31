@@ -13,7 +13,7 @@ class Policies extends StatelessWidget {
           children: [
             CircleAvatar(
               backgroundColor: Colors.transparent,
-              child: Image.asset('assets/images/LOGO.jpeg'),
+              child: Image.asset('assets/AppIcon/Logo.png'),
             ),
             SizedBox(width: 10,),
             Text('aatmanirbhar institutions'),

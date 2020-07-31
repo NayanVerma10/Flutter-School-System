@@ -398,7 +398,6 @@ print("$name updated");
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black,
         title: Text("School Registration"),
       ),
       body: Builder(

@@ -133,6 +133,8 @@ flutter:
     - assets/images/profile.jpg
     - assets/images/coverimage.jpg
     - assets/images/LOGO.jpeg
+    - assets/AppIcon/Logo.png
+    - assets/AppIcon/Logo.svg
 
 
 

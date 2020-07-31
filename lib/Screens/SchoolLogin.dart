@@ -219,12 +219,19 @@ class _SchoolLoginState extends State<SchoolLogin> {
                           ),
                           RichText(
                             text: TextSpan(
-                              style: DefaultTextStyle.of(context).style.merge(TextStyle(fontSize: 12,fontWeight: FontWeight.bold,decoration: TextDecoration.underline)),
-                              text: 'Policies',
-                              recognizer: TapGestureRecognizer()..onTap= () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=>Policies()));
-                              }
-                            ),
+                                style: DefaultTextStyle.of(context).style.merge(
+                                    TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                        decoration: TextDecoration.underline)),
+                                text: 'Policies',
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => Policies()));
+                                  }),
                           ),
                         ],
                       ),
@@ -236,7 +243,7 @@ class _SchoolLoginState extends State<SchoolLogin> {
                         SizedBox(width: 5),
                         Expanded(child: Divider(thickness: 2)),
                       ]),
-                      SizedBox(height: 100),
+                      SizedBox(height: 70),
                       Center(
                         child: RaisedButton.icon(
                           onPressed: () {
@@ -244,11 +251,9 @@ class _SchoolLoginState extends State<SchoolLogin> {
                           },
                           icon: Icon(
                             FontAwesomeIcons.google,
-                            color: Colors.white,
                           ),
                           label: Text('Sign in with Google'),
                           color: Theme.of(context).primaryColor,
-                          textColor: Colors.white,
                           padding: EdgeInsets.symmetric(
                               horizontal: 20, vertical: 10),
                         ),

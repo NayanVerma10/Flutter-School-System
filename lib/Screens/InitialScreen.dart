@@ -12,13 +12,20 @@ class InitialScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: CircleAvatar(
-          backgroundColor: Colors.transparent,
-          child: Image.asset('assets/images/LOGO.jpeg'),
-        ),
+        
         leadingWidth: 40,
+        
         titleSpacing: 10,
-        title: Text('aatmanirbhar institutions'),
+        title: Row(
+          children: [
+            CircleAvatar(
+              backgroundColor: Colors.transparent,
+              child: Image.asset('assets/AppIcon/Logo.png'),
+            ),
+            SizedBox(width: 10,),
+            Text('aatmanirbhar institutions'),
+          ],
+        ),
       ),
       body: Container(
         alignment: Alignment.center,

@@ -270,7 +270,7 @@ class _TeachersLoginState extends State<TeachersLogin> {
                         SizedBox(width: 5),
                         Expanded(child: Divider(thickness: 2)),
                       ]),
-                      SizedBox(height: 100),
+                      SizedBox(height: 70),
                       Center(
                         child: RaisedButton.icon(
                           onPressed: () {
@@ -278,11 +278,10 @@ class _TeachersLoginState extends State<TeachersLogin> {
                           },
                           icon: Icon(
                             FontAwesomeIcons.google,
-                            color: Colors.white,
                           ),
                           label: Text('Sign in with Google'),
                           color: Theme.of(context).primaryColor,
-                          textColor: Colors.white,
+                          
                           padding: EdgeInsets.symmetric(
                               horizontal: 20, vertical: 10),
                         ),
