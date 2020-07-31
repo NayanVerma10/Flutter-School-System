@@ -189,7 +189,7 @@ class _MyAppState extends State<MyApp> {
                     "Join Meeting",
                     style: TextStyle(color: Colors.white),
                   ),
-                  color: Theme.of(context).primaryColor,
+                  color: Theme.of(context).accentColor,
                 ),
               ),
               SizedBox(

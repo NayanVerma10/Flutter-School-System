@@ -213,7 +213,7 @@ class _SchoolLoginState extends State<SchoolLogin> {
                             child: Text(
                               'Register',
                               style: TextStyle(
-                                  fontSize: 12,
+                                  fontSize: 14,
                                   decoration: TextDecoration.underline),
                             ),
                           ),
@@ -221,7 +221,7 @@ class _SchoolLoginState extends State<SchoolLogin> {
                             text: TextSpan(
                                 style: DefaultTextStyle.of(context).style.merge(
                                     TextStyle(
-                                        fontSize: 12,
+                                        fontSize: 10,
                                         fontWeight: FontWeight.bold,
                                         decoration: TextDecoration.underline)),
                                 text: 'Policies',

@@ -245,13 +245,13 @@ class _TeachersLoginState extends State<TeachersLogin> {
                             child: Text(
                               'Register',
                               style: TextStyle(
-                                  fontSize: 12,
+                                  fontSize: 14,
                                   decoration: TextDecoration.underline),
                             ),
                           ),
                           RichText(
                             text: TextSpan(
-                              style: DefaultTextStyle.of(context).style.merge(TextStyle(fontSize: 12,fontWeight: FontWeight.bold,decoration: TextDecoration.underline)),
+                              style: DefaultTextStyle.of(context).style.merge(TextStyle(fontSize: 10,fontWeight: FontWeight.bold,decoration: TextDecoration.underline)),
                               text: 'Policies',
                               recognizer: TapGestureRecognizer()
                               ..onTap= () {

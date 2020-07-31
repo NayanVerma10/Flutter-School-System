@@ -115,7 +115,7 @@ class _SubjectDetailsState extends State<SubjectDetails>
               Icons.videocam,
             ),
             onPressed: videoChat,
-            textColor: Colors.white,
+            textColor: Theme.of(context).accentColor,
           ),
         ],
         // iconTheme: new IconThemeData(color: Colors.white),
