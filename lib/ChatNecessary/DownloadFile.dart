@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-//import 'package:universal_html/html.dart' as html;
+import 'package:universal_html/html.dart' as html;
 
 Future<bool> downloadFile(String url, String text, BuildContext context) async {
   Dio dio = Dio();
@@ -29,10 +29,10 @@ Future<bool> downloadFile(String url, String text, BuildContext context) async {
     } else {
       // This Code will run on web
 
-      // html.AnchorElement anchorElement = new html.AnchorElement(href: url)
-      //   ..setAttribute("download", text)
-      //   ..target='_blank'
-      //   ..click();
+      html.AnchorElement anchorElement = new html.AnchorElement(href: url)
+         ..setAttribute("download", text)
+         ..target='_blank'
+         ..click();
 
     }
   } catch (e) {

@@ -1,3 +1,4 @@
+import 'package:Schools/ChatNecessary/DownloadFile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import '../../ChatNecessary/UploadFile.dart';
@@ -20,7 +21,7 @@ class _AddCSVStudentsState extends State<AddCSVStudents> {
       print(files);
       files.forEach((file) async{
         print('+++');
-        ReadCSVTeacher(file, schoolCode);
+        ReadCSVStudents(file, schoolCode);
 
       });
     });
@@ -78,6 +79,8 @@ class _AddCSVStudentsState extends State<AddCSVStudents> {
                           child: InkWell(
                             child:
                             Image.asset('images/sheet.png'),
+                            onTap: () =>downloadFile('https://firebasestorage.googleapis.com/v0/b/aatmanirbhar-51cd2.appspot.com/o/Template%2FstudentTemplate.xlsx?alt=media&token=fe0656d0-adba-40d2-924a-ae58668d66f5', 'studentTemplate.xlsx', context) ,
+
 
                           ),
                         ),
@@ -104,6 +107,7 @@ class _AddCSVStudentsState extends State<AddCSVStudents> {
             heroTag: null,
             child: Icon(Icons.cloud_upload),
             onPressed: () {
+              callback();
 
             },
           ),

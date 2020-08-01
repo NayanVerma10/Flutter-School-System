@@ -1,3 +1,4 @@
+import 'package:Schools/ChatNecessary/DownloadFile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import '../../ChatNecessary/UploadFile.dart';
@@ -78,6 +79,7 @@ class _AddCSVTeachersState extends State<AddCSVTeachers> {
                           child: InkWell(
                             child:
                             Image.asset('images/sheet.png'),
+                              onTap: () =>downloadFile('https://firebasestorage.googleapis.com/v0/b/aatmanirbhar-51cd2.appspot.com/o/Template%2FteacherTemplate.xlsx?alt=media&token=e307dc37-de41-4921-ad37-e92cb85a5a5f', 'Teachers Database.xlsx', context) ,
 
                           ),
                         ),
@@ -104,6 +106,7 @@ class _AddCSVTeachersState extends State<AddCSVTeachers> {
             heroTag: null,
             child: Icon(Icons.cloud_upload),
             onPressed: () {
+              callback();
 
             },
           ),
