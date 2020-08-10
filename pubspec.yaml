@@ -32,8 +32,8 @@ dependencies:
   firebase_auth:  #Added by Nayan for Sign in
   google_sign_in: #Added by Nayan for Sign in
   firebase_core:
-  firebase_analytics:
   firebase:
+  firebase_messaging: #Added By Nayan for Push Notifications
 
   # Other Dependencies
   grouped_buttons:
@@ -77,8 +77,8 @@ dev_dependencies:
 flutter_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/AppIcon/Logo.jpeg"
-
+  image_path: "assets/AppIcon/LOGO.jpeg"
+  
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -132,9 +132,11 @@ flutter:
     - assets/images/tutorials2.jpg
     - assets/images/profile.jpg
     - assets/images/coverimage.jpg
+    - assets/images/sheet.png
     - assets/images/LOGO.jpeg
     - assets/AppIcon/Logo.png
     - assets/AppIcon/Logo.svg
+
 
 
 

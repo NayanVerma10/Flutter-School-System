@@ -85,7 +85,6 @@ class _ChatBoxState extends State<ChatBox> {
         'isTeacher': sender_isTeacher,
         'url': sender['url'],
       },
-      merge: true,
     );
     await _firestore
         .collection('School')
@@ -104,7 +103,6 @@ class _ChatBoxState extends State<ChatBox> {
         'isTeacher': reciever_isTeacher,
         'url': reciever['url'],
       },
-      merge: true,
     );
   }
 
