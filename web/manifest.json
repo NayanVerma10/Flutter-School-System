@@ -1,0 +1,23 @@
+{
+    "name": "Aatmanirbhar Institutions",
+    "short_name": "Aatmanirbhar Institutions",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#0175C2",
+    "theme_color": "#0175C2",
+    "description": "A new Flutter project.",
+    "orientation": "portrait-primary",
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "icons/Logo.svg",
+            "sizes": "244x241",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/LOGO.jpeg",
+            "sizes": "244x240",
+            "type": "image/png"
+        }
+    ]
+}
