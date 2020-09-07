@@ -7,7 +7,7 @@ class Policies extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leadingWidth: 40,
+        leading: Padding(padding: EdgeInsets.only(left:40)),
         titleSpacing: 0,
         title: Row(
           children: [
