@@ -1,17 +1,27 @@
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:universal_html/html.dart';
-import '../Chat/FlutterWebFileUpload.dart';
-import 'GroupChats.dart';
-import 'dart:io' as io;
+import 'CreateGroupUsersList.dart';
+import 'dart:io';
 import 'dart:async';
+import 'ChatList.dart';
 
 class GroupName extends StatefulWidget {
   String schoolCode;
-  GroupName(this.schoolCode);
+  List<User> list = List<User>();
+  String userId;
+  bool isTeacher;
+  GroupName(
+    this.schoolCode,
+    this.list,
+    this.userId,
+    this.isTeacher,
+  );
 
   @override
   _GroupNameState createState() => _GroupNameState();
@@ -19,31 +29,42 @@ class GroupName extends StatefulWidget {
 
 class _GroupNameState extends State<GroupName> {
   String name = "", description = "";
+  PickedFile _pickedFile;
 
-  ImageProvider _selectedImage;
+  File _image;
+  final picker = ImagePicker();
+  File _selectedFile;
+  bool _inProcess = false;
+  Uint8List bytesList;
+  Image webImage;
 
-  // String _uploadedFileURL;
-
-  // var _fileBytes;
-  // Image _imageWidget;
-  // File cropped;
-
-  Future<void> getImage() async {
-    if (kIsWeb) {
-      Image image = await FlutterWebFileUpload();
+  Future getImageFromGallery() async {
+    this.setState(() {
+      _inProcess = true;
+    });
+      _pickedFile = await picker.getImage(source: ImageSource.gallery);
+      print(_pickedFile.path);
+      Image webImage1 = Image.network(_pickedFile.path);
+      print(webImage1.image.toString());
+      Uint8List bytesList1 = await _pickedFile.readAsBytes();
       setState(() {
-        _selectedImage = image.image;
+        bytesList = bytesList1;
+        webImage = Image.memory(bytesList);
       });
-    } else {
-      final _pickedFile =
-          await ImagePicker().getImage(source: ImageSource.gallery);
-
-      if (_pickedFile != null) {
-        this.setState(() {
-          _selectedImage = Image.file(io.File(_pickedFile.path)).image;
-        });
-      }
-    }
+    // } else {
+    //   _pickedFile = await picker.getImage(source: ImageSource.gallery);
+    //   if (_pickedFile != null) {
+    //     setState(() {
+    //       _image = File(_pickedFile.path);
+    //       _selectedFile = _image;
+    //       _inProcess = false;
+    //     });
+    //   } else {
+    //     this.setState(() {
+    //       _inProcess = false;
+    //     });
+    //   }
+    //}
   }
 
   Widget editImage() {
@@ -58,8 +79,8 @@ class _GroupNameState extends State<GroupName> {
                     style:
                         TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 onPressed: () {
-                  getImage();
-                  Navigator.pop(context);
+                  getImageFromGallery();
+                  Navigator.pop(this.context);
                 }),
             FlatButton(
                 child: Text(
@@ -67,12 +88,12 @@ class _GroupNameState extends State<GroupName> {
                   textAlign: TextAlign.left,
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                onPressed: _selectedImage == null
+                onPressed: _selectedFile == null
                     ? null
                     : () {
                         setState(() {
-                          _selectedImage = null;
-                          Navigator.pop(context);
+                          _selectedFile = null;
+                          Navigator.pop(this.context);
                         });
                       }),
           ],
@@ -102,10 +123,12 @@ class _GroupNameState extends State<GroupName> {
                         decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             image: DecorationImage(
-                                image: _selectedImage != null
-                                    ? _selectedImage
-                                    : ExactAssetImage(
-                                        'assets/images/coverimage.jpg'),
+                                image: _selectedFile != null
+                                    ? Image.file(_selectedFile).image
+                                    : (kIsWeb && webImage != null
+                                        ? webImage.image
+                                        : ExactAssetImage(
+                                            'assets/images/coverimage.jpg')),
                                 fit: BoxFit.cover)),
                       )
                     ],
@@ -132,7 +155,6 @@ class _GroupNameState extends State<GroupName> {
                                           ),
                                           content: editImage(),
                                         ));
-                                //getImageFromGallery();
                               },
                               color: Colors.white,
                             ),
@@ -178,19 +200,94 @@ class _GroupNameState extends State<GroupName> {
               ),
               RaisedButton(
                 onPressed: name != "" && description != ""
-                    ? () {
-                        print(Firestore.instance
-                            .collection("School")
-                            .document(widget.schoolCode)
-                            .collection("GroupChats")
-                            .add({
-                          "Description": description,
-                          "Name": name,
-                          "GroupIcon": _selectedImage ?? null
-                        }));
-                        if (_selectedImage != null) {
-                          uploadImageFile(imageName: "${widget.schoolCode}/GroupChats/$name/icon/");
+                    ? () async {
+                        showDialog(
+                          context: this.context,
+                          barrierDismissible: false,
+                          builder: (context) => AlertDialog(
+                            content: Row(
+                              children: [
+                                CircularProgressIndicator(),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text("Please wait....")
+                              ],
+                            ),
+                          ),
+                        );
+                        DocumentReference docRef;
+                        if (bytesList!=null) {
+                          
+                            docRef = await Firestore.instance
+                                .collection("School")
+                                .document(widget.schoolCode)
+                                .collection("GroupChats")
+                                .add({
+                              "Description": description,
+                              "Name": name,
+                              "Icon": List<int>.unmodifiable(bytesList),
+                            });
+                          } else {
+                            docRef = await Firestore.instance
+                                .collection("School")
+                                .document(widget.schoolCode)
+                                .collection("GroupChats")
+                                .add({
+                              "Description": description,
+                              "Name": name,
+                              "Icon": null,
+                            });
+                          }
+                        if (docRef != null) {
+                          CollectionReference teachersRef = Firestore.instance
+                              .collection("School")
+                              .document(widget.schoolCode)
+                              .collection("Teachers");
+                          CollectionReference studentsRef = Firestore.instance
+                              .collection("School")
+                              .document(widget.schoolCode)
+                              .collection("Student");
+                          widget.list.forEach((element) async {
+                            if (element.id.compareTo(widget.userId)==0 &&
+                                element.isTeacher == widget.isTeacher) {
+                              element.isAdmin = true;
+                            } else {
+                              element.isAdmin = false;
+                            }
+                            await docRef
+                                .collection("Members")
+                                .document(element.id +
+                                    "_" +
+                                    (element.isTeacher ? "true" : "false"))
+                                .setData(element.toMap());
+                            if (element.isTeacher != null &&
+                                element.isTeacher) {
+                              await teachersRef
+                                  .document(element.id)
+                                  .collection("GroupsJoined")
+                                  .document(docRef.documentID)
+                                  .setData({});
+                            } else {
+                              await studentsRef
+                                  .document(element.id)
+                                  .collection("GroupsJoined")
+                                  .document(docRef.documentID)
+                                  .setData({});
+                            }
+                            await docRef
+                                .collection('ChatMessages')
+                                .document(timeToString())
+                                .setData({});
+                          });
                         }
+                        Navigator.pop(context);
+                        Navigator.pop(context, [
+                          docRef,
+                          widget.schoolCode,
+                          widget.userId,
+                          widget.isTeacher
+                        ]);
                       }
                     : null,
                 child: Text(
@@ -203,22 +300,4 @@ class _GroupNameState extends State<GroupName> {
           ),
         ));
   }
-
-  // String picName = timeToString();
-
-  // Future uploadFile() async {
-  //   var ref = FirebaseStorage.instance
-  //       .ref()
-  //       .child(widget.schoolCode)
-  //       .child("GroupChats")
-  //       .child('${timeToString()}.jpg}');
-  //   var uploadTask = ref.putFile(cropped);
-  //   await uploadTask.onComplete;
-  //   print('File Uploaded');
-  //   ref.getDownloadURL().then((fileURL) {
-  //     setState(() {
-  //       _uploadedFileURL = fileURL;
-  //     });
-  //   });
-  // }
 }

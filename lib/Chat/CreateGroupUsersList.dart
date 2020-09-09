@@ -2,92 +2,8 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
-import 'ChatBox.dart';
-import 'ChatInitialScreen.dart';
+import 'ChatList.dart';
 import 'GroupName.dart';
-
-
-
-class GroupChat extends StatefulWidget {
-  AsyncSnapshot snapshot;
-  String docId, schoolCode;
-  GroupChat(this.snapshot, this.docId, this.schoolCode);
-  @override
-  _GroupChatState createState() => _GroupChatState(snapshot, docId, schoolCode);
-}
-
-class _GroupChatState extends State<GroupChat> {
-  List<Widget> list;
-  AsyncSnapshot snapshot;
-  String docId, schoolCode;
-  _GroupChatState(this.snapshot, this.docId, this.schoolCode);
-  @override
-  void initState() {
-    super.initState();
-    list = List();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    List<DocumentSnapshot> groupIds = snapshot.data.documents;
-    groupIds.forEach((element) {
-      list.add(ListTile(
-        title: Text(
-          element.documentID,
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        subtitle: StreamBuilder(
-          stream: Firestore.instance
-              .collection("School")
-              .document(schoolCode)
-              .collection("GroupChats")
-              .document(element.documentID)
-              .collection("ChatMessages")
-              .snapshots(),
-          builder: (context, snap) {
-            if (!snap.hasData ||
-                snap.connectionState == ConnectionState.waiting) {
-              return Text("Please wait fetching messages....");
-            }
-            QuerySnapshot sp = snap.data;
-            List<DocumentSnapshot> docs = snap.data.documents ?? [];
-            return Text(docs.first["text"]);
-          },
-        ),
-      ));
-    });
-    if (list.length > 0) {
-      return ListView(
-        children: list,
-      );
-    } else {
-      return Center(
-        child: Text("Nothing to show here!"),
-      );
-    }
-  }
-}
-
-class User {
-  String id;
-  String name;
-  String mobile;
-  String classNumber;
-  String section;
-  bool isTeacher;
-  String imgURL;
-
-  User({
-    this.id,
-    this.name,
-    this.mobile,
-    this.classNumber,
-    this.section,
-    this.isTeacher,
-    this.imgURL,
-  });
-}
 
 class Debouncer {
   final int milliseconds;
@@ -106,22 +22,35 @@ class Debouncer {
 
 class CreateGroup extends StatefulWidget {
   String schoolCode, userId;
-  CreateGroup(this.schoolCode, this.userId);
+  static DocumentReference _docRef;
+  bool isTeacher;
+  List<User> alreadyAdded;
+  static set docRef(DocumentReference value) {
+    _docRef = value;
+  }
+
+  CreateGroup(this.schoolCode, this.userId, this.isTeacher,
+      {this.alreadyAdded});
 
   @override
-  _CreateGroupState createState() => _CreateGroupState(schoolCode, userId);
+  _CreateGroupState createState() =>
+      _CreateGroupState(schoolCode, userId, isTeacher,
+          alreadyAdded: alreadyAdded);
 }
 
 class _CreateGroupState extends State<CreateGroup> {
   String schoolCode, userId;
-  _CreateGroupState(this.schoolCode, this.userId);
+  bool isTeacher;
+  List<User> alreadyAdded;
+  _CreateGroupState(this.schoolCode, this.userId, this.isTeacher,
+      {this.alreadyAdded});
   Debouncer _debouncer = new Debouncer(milliseconds: 500);
   List<User> users = List();
   List<User> filteredUsers = List();
   bool loading = true;
   List<bool> totalUsers;
   int count = 0;
-
+  User user;
   void loadData() async {
     await Firestore.instance
         .collection('School')
@@ -129,7 +58,7 @@ class _CreateGroupState extends State<CreateGroup> {
         .collection('Student')
         .getDocuments()
         .then((value) => value.documents.forEach((element) {
-              users.add(User(
+              User currentUser = User(
                 mobile: (element.data['mobile'] ?? ''),
                 id: element.documentID,
                 name: (element.data['first name'] ?? '') +
@@ -138,8 +67,15 @@ class _CreateGroupState extends State<CreateGroup> {
                 classNumber: element.data['class'] ?? '',
                 section: element.data['section'] ?? '',
                 isTeacher: false,
-                imgURL: element.data['url'],
-              ));
+                imgURL: (element.data['url'] ?? '') == ''
+                    ? null
+                    : element.data['url'],
+              );
+              if (alreadyAdded == null ||
+                  (alreadyAdded != null &&
+                      !alreadyAdded.contains(currentUser))) {
+                users.add(currentUser);
+              }
             }));
 
     await Firestore.instance
@@ -148,7 +84,7 @@ class _CreateGroupState extends State<CreateGroup> {
         .collection('Teachers')
         .getDocuments()
         .then((value) => value.documents.forEach((element) {
-              users.add(User(
+              User currentUser = User(
                 mobile: element.data['mobile'] ?? '',
                 id: element.documentID,
                 name: (element.data['first name'] ?? '') +
@@ -156,14 +92,48 @@ class _CreateGroupState extends State<CreateGroup> {
                     (element.data['last name'] ?? ''),
                 classNumber: element.data['classteacher'] != null
                     ? element.data['classteacher']['class']
-                    : '',
+                    : (element.data['class'] ?? ''),
                 section: element.data['classteacher'] != null
                     ? element.data['classteacher']['section']
-                    : '',
+                    : element.data['section'] ?? '',
                 isTeacher: true,
-                imgURL: element.data['url'],
-              ));
+                imgURL: (element.data['url'] ?? '') == ''
+                    ? null
+                    : element.data['url'],
+              );
+              if (alreadyAdded == null ||
+                  (alreadyAdded != null &&
+                      !alreadyAdded.contains(currentUser))) {
+                users.add(currentUser);
+              }
             }));
+
+    Firestore.instance
+        .collection("School")
+        .document(schoolCode)
+        .collection(isTeacher ? "Teachers" : "Student")
+        .document(userId)
+        .get()
+        .then((value) {
+      setState(() {
+        user = User(
+            id: value.documentID,
+            name: (value.data["first name"] ?? '') +
+                    " " +
+                    value.data["last name"] ??
+                '',
+            mobile: value.data["mobile"] ?? '',
+            classNumber: value.data['classteacher'] != null
+                ? value.data['classteacher']['class']
+                : (value.data['class'] ?? ''),
+            section: value.data['classteacher'] != null
+                ? value.data['classteacher']['section']
+                : value.data['section'] ?? '',
+            isTeacher: value.data["isTeacher"] ?? false,
+            imgURL: (value.data["url"] ?? '') == '' ? null : value.data['url']);
+        users.remove(user);
+      });
+    });
     setState(() {
       filteredUsers = users;
       loading = false;
@@ -186,20 +156,39 @@ class _CreateGroupState extends State<CreateGroup> {
       appBar: AppBar(
         actions: [
           FlatButton(
-            onPressed: count == 0 ? null:() {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => GroupName(schoolCode)));
-            } ,
-            child: Row(children: [
-              Icon(Icons.done,color: count > 0 ? Colors.black : Colors.black26,),
-              Text(
-              "Done",
-              style:
-                  TextStyle(color: count > 0 ? Colors.black : Colors.black26),
+            onPressed: count == 0
+                ? null
+                : () async {
+                    List<User> usersList = List();
+                    for (int i = 0; i < users.length; i++) {
+                      if (totalUsers.elementAt(i)) {
+                        usersList.add(users.elementAt(i));
+                      }
+                    }
+                    user.isAdmin = true;
+                    usersList.add(user);
+                    var results = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => GroupName(
+                                schoolCode, usersList, userId, isTeacher)));
+                    if (results != null) {
+                      Navigator.pop(context, results);
+                    }
+                  },
+            child: Row(
+              children: [
+                Icon(
+                  Icons.done,
+                  color: count > 0 ? Colors.black : Colors.black26,
+                ),
+                Text(
+                  "Done",
+                  style: TextStyle(
+                      color: count > 0 ? Colors.black : Colors.black26),
+                ),
+              ],
             ),
-            ],),
           )
         ],
         title: Text('$count selected'),

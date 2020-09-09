@@ -10,6 +10,7 @@ class User {
   String section;
   bool isTeacher;
   String imgURL;
+  bool isAdmin = false;
 
   User({
     this.id,
@@ -19,7 +20,20 @@ class User {
     this.section,
     this.isTeacher,
     this.imgURL,
+    this.isAdmin,
   });
+  Map<String, dynamic> toMap() {
+    return {
+      "id": id,
+      "name": name ?? '',
+      "mobile": mobile,
+      "classNumber": classNumber,
+      "section": section,
+      "isTeacher": isTeacher,
+      "imgURL": imgURL,
+      "isAdmin":isAdmin,
+    };
+  }
 }
 
 class Debouncer {
@@ -61,13 +75,13 @@ class _ChatListState extends State<ChatList> {
         .getDocuments()
         .then((value) => value.documents.forEach((element) {
               users.add(User(
-                mobile: (element.data['mobile']??''),
+                mobile: (element.data['mobile'] ?? ''),
                 id: element.documentID,
-                name: (element.data['first name']??'') +
+                name: (element.data['first name'] ?? '') +
                     ' ' +
-                    (element.data['last name']??''),
-                classNumber: element.data['class']??'',
-                section: element.data['section']??'',
+                    (element.data['last name'] ?? ''),
+                classNumber: element.data['class'] ?? '',
+                section: element.data['section'] ?? '',
                 isTeacher: false,
                 imgURL: element.data['url'],
               ));
@@ -80,13 +94,17 @@ class _ChatListState extends State<ChatList> {
         .getDocuments()
         .then((value) => value.documents.forEach((element) {
               users.add(User(
-                mobile: element.data['mobile']??'',
+                mobile: element.data['mobile'] ?? '',
                 id: element.documentID,
-                name: (element.data['first name'] ??'')+
+                name: (element.data['first name'] ?? '') +
                     ' ' +
-                    (element.data['last name']??''),
-                classNumber: element.data['classteacher']!=null?element.data['classteacher']['class']:'',
-                section: element.data['classteacher']!=null?element.data['classteacher']['section']:'',
+                    (element.data['last name'] ?? ''),
+                classNumber: element.data['classteacher'] != null
+                    ? element.data['classteacher']['class']
+                    : '',
+                section: element.data['classteacher'] != null
+                    ? element.data['classteacher']['section']
+                    : '',
                 isTeacher: true,
                 imgURL: element.data['url'],
               ));
@@ -155,14 +173,24 @@ class _ChatListState extends State<ChatList> {
                         child: Padding(
                             padding: EdgeInsets.all(3.0),
                             child: ListTile(
-                              leading: filteredUsers[index].imgURL != null ?CircleAvatar(
-                                backgroundColor: Colors.grey[300],
-                                backgroundImage: NetworkImage(filteredUsers[index].imgURL),
-                              ):CircleAvatar(
-                                backgroundColor: Colors.grey[300],
-                                foregroundColor: Colors.black54,
-                                child:Text(filteredUsers[index].name.split('')[0][0].toUpperCase()+filteredUsers[index].name.split(' ')[1][0].toUpperCase()),
-                              ),
+                              leading: filteredUsers[index].imgURL != null
+                                  ? CircleAvatar(
+                                      backgroundColor: Colors.grey[300],
+                                      backgroundImage: NetworkImage(
+                                          filteredUsers[index].imgURL),
+                                    )
+                                  : CircleAvatar(
+                                      backgroundColor: Colors.grey[300],
+                                      foregroundColor: Colors.black54,
+                                      child: Text(filteredUsers[index]
+                                              .name
+                                              .split('')[0][0]
+                                              .toUpperCase() +
+                                          filteredUsers[index]
+                                              .name
+                                              .split(' ')[1][0]
+                                              .toUpperCase()),
+                                    ),
                               title: Text(
                                 filteredUsers[index].name.toUpperCase(),
                                 style: TextStyle(fontWeight: FontWeight.bold),
@@ -173,7 +201,9 @@ class _ChatListState extends State<ChatList> {
                                   ' - ' +
                                   filteredUsers[index].section),
                               isThreeLine: true,
-                              trailing: Text(filteredUsers[index].isTeacher?'Teacher':'Student'),
+                              trailing: Text(filteredUsers[index].isTeacher
+                                  ? 'Teacher'
+                                  : 'Student'),
                               dense: false,
                               onTap: () {
                                 Navigator.pop(context, [
