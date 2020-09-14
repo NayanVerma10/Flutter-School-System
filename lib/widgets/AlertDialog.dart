@@ -10,6 +10,7 @@ showLoaderDialog(BuildContext context, String text) {
     ),
   );
   showDialog(
+    routeSettings: RouteSettings(name: 'Loading'),
     barrierDismissible: false,
     context: context,
     builder: (BuildContext context) {

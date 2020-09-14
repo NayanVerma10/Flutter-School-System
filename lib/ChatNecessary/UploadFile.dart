@@ -20,7 +20,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 
 Future<List<File>> attachment() async {
   List<File> files;
-  files = await FilePicker.getMultiFile();
+  files = (await FilePicker.platform.pickFiles(allowMultiple: true)).files.cast();
   return files;
 }
 

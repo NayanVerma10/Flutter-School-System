@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:Schools/Chat/GroupChatBox.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'ChatList.dart';
@@ -40,7 +41,7 @@ class CreateGroup extends StatefulWidget {
 
 class _CreateGroupState extends State<CreateGroup> {
   String schoolCode, userId;
-  bool isTeacher;
+  bool isTeacher, value;
   List<User> alreadyAdded;
   _CreateGroupState(this.schoolCode, this.userId, this.isTeacher,
       {this.alreadyAdded});
@@ -48,7 +49,7 @@ class _CreateGroupState extends State<CreateGroup> {
   List<User> users = List();
   List<User> filteredUsers = List();
   bool loading = true;
-  List<bool> totalUsers;
+  Map<String, bool> totalUsers;
   int count = 0;
   User user;
   void loadData() async {
@@ -58,6 +59,7 @@ class _CreateGroupState extends State<CreateGroup> {
         .collection('Student')
         .getDocuments()
         .then((value) => value.documents.forEach((element) {
+              totalUsers[element.documentID + "_false"] = false;
               User currentUser = User(
                 mobile: (element.data['mobile'] ?? ''),
                 id: element.documentID,
@@ -67,13 +69,10 @@ class _CreateGroupState extends State<CreateGroup> {
                 classNumber: element.data['class'] ?? '',
                 section: element.data['section'] ?? '',
                 isTeacher: false,
-                imgURL: (element.data['url'] ?? '') == ''
-                    ? null
-                    : element.data['url'],
+                imgURL: element.data['url'],
+                isAdmin: false,
               );
-              if (alreadyAdded == null ||
-                  (alreadyAdded != null &&
-                      !alreadyAdded.contains(currentUser))) {
+              if (alreadyAdded == null || !alreadyAdded.contains(currentUser)) {
                 users.add(currentUser);
               }
             }));
@@ -84,6 +83,7 @@ class _CreateGroupState extends State<CreateGroup> {
         .collection('Teachers')
         .getDocuments()
         .then((value) => value.documents.forEach((element) {
+              totalUsers[element.documentID + "_true"] = false;
               User currentUser = User(
                 mobile: element.data['mobile'] ?? '',
                 id: element.documentID,
@@ -92,23 +92,20 @@ class _CreateGroupState extends State<CreateGroup> {
                     (element.data['last name'] ?? ''),
                 classNumber: element.data['classteacher'] != null
                     ? element.data['classteacher']['class']
-                    : (element.data['class'] ?? ''),
+                    : '',
                 section: element.data['classteacher'] != null
                     ? element.data['classteacher']['section']
-                    : element.data['section'] ?? '',
+                    : '',
                 isTeacher: true,
-                imgURL: (element.data['url'] ?? '') == ''
-                    ? null
-                    : element.data['url'],
+                imgURL: element.data['url'],
+                isAdmin: false,
               );
-              if (alreadyAdded == null ||
-                  (alreadyAdded != null &&
-                      !alreadyAdded.contains(currentUser))) {
+              if (alreadyAdded == null || !alreadyAdded.contains(currentUser)) {
                 users.add(currentUser);
               }
             }));
 
-    Firestore.instance
+    await Firestore.instance
         .collection("School")
         .document(schoolCode)
         .collection(isTeacher ? "Teachers" : "Student")
@@ -117,29 +114,27 @@ class _CreateGroupState extends State<CreateGroup> {
         .then((value) {
       setState(() {
         user = User(
-            id: value.documentID,
-            name: (value.data["first name"] ?? '') +
-                    " " +
-                    value.data["last name"] ??
-                '',
-            mobile: value.data["mobile"] ?? '',
-            classNumber: value.data['classteacher'] != null
-                ? value.data['classteacher']['class']
-                : (value.data['class'] ?? ''),
-            section: value.data['classteacher'] != null
-                ? value.data['classteacher']['section']
-                : value.data['section'] ?? '',
-            isTeacher: value.data["isTeacher"] ?? false,
-            imgURL: (value.data["url"] ?? '') == '' ? null : value.data['url']);
-        users.remove(user);
+          id: value.documentID,
+          name: (value.data["first name"] ?? '') +
+              " " +
+              (value.data["last name"] ?? ''),
+          mobile: (value.data["mobile"] ?? ''),
+          classNumber: value.data['classteacher'] != null
+              ? value.data['classteacher']['class']
+              : (value.data['class'] ?? ''),
+          section: value.data['classteacher'] != null
+              ? value.data['classteacher']['section']
+              : (value.data['section'] ?? ''),
+          isTeacher: isTeacher,
+          imgURL: value.data["url"],
+          isAdmin: false,
+        );
       });
     });
+    users.remove(user);
     setState(() {
       filteredUsers = users;
       loading = false;
-      for (int i = 0; i < users.length; i++) {
-        totalUsers.add(false);
-      }
     });
   }
 
@@ -147,33 +142,55 @@ class _CreateGroupState extends State<CreateGroup> {
   void initState() {
     super.initState();
     loadData();
-    totalUsers = List();
+    totalUsers = Map();
+    value = false;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              if (alreadyAdded != null)
+              Navigator.pop(context);
+              
+                // Navigator.popUntil(
+                //     context, ModalRoute.withName('GroupChatBox'));
+              else {
+                Navigator.pop(context);
+              }
+            }),
         actions: [
           FlatButton(
             onPressed: count == 0
                 ? null
                 : () async {
                     List<User> usersList = List();
-                    for (int i = 0; i < users.length; i++) {
-                      if (totalUsers.elementAt(i)) {
-                        usersList.add(users.elementAt(i));
+                    users.forEach((element) {
+                      if (totalUsers[element.id +
+                          "_" +
+                          (element.isTeacher ? "true" : "false")]) {
+                        usersList.add(element);
                       }
-                    }
-                    user.isAdmin = true;
-                    usersList.add(user);
-                    var results = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => GroupName(
-                                schoolCode, usersList, userId, isTeacher)));
-                    if (results != null) {
-                      Navigator.pop(context, results);
+                    });
+                    //print("length " + alreadyAdded.length.toString());
+                    if (alreadyAdded == null || alreadyAdded.length == 0) {
+                      user.isAdmin = true;
+                      usersList.add(user);
+                      var results = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              settings: RouteSettings(name: 'GroupName'),
+                              builder: (context) => GroupName(
+                              
+                                  schoolCode, usersList, userId, isTeacher)));
+                      if (results != null) {
+                        Navigator.pop(context, results);
+                      }
+                    } else {
+                      Navigator.pop(context, usersList);
                     }
                   },
             child: Row(
@@ -228,8 +245,45 @@ class _CreateGroupState extends State<CreateGroup> {
                     });
                   },
                 ),
+                ListTile(
+                  onTap: () {
+                    setState(() {
+                      value = (!value);
+                      filteredUsers.forEach((element) {
+                        totalUsers[element.id +
+                            "_" +
+                            (element.isTeacher ? "true" : "false")] = value;
+                      });
+                      count = 0;
+                      totalUsers.forEach((key, value) {
+                        if (value) count++;
+                      });
+                    });
+                  },
+                  title: Text(
+                    'Select All',
+                    style: TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.bold),
+                  ),
+                  leading: Checkbox(
+                      value: value,
+                      onChanged: (val) {
+                        setState(() {
+                          value = val;
+                          filteredUsers.forEach((element) {
+                            totalUsers[element.id +
+                                "_" +
+                                (element.isTeacher ? "true" : "false")] = val;
+                          });
+                          count = 0;
+                          totalUsers.forEach((key, value) {
+                            if (value) count++;
+                          });
+                        });
+                      }),
+                ),
                 Expanded(
-                  child: ListView.builder(
+                  child: ListView.separated(
                     padding: EdgeInsets.all(0),
                     itemCount: filteredUsers.length,
                     itemBuilder: (BuildContext context, int index) {
@@ -239,15 +293,56 @@ class _CreateGroupState extends State<CreateGroup> {
                         child: Padding(
                             padding: EdgeInsets.all(3.0),
                             child: ListTile(
+                              onTap: () {
+                                setState(() {
+                                  totalUsers[filteredUsers.elementAt(index).id +
+                                      "_" +
+                                      (filteredUsers.elementAt(index).isTeacher
+                                          ? "true"
+                                          : "false")] = (!totalUsers[
+                                      filteredUsers.elementAt(index).id +
+                                          "_" +
+                                          (filteredUsers
+                                                  .elementAt(index)
+                                                  .isTeacher
+                                              ? "true"
+                                              : "false")]);
+                                  if (totalUsers[filteredUsers
+                                          .elementAt(index)
+                                          .id +
+                                      "_" +
+                                      (filteredUsers.elementAt(index).isTeacher
+                                          ? "true"
+                                          : "false")])
+                                    count++;
+                                  else
+                                    count--;
+                                });
+                              },
                               leading: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   Checkbox(
-                                      value: totalUsers[index],
+                                      value: totalUsers[
+                                          filteredUsers.elementAt(index).id +
+                                              "_" +
+                                              (filteredUsers
+                                                      .elementAt(index)
+                                                      .isTeacher
+                                                  ? "true"
+                                                  : "false")],
                                       onChanged: (value) {
                                         setState(() {
-                                          totalUsers[index] = value;
+                                          totalUsers[filteredUsers
+                                                  .elementAt(index)
+                                                  .id +
+                                              "_" +
+                                              (filteredUsers
+                                                      .elementAt(index)
+                                                      .isTeacher
+                                                  ? "true"
+                                                  : "false")] = value;
                                           value ? count++ : count--;
                                         });
                                       }),
@@ -288,6 +383,12 @@ class _CreateGroupState extends State<CreateGroup> {
                             )),
                       );
                     },
+                    separatorBuilder: (context, index) => Divider(
+                      height: 1,
+                      thickness: 1,
+                      indent: 70,
+                      color: Colors.black12,
+                    ),
                   ),
                 ),
               ],

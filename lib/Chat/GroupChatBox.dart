@@ -1,9 +1,17 @@
-import 'dart:typed_data';
+import 'dart:io';
 
 import 'package:Schools/ChatNecessary/MessageBubble.dart';
 import 'package:Schools/ChatNecessary/UploadFile.dart';
+import 'package:Schools/Screens/StudentScreens/main.dart';
+import 'package:Schools/Screens/TeacherScreens/main.dart';
+import 'package:Schools/plugins/url_launcher.dart';
+import 'package:bubble/bubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'ChatList.dart';
 import 'CreateGroupUsersList.dart';
 import 'ChatBox.dart';
 import 'GroupDetails.dart';
@@ -23,33 +31,18 @@ class GroupChatBox extends StatefulWidget {
 }
 
 class _GroupChatBoxState extends State<GroupChatBox> {
-  String groupName;
-  String name1, name2;
-  bool loading = true, isAdmin;
+  String groupName, icon, name;
+  List<User> members;
+  bool isAdmin = false, inProcess1 = true, inProcess2 = true;
   final _firestore = Firestore.instance;
   int limitOfMessages = 40;
   TextEditingController messageController = TextEditingController();
   ScrollController scrollController = ScrollController();
-  Uint8List bytes;
+
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
-    widget.GroupRef.get().then((value) {
-      setState(() {
-        bytes = Uint8List.fromList(List<int>.unmodifiable(value.data["Icon"]));
-        groupName = value.data["Name"];
-      });
-    });
-    Firestore.instance
-        .collection("School")
-        .document(widget.schoolCode)
-        .collection(widget.isTeacher ? "Teachers" : "Student")
-        .document(widget.userId)
-        .get()
-        .then((value) {
-      name1 = value.data["first name"];
-      name2 = value.data["last name"];
-    });
     Firestore.instance
         .collection("School")
         .document(widget.schoolCode)
@@ -57,10 +50,21 @@ class _GroupChatBoxState extends State<GroupChatBox> {
         .document(widget.GroupRef.documentID)
         .collection("Members")
         .document(widget.userId + "_" + (widget.isTeacher ? "true" : "false"))
-        .get()
-        .then((value) => setState(() {
-              isAdmin = value.data['isAdmin'];
-            }));
+        .snapshots()
+        .listen((event) {
+      if (event != null && event.data != null) {
+        setState(() {
+          name = event.data['name'];
+          isAdmin = event.data['isAdmin'];
+        });
+      }
+    });
+    widget.GroupRef.snapshots().listen((event) {
+      setState(() {
+        icon = event.data['Icon'];
+        groupName = event.data['Name'];
+      });
+    });
   }
 
   Future<void> callback(String type, String text, {String fileURL = ''}) async {
@@ -76,11 +80,11 @@ class _GroupChatBoxState extends State<GroupChatBox> {
         .document(timeToString())
         .setData({
       'text': text,
-      'from': (name1 ?? '') + ' ' + name2,
+      'name': name,
       'fromId': widget.userId,
       'type': type,
       'isTeacher': widget.isTeacher,
-      'fileURL': fileURL,
+      'url': fileURL,
       'date': date,
     });
   }
@@ -90,14 +94,24 @@ class _GroupChatBoxState extends State<GroupChatBox> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        leading: Padding(padding: EdgeInsets.only(left: 35)),
+        leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () => Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                    builder: (BuildContext context) => (widget.isTeacher)
+                        ? MyAppTeacher(widget.schoolCode, widget.userId)
+                        : MyAppStudent(widget.schoolCode, widget.userId)),
+                (route) => false)),
         titleSpacing: 0,
         title: Row(
           children: <Widget>[
-            bytes != null
+            icon != null
                 ? CircleAvatar(
-                    backgroundImage: Image.memory(bytes).image,
-                  )
+                    backgroundImage: Image.network(
+                    icon,
+                    fit: BoxFit.cover,
+                  ).image)
                 : CircleAvatar(
                     child: Icon(
                       Icons.people,
@@ -108,7 +122,7 @@ class _GroupChatBoxState extends State<GroupChatBox> {
             SizedBox(
               width: 10,
             ),
-            TextButton(
+            FlatButton(
               child: Text(
                 groupName ?? "",
                 style: TextStyle(
@@ -116,135 +130,227 @@ class _GroupChatBoxState extends State<GroupChatBox> {
                     fontWeight: FontWeight.bold,
                     fontSize: 20),
               ),
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            GroupDetails(widget.GroupRef, isAdmin)));
-              },
+              onPressed: (groupName == null || name == null || isAdmin == null)
+                  ? null
+                  : () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          settings: RouteSettings(name: 'GroupDetails'),
+                          builder: (context) => GroupDetails(
+                            widget.schoolCode,
+                            widget.GroupRef,
+                            widget.userId,
+                            widget.isTeacher,
+                            isAdmin,
+                            name,
+                          ),
+                        ),
+                      );
+                    },
             ),
           ],
         ),
         actions: <Widget>[
-          // IconButton(
-          //     icon: Icon(Icons.call),
-          //     onPressed: () {
-          //       URLLauncher('tel:' + reciever['mobile']);
-          //     }),
           IconButton(
+              tooltip: isAdmin ? 'Add a member' : 'Only admin can add members',
               icon: Icon(
                 Icons.person_add,
                 color: Colors.black,
               ),
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => CreateGroup(widget.schoolCode,
-                            widget.userId, widget.isTeacher)));
-              }),
+              onPressed: isAdmin
+                  ? () async {
+                      members = List<User>();
+                      await Firestore.instance
+                          .collection("School")
+                          .document(widget.schoolCode)
+                          .collection("GroupChats")
+                          .document(widget.GroupRef.documentID)
+                          .collection("Members")
+                          .getDocuments()
+                          .then((value) {
+                        setState(() {
+                          value.documents.forEach((element) {
+                            members.add(User.fromMap(element.data));
+                          });
+                        });
+                      });
+                      List<User> newUsers =
+                          await Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => CreateGroup(
+                                    widget.schoolCode,
+                                    widget.userId,
+                                    widget.isTeacher,
+                                    alreadyAdded: members,
+                                  )));
+                      if (newUsers != null) {
+                        CollectionReference teachersRef = Firestore.instance
+                            .collection("School")
+                            .document(widget.schoolCode)
+                            .collection("Teachers");
+                        CollectionReference studentsRef = Firestore.instance
+                            .collection("School")
+                            .document(widget.schoolCode)
+                            .collection("Student");
+                        newUsers.forEach((element) async {
+                          await widget.GroupRef.collection("Members")
+                              .document(element.id +
+                                  "_" +
+                                  (element.isTeacher ? "true" : "false"))
+                              .setData(element.toMap());
+                          if (element.isTeacher) {
+                            await teachersRef
+                                .document(element.id)
+                                .collection("GroupsJoined")
+                                .document(widget.GroupRef.documentID)
+                                .setData({});
+                          } else {
+                            await studentsRef
+                                .document(element.id)
+                                .collection("GroupsJoined")
+                                .document(widget.GroupRef.documentID)
+                                .setData({});
+                          }
+                          await widget.GroupRef.collection('ChatMessages')
+                              .document(timeToString())
+                              .setData({
+                            'type': 'notification',
+                            'text': '$name added ${element.name}'
+                          });
+                        });
+                      }
+                    }
+                  : null),
         ],
       ),
       /*---------------------------This the Main body of the page -----------------------------------------------*/
-      body: Container(
-        padding: EdgeInsets.symmetric(horizontal: pad),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-                stream: widget.GroupRef.collection("ChatMessages").snapshots(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData)
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  List<DocumentSnapshot> docs = snapshot.data.documents;
-                  //print(limitOfMessages);
-                  List<Widget> messages = List();
-                  if (docs.length > 0) {
-                    docs.map((doc) {
-                      messages.add(Message(
-                        key: UniqueKey(),
-                        from: doc.data['from'],
-                        text: doc.data['text'],
-                        fromId: doc.data['fromId'],
-                        isTeacher: doc.data['isTeacher'],
-                        type: doc.data['type'],
-                        date: doc.data['date'],
-                        fileURL: doc.data['fileURL'],
-                        me: widget.userId == doc.data['fromId'],
-                        pad: pad,
-                      ));
-                    });
-                  }
-                  return ListView(
-                    reverse: true,
-                    controller: scrollController,
-                    children: <Widget>[
-                      ...messages,
-                    ],
-                  );
-                },
-              ),
-            ),
-            Container(
-              decoration: BoxDecoration(color: Colors.transparent),
-              padding: EdgeInsets.symmetric(horizontal: 2, vertical: 2),
-              child: Row(
+      body: (groupName == null || name == null || isAdmin == null)
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : Container(
+              padding: EdgeInsets.symmetric(horizontal: pad),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Expanded(
-                    child: TextField(
-                      onSubmitted: (value) =>
-                          messageController.text.trim().length > 0
-                              ? callback('text', messageController.text)
-                              : null,
-                      decoration: InputDecoration(
-                        hintText: "Enter a Message...",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(70),
-                        ),
-                      ),
-                      controller: messageController,
+                    child: StreamBuilder<QuerySnapshot>(
+                      stream: widget.GroupRef.collection("ChatMessages")
+                          .limit(limitOfMessages)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData)
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        List<DocumentSnapshot> docs = snapshot.data.documents;
+                        List<Widget> messages = docs.map((doc) {
+                          if (doc.data['type']
+                                  .toString()
+                                  .compareTo('notification') ==
+                              0) {
+                            return Bubble(
+                              margin: BubbleEdges.all(4),
+                              color: Colors.black,
+                              alignment: Alignment.center,
+                              child: Text(doc.data['text'], style: TextStyle(color: Colors.white),),
+                            );
+                          }
+                          return Message(
+                            key: UniqueKey(),
+                            from: doc.data['name'],
+                            text: doc.data['text'],
+                            fromId: doc.data['fromId'],
+                            isTeacher: doc.data['isTeacher'],
+                            type: doc.data['type'],
+                            date: doc.data['date'],
+                            fileURL: doc.data['url'],
+                            me: (widget.userId == doc.data['fromId']) &
+                                (widget.isTeacher == doc.data['isTeacher']),
+                            pad: pad,
+                          );
+                        }).toList();
+                        return ListView.builder(
+                          reverse: true,
+                          controller: scrollController,
+                          itemCount: messages.length,
+                          itemBuilder: (context, index) =>
+                              messages[messages.length - index - 1],
+                        );
+                      },
                     ),
                   ),
-                  SizedBox(
-                    width: 1,
+                  Container(
+                    decoration: BoxDecoration(color: Colors.transparent),
+                    padding: EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: TextField(
+                            onSubmitted: (value) =>
+                                messageController.text.trim().length > 0
+                                    ? callback('text', messageController.text)
+                                    : null,
+                            decoration: InputDecoration(
+                              hintText: "Enter a Message...",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(70),
+                              ),
+                            ),
+                            controller: messageController,
+                          ),
+                        ),
+                        SizedBox(
+                          width: 1,
+                        ),
+                        FloatingActionButton(
+                          elevation: 0,
+                          tooltip: 'Start Meeting',
+                          child: Icon(Icons.attach_file),
+                          heroTag: null,
+                          onPressed: () async {
+                            final result = await FilePicker.platform
+                                .pickFiles(allowMultiple: true);
+                            if (result != null) {
+                              List<PlatformFile> pFiles = result.files;
+                              if (kIsWeb) {
+                                UrlUtils.UploadFiles(
+                                  result,
+                                  widget.GroupRef.collection('ChatMessages'),
+                                  "${widget.schoolCode}/GroupChats/${widget.GroupRef.documentID}/",
+                                  name: name,
+                                  isTeacher: widget.isTeacher,
+                                  fromId: widget.userId,
+                                );
+                              } else {
+                                pFiles.forEach((element) async {
+                                  List<String> fileData = await uploadToFirebase(
+                                      "${widget.schoolCode}/GroupChats/${widget.GroupRef.documentID}/",
+                                      File(element.path));
+                                  await callback('File', fileData[1],
+                                      fileURL: fileData[0]);
+                                });
+                              }
+                            }
+                          },
+                        ),
+                        SizedBox(
+                          width: 1,
+                        ),
+                        SendButton(
+                          text: "Send",
+                          callback: () {
+                            messageController.text.trim().length > 0
+                                ? callback('Text', messageController.text)
+                                : null;
+                          },
+                        )
+                      ],
+                    ),
                   ),
-                  FloatingActionButton(
-                    elevation: 0,
-                    tooltip: 'Start Meeting',
-                    child: Icon(Icons.attach_file),
-                    heroTag: null,
-                    onPressed: () async {
-                      await attachment()
-                          .then((files) => files.forEach((file) async {
-                                List<String> fileData = await uploadToFirebase(
-                                    '${widget.schoolCode}/GroupChats/${widget.GroupRef.documentID}/',
-                                    file);
-                                await callback('File', fileData[1],
-                                    fileURL: fileData[0]);
-                              }));
-                    },
-                  ),
-                  SizedBox(
-                    width: 1,
-                  ),
-                  SendButton(
-                    text: "Send",
-                    callback: () {
-                      messageController.text.trim().length > 0
-                          ? callback('Text', messageController.text)
-                          : null;
-                    },
-                  )
                 ],
               ),
             ),
-          ],
-        ),
-      ),
     );
   }
 }

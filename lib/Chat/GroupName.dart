@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:Schools/widgets/AlertDialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
@@ -7,9 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:image_picker/image_picker.dart';
 import 'CreateGroupUsersList.dart';
-import 'dart:io';
 import 'dart:async';
 import 'ChatList.dart';
+import '../plugins/url_launcher.dart';
+import 'GroupChatBox.dart';
 
 class GroupName extends StatefulWidget {
   String schoolCode;
@@ -31,40 +33,19 @@ class _GroupNameState extends State<GroupName> {
   String name = "", description = "";
   PickedFile _pickedFile;
 
-  File _image;
   final picker = ImagePicker();
-  File _selectedFile;
-  bool _inProcess = false;
-  Uint8List bytesList;
-  Image webImage;
+  Image image;
+  Uint8List bytesData;
 
   Future getImageFromGallery() async {
-    this.setState(() {
-      _inProcess = true;
-    });
-      _pickedFile = await picker.getImage(source: ImageSource.gallery);
-      print(_pickedFile.path);
-      Image webImage1 = Image.network(_pickedFile.path);
-      print(webImage1.image.toString());
-      Uint8List bytesList1 = await _pickedFile.readAsBytes();
+    _pickedFile = await picker.getImage(source: ImageSource.gallery);
+    if (_pickedFile != null) {
+      Uint8List bytesData1 = await _pickedFile.readAsBytes();
       setState(() {
-        bytesList = bytesList1;
-        webImage = Image.memory(bytesList);
+        bytesData = bytesData1;
+        image = Image.memory(bytesData);
       });
-    // } else {
-    //   _pickedFile = await picker.getImage(source: ImageSource.gallery);
-    //   if (_pickedFile != null) {
-    //     setState(() {
-    //       _image = File(_pickedFile.path);
-    //       _selectedFile = _image;
-    //       _inProcess = false;
-    //     });
-    //   } else {
-    //     this.setState(() {
-    //       _inProcess = false;
-    //     });
-    //   }
-    //}
+    }
   }
 
   Widget editImage() {
@@ -78,9 +59,9 @@ class _GroupNameState extends State<GroupName> {
                 child: Text('Add image',
                     style:
                         TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                onPressed: () {
-                  getImageFromGallery();
-                  Navigator.pop(this.context);
+                onPressed: () async {
+                  await getImageFromGallery();
+                  Navigator.pop(context);
                 }),
             FlatButton(
                 child: Text(
@@ -88,12 +69,12 @@ class _GroupNameState extends State<GroupName> {
                   textAlign: TextAlign.left,
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                onPressed: _selectedFile == null
+                onPressed: image == null
                     ? null
                     : () {
+                          Navigator.pop(context);
                         setState(() {
-                          _selectedFile = null;
-                          Navigator.pop(this.context);
+                          image = null;
                         });
                       }),
           ],
@@ -123,12 +104,10 @@ class _GroupNameState extends State<GroupName> {
                         decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             image: DecorationImage(
-                                image: _selectedFile != null
-                                    ? Image.file(_selectedFile).image
-                                    : (kIsWeb && webImage != null
-                                        ? webImage.image
-                                        : ExactAssetImage(
-                                            'assets/images/coverimage.jpg')),
+                                image: image != null
+                                    ? image.image
+                                    : ExactAssetImage(
+                                        'assets/images/coverimage.jpg'),
                                 fit: BoxFit.cover)),
                       )
                     ],
@@ -201,44 +180,30 @@ class _GroupNameState extends State<GroupName> {
               RaisedButton(
                 onPressed: name != "" && description != ""
                     ? () async {
-                        showDialog(
-                          context: this.context,
-                          barrierDismissible: false,
-                          builder: (context) => AlertDialog(
-                            content: Row(
-                              children: [
-                                CircularProgressIndicator(),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Text("Please wait....")
-                              ],
-                            ),
-                          ),
-                        );
-                        DocumentReference docRef;
-                        if (bytesList!=null) {
-                          
-                            docRef = await Firestore.instance
-                                .collection("School")
-                                .document(widget.schoolCode)
-                                .collection("GroupChats")
-                                .add({
-                              "Description": description,
-                              "Name": name,
-                              "Icon": List<int>.unmodifiable(bytesList),
-                            });
-                          } else {
-                            docRef = await Firestore.instance
-                                .collection("School")
-                                .document(widget.schoolCode)
-                                .collection("GroupChats")
-                                .add({
-                              "Description": description,
-                              "Name": name,
-                              "Icon": null,
-                            });
-                          }
+                        showLoaderDialog(context, "Please wait....");
+                        DocumentReference docRef = await Firestore.instance
+                            .collection("School")
+                            .document(widget.schoolCode)
+                            .collection("GroupChats")
+                            .add({
+                          "Description": description,
+                          "Name": name,
+                          'AdminCount': 1,
+                        });
+                        if (bytesData != null) {
+                          UrlUtils.open(
+                              bytesData,
+                              "${widget.schoolCode}/GroupChats/${docRef.documentID}/icon/" +
+                                  _pickedFile.path.split("/").last +
+                                  ".txt",
+                              docRef: docRef);
+                          await docRef.updateData({
+                            "IconFileName":
+                                _pickedFile.path.split("/").last + ".txt"
+                          });
+                        } else {
+                          await docRef.updateData({"Icon": null});
+                        }
                         if (docRef != null) {
                           CollectionReference teachersRef = Firestore.instance
                               .collection("School")
@@ -249,9 +214,17 @@ class _GroupNameState extends State<GroupName> {
                               .document(widget.schoolCode)
                               .collection("Student");
                           widget.list.forEach((element) async {
-                            if (element.id.compareTo(widget.userId)==0 &&
+                            if (element.id == widget.userId &&
                                 element.isTeacher == widget.isTeacher) {
-                              element.isAdmin = true;
+                                element.isAdmin = true;
+                              await docRef
+                                  .collection('ChatMessages')
+                                  .document(timeToString())
+                                  .setData({
+                                'type': 'notification',
+                                'text':
+                                    '${element.name} created this group and added ${widget.list.length-1} members'
+                              });
                             } else {
                               element.isAdmin = false;
                             }
@@ -261,8 +234,7 @@ class _GroupNameState extends State<GroupName> {
                                     "_" +
                                     (element.isTeacher ? "true" : "false"))
                                 .setData(element.toMap());
-                            if (element.isTeacher != null &&
-                                element.isTeacher) {
+                            if (element.isTeacher) {
                               await teachersRef
                                   .document(element.id)
                                   .collection("GroupsJoined")
@@ -275,13 +247,11 @@ class _GroupNameState extends State<GroupName> {
                                   .document(docRef.documentID)
                                   .setData({});
                             }
-                            await docRef
-                                .collection('ChatMessages')
-                                .document(timeToString())
-                                .setData({});
                           });
                         }
-                        Navigator.pop(context);
+
+                        Navigator.popUntil(
+                            context, ModalRoute.withName('GroupName'));
                         Navigator.pop(context, [
                           docRef,
                           widget.schoolCode,

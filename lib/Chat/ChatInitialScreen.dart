@@ -220,11 +220,12 @@ class _MainChatState extends State<MainChat> {
         bottomNavigationBar: BottomNavigationBar(
           items: [
             BottomNavigationBarItem(
-                icon: Icon(Icons.person), title: Text("Personal")),
+                icon: Icon(state==0?Icons.person:Icons.person_outlined), title: Text("Personal", style: TextStyle(fontWeight: state==0?FontWeight.bold:FontWeight.normal),)),
             BottomNavigationBarItem(
-                icon: Icon(Icons.people), title: Text("Groups"))
+                icon: Icon(state == 1?Icons.people:Icons.people_outlined), title: Text("Groups", style: TextStyle(fontWeight: state==1?FontWeight.bold:FontWeight.normal),))
           ],
-          selectedItemColor: Colors.amber[800],
+          selectedItemColor: Colors.black,
+          unselectedItemColor: Colors.black,
           currentIndex: state,
           onTap: (int tapped) {
             if (state != tapped) {
@@ -258,29 +259,30 @@ class _MainChatState extends State<MainChat> {
               size: 30,
             ),
             onPressed: () async {
-              dynamic results;
-              results = await Navigator.push(
+              List<dynamic> results = await Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
                           CreateGroup(schoolCode, docId, isTeacher)));
-              //print(results.toString());
+              print(results.toString());
               if (results != null) {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
+                      settings: RouteSettings(name: 'GroupChatBox'),
                         builder: (context) => GroupChatBox(
-                            results[0], results[1], results[2], results[3],)));
+                            results[0], results[1], results[2], results[3])));
               }
             }),
         bottomNavigationBar: BottomNavigationBar(
           items: [
             BottomNavigationBarItem(
-                icon: Icon(Icons.person), title: Text("Personal")),
+                icon: Icon(state==0?Icons.person:Icons.person_outlined), title: Text("Personal", style: TextStyle(fontWeight: state==0?FontWeight.bold:FontWeight.normal),)),
             BottomNavigationBarItem(
-                icon: Icon(Icons.people), title: Text("Groups"))
+                icon: Icon(state == 1?Icons.people:Icons.people_outlined), title: Text("Groups", style: TextStyle(fontWeight: state==1?FontWeight.bold:FontWeight.normal),))
           ],
-          selectedItemColor: Colors.amber[800],
+          selectedItemColor: Colors.black,
+          unselectedItemColor: Colors.black,
           currentIndex: state,
           onTap: (int tapped) {
             if (state != tapped) {

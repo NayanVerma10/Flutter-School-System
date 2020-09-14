@@ -1,9 +1,6 @@
-import 'dart:typed_data';
-
 import 'package:Schools/Chat/GroupChatBox.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class GroupChat extends StatefulWidget {
   AsyncSnapshot snapshot;
@@ -19,7 +16,7 @@ class GroupChat extends StatefulWidget {
 class _GroupChatState extends State<GroupChat> {
   List<Widget> list;
   AsyncSnapshot snapshot;
-  String docId, schoolCode;
+  String docId, schoolCode, name;
   bool isTeacher;
   _GroupChatState(this.snapshot, this.docId, this.schoolCode, this.isTeacher);
   @override
@@ -27,7 +24,6 @@ class _GroupChatState extends State<GroupChat> {
     super.initState();
     list = List();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -42,18 +38,20 @@ class _GroupChatState extends State<GroupChat> {
               .snapshots(),
           builder: (context, snap) {
             if (!snap.hasData) {
-              return Text(
+              return ListTile(
+                  title: Text(
                 "Please wait fetching group details....",
-                style: TextStyle(
-                    color: Colors.lightBlue[500], fontStyle: FontStyle.italic),
-              );
+                style:
+                    TextStyle(color: Colors.black, fontStyle: FontStyle.italic),
+              ));
             } else {
               DocumentSnapshot snapshotData = snap.data;
               return ListTile(
-                  onTap: () {
+                  onTap: element.documentID!=null?() {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
+                          settings: RouteSettings(name: 'GroupChatBox'),
                             builder: (context) => GroupChatBox(
                                   Firestore.instance
                                       .collection('School')
@@ -63,21 +61,21 @@ class _GroupChatState extends State<GroupChat> {
                                   schoolCode,
                                   docId,
                                   isTeacher,
+                                  
                                 )));
-                  },
-                  leading: snapshotData["Icon"] != null
-                      ?  CircleAvatar(
-                                  radius: 28,
-                                  backgroundImage:
-                                      MemoryImage(Uint8List.fromList(List<int>.unmodifiable(snapshotData.data['Icon'])))
-                                  //NetworkImage( snapshotData.data["Icon"]))
-                      )
+                  }:null,
+                  leading: snapshotData.data["Icon"] != null
+                      ? CircleAvatar(
+                          backgroundImage: Image.network(
+                                  snapshotData.data['Icon'],
+                                  fit: BoxFit.cover)
+                              .image,
+                        )
                       : CircleAvatar(
                           radius: 28,
                           child: Icon(
                             Icons.people,
                             color: Colors.grey[500],
-                            size: 40,
                           ),
                           backgroundColor: Colors.white,
                         ),
@@ -94,28 +92,54 @@ class _GroupChatState extends State<GroupChat> {
                           .collection("ChatMessages")
                           .snapshots(),
                       builder: (context, snap) {
-                        if (!snap.hasData ||
-                            snap.connectionState == ConnectionState.waiting) {
+                        if (!snap.hasData) {
                           return Text(
                             "Please wait fetching messages....",
                             style: TextStyle(
-                                color: Colors.lightBlue[500],
+                                color: Colors.black,
                                 fontStyle: FontStyle.italic),
                           );
                         }
                         List<DocumentSnapshot> docs = snap.data.documents ?? [];
-                        return Text(docs.first['text'] ?? '');
+                        if (docs.last.data['type'] != 'notification')
+                          return Row(children: [
+                            Text(
+                              ((docs.last.data['fromId'].compareTo(docId) ==
+                                              0 &&
+                                          docs.last.data['isTeacher'] ==
+                                              isTeacher)
+                                      ? 'You'
+                                      : docs.last.data['name']) +
+                                  " : ",
+                              style: TextStyle(color: Colors.blue[900]),
+                            ),
+                            Text(
+                              docs.last.data['text'],
+                              style: TextStyle(color: Colors.black),
+                            )
+                          ]);
+                        else
+                          return Text(
+                            docs.last.data['text'],
+                            style: TextStyle(color: Colors.black),
+                          );
                       }));
             }
           }));
     });
     if (list.length > 0) {
-      return ListView(
-        children: list,
+      return ListView.separated(
+        itemCount: list.length,
+        itemBuilder: (context, index) => list.elementAt(index),
+        separatorBuilder: (context, index) => Divider(
+          thickness: 1,
+          color: Colors.black12,
+          indent: 70,
+        ),
       );
     } else {
       return Center(
-        child: Text("Nothing to show here!"),
+        child: Text("Nothing to show here!",style: TextStyle(fontSize: 18),),
       );
     }
   }

@@ -10,7 +10,7 @@ class User {
   String section;
   bool isTeacher;
   String imgURL;
-  bool isAdmin = false;
+  bool isAdmin;
 
   User({
     this.id,
@@ -20,7 +20,7 @@ class User {
     this.section,
     this.isTeacher,
     this.imgURL,
-    this.isAdmin,
+    this.isAdmin = false,
   });
   Map<String, dynamic> toMap() {
     return {
@@ -31,8 +31,33 @@ class User {
       "section": section,
       "isTeacher": isTeacher,
       "imgURL": imgURL,
-      "isAdmin":isAdmin,
+      "isAdmin": isAdmin,
     };
+  }
+
+  @override
+  User.fromMap(Map<String, dynamic> map) {
+    this.id = map['id'];
+    this.name = map['name'];
+    this.mobile = map['mobile'];
+    this.classNumber = map['classNumber'];
+    this.section = map['section'];
+    this.isTeacher = map['isTeacher'];
+    this.imgURL = map['imgURL'];
+    this.isAdmin = map['isAdmin'];
+  }
+  bool operator ==(b) {
+    return Comparator(this, b);
+  }
+
+  bool Comparator(User a, User b) {
+    Map<String, dynamic> map1 = a.toMap(), map2 = b.toMap();
+    for (String s in map1.keys) {
+      if (map1[s] != map2[s]) {
+        return false;
+      }
+    }
+    return true;
   }
 }
 
