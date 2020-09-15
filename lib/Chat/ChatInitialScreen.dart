@@ -264,7 +264,7 @@ class _MainChatState extends State<MainChat> {
                   MaterialPageRoute(
                       builder: (context) =>
                           CreateGroup(schoolCode, docId, isTeacher)));
-              print(results.toString());
+              
               if (results != null) {
                 Navigator.push(
                     context,

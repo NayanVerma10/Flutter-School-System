@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:Schools/widgets/AlertDialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -31,16 +32,17 @@ class GroupName extends StatefulWidget {
 
 class _GroupNameState extends State<GroupName> {
   String name = "", description = "";
-  PickedFile _pickedFile;
 
   final picker = ImagePicker();
   Image image;
   Uint8List bytesData;
+  FilePickerResult result;
 
   Future getImageFromGallery() async {
-    _pickedFile = await picker.getImage(source: ImageSource.gallery);
-    if (_pickedFile != null) {
-      Uint8List bytesData1 = await _pickedFile.readAsBytes();
+    result = await FilePicker.platform
+        .pickFiles(type: FileType.image, withData: true);
+    if (result != null) {
+      Uint8List bytesData1 = result.files.first.bytes;
       setState(() {
         bytesData = bytesData1;
         image = Image.memory(bytesData);
@@ -72,7 +74,7 @@ class _GroupNameState extends State<GroupName> {
                 onPressed: image == null
                     ? null
                     : () {
-                          Navigator.pop(context);
+                        Navigator.pop(context);
                         setState(() {
                           image = null;
                         });
@@ -194,12 +196,12 @@ class _GroupNameState extends State<GroupName> {
                           UrlUtils.open(
                               bytesData,
                               "${widget.schoolCode}/GroupChats/${docRef.documentID}/icon/" +
-                                  _pickedFile.path.split("/").last +
+                                  result.files.first.path.split("/").last +
                                   ".txt",
                               docRef: docRef);
                           await docRef.updateData({
                             "IconFileName":
-                                _pickedFile.path.split("/").last + ".txt"
+                                 result.files.first.path.split("/").last + ".txt"
                           });
                         } else {
                           await docRef.updateData({"Icon": null});
@@ -216,14 +218,14 @@ class _GroupNameState extends State<GroupName> {
                           widget.list.forEach((element) async {
                             if (element.id == widget.userId &&
                                 element.isTeacher == widget.isTeacher) {
-                                element.isAdmin = true;
+                              element.isAdmin = true;
                               await docRef
                                   .collection('ChatMessages')
                                   .document(timeToString())
                                   .setData({
                                 'type': 'notification',
                                 'text':
-                                    '${element.name} created this group and added ${widget.list.length-1} members'
+                                    '${element.name} created this group and added ${widget.list.length - 1} members'
                               });
                             } else {
                               element.isAdmin = false;
