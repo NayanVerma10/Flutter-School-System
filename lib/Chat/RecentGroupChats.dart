@@ -66,10 +66,9 @@ class _GroupChatState extends State<GroupChat> {
                   }:null,
                   leading: snapshotData.data["Icon"] != null
                       ? CircleAvatar(
-                          backgroundImage: Image.network(
-                                  snapshotData.data['Icon'],
-                                  fit: BoxFit.cover)
-                              .image,
+                        backgroundColor: Colors.white,
+                          backgroundImage: NetworkImage(snapshotData.data['Icon']),
+                          radius: 28,
                         )
                       : CircleAvatar(
                           radius: 28,

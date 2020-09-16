@@ -1,15 +1,10 @@
-import 'dart:io';
-
 import 'package:Schools/ChatNecessary/MessageBubble.dart';
-import 'package:Schools/ChatNecessary/UploadFile.dart';
 import 'package:Schools/Screens/StudentScreens/main.dart';
 import 'package:Schools/Screens/TeacherScreens/main.dart';
-import 'package:Schools/plugins/url_launcher.dart';
+import 'package:Schools/plugins/url_launcher/url_launcher.dart';
 import 'package:bubble/bubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'ChatList.dart';
 import 'CreateGroupUsersList.dart';
@@ -33,7 +28,7 @@ class GroupChatBox extends StatefulWidget {
 class _GroupChatBoxState extends State<GroupChatBox> {
   String groupName, icon, name;
   List<User> members;
-  bool isAdmin = false, inProcess1 = true, inProcess2 = true;
+  bool isAdmin;
   final _firestore = Firestore.instance;
   int limitOfMessages = 40;
   TextEditingController messageController = TextEditingController();
@@ -43,26 +38,19 @@ class _GroupChatBoxState extends State<GroupChatBox> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    Firestore.instance
-        .collection("School")
-        .document(widget.schoolCode)
-        .collection("GroupChats")
-        .document(widget.GroupRef.documentID)
-        .collection("Members")
-        .document(widget.userId + "_" + (widget.isTeacher ? "true" : "false"))
-        .snapshots()
-        .listen((event) {
-      if (event != null && event.data != null) {
+
+    widget.GroupRef.get().then((value) {
+      value.reference
+          .collection('Members')
+          .document(widget.userId + "_" + (widget.isTeacher ? "true" : "false"))
+          .get()
+          .then((value1) {
         setState(() {
-          name = event.data['name'];
-          isAdmin = event.data['isAdmin'];
+          name = value1.data['name'];
+          isAdmin = value1.data['isAdmin'];
+          icon = value.data['Icon'];
+          groupName = value.data['Name'];
         });
-      }
-    });
-    widget.GroupRef.snapshots().listen((event) {
-      setState(() {
-        icon = event.data['Icon'];
-        groupName = event.data['Name'];
       });
     });
   }
@@ -107,11 +95,7 @@ class _GroupChatBoxState extends State<GroupChatBox> {
         title: Row(
           children: <Widget>[
             icon != null
-                ? CircleAvatar(
-                    backgroundImage: Image.network(
-                    icon,
-                    fit: BoxFit.cover,
-                  ).image)
+                ? CircleAvatar(backgroundColor: Colors.white, backgroundImage: NetworkImage(icon, scale: 0.2))
                 : CircleAvatar(
                     child: Icon(
                       Icons.people,
@@ -153,12 +137,14 @@ class _GroupChatBoxState extends State<GroupChatBox> {
         ),
         actions: <Widget>[
           IconButton(
-              tooltip: isAdmin ? 'Add a member' : 'Only admin can add members',
+              tooltip: (isAdmin ?? false)
+                  ? 'Add a member'
+                  : 'Only admin can add members',
               icon: Icon(
                 Icons.person_add,
                 color: Colors.black,
               ),
-              onPressed: isAdmin
+              onPressed: (isAdmin ?? false)
                   ? () async {
                       members = List<User>();
                       await Firestore.instance
@@ -253,7 +239,10 @@ class _GroupChatBoxState extends State<GroupChatBox> {
                               margin: BubbleEdges.all(4),
                               color: Colors.black,
                               alignment: Alignment.center,
-                              child: Text(doc.data['text'], style: TextStyle(color: Colors.white),),
+                              child: Text(
+                                doc.data['text'],
+                                style: TextStyle(color: Colors.white),
+                              ),
                             );
                           }
                           return Message(
@@ -312,25 +301,24 @@ class _GroupChatBoxState extends State<GroupChatBox> {
                             final result = await FilePicker.platform
                                 .pickFiles(allowMultiple: true);
                             if (result != null) {
-                              List<PlatformFile> pFiles = result.files;
-                              if (kIsWeb) {
-                                UrlUtils.UploadFiles(
-                                  result,
-                                  widget.GroupRef.collection('ChatMessages'),
-                                  "${widget.schoolCode}/GroupChats/${widget.GroupRef.documentID}/",
-                                  name: name,
-                                  isTeacher: widget.isTeacher,
-                                  fromId: widget.userId,
-                                );
-                              } else {
-                                pFiles.forEach((element) async {
-                                  List<String> fileData = await uploadToFirebase(
-                                      "${widget.schoolCode}/GroupChats/${widget.GroupRef.documentID}/",
-                                      File(element.path));
-                                  await callback('File', fileData[1],
-                                      fileURL: fileData[0]);
-                                });
-                              }
+                              //if (kIsWeb) {
+                              UrlUtils.uploadFiles(
+                                result,
+                                widget.GroupRef.collection('ChatMessages'),
+                                "${widget.schoolCode}/GroupChats/${widget.GroupRef.documentID}/",
+                                name: name,
+                                isTeacher: widget.isTeacher,
+                                fromId: widget.userId,
+                              );
+                              //} else {
+                              // pFiles.forEach((element) async {
+                              //   List<String> fileData = await uploadToFirebase(
+                              //       "${widget.schoolCode}/GroupChats/${widget.GroupRef.documentID}/",
+                              //       File(element.path));
+                              //   await callback('File', fileData[1],
+                              //       fileURL: fileData[0]);
+                              // });
+                              //}
                             }
                           },
                         ),
