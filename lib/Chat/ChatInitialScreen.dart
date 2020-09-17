@@ -220,9 +220,9 @@ class _MainChatState extends State<MainChat> {
         bottomNavigationBar: BottomNavigationBar(
           items: [
             BottomNavigationBarItem(
-                icon: Icon(state==0?Icons.person:Icons.person_outlined), title: Text("Personal", style: TextStyle(fontWeight: state==0?FontWeight.bold:FontWeight.normal),)),
+                icon: Icon(state==0?Icons.person:Icons.person_outline), title: Text("Personal", style: TextStyle(fontWeight: state==0?FontWeight.bold:FontWeight.normal),)),
             BottomNavigationBarItem(
-                icon: Icon(state == 1?Icons.people:Icons.people_outlined), title: Text("Groups", style: TextStyle(fontWeight: state==1?FontWeight.bold:FontWeight.normal),))
+                icon: Icon(state == 1?Icons.people:Icons.people_outline), title: Text("Groups", style: TextStyle(fontWeight: state==1?FontWeight.bold:FontWeight.normal),))
           ],
           selectedItemColor: Colors.black,
           unselectedItemColor: Colors.black,
@@ -277,9 +277,9 @@ class _MainChatState extends State<MainChat> {
         bottomNavigationBar: BottomNavigationBar(
           items: [
             BottomNavigationBarItem(
-                icon: Icon(state==0?Icons.person:Icons.person_outlined), title: Text("Personal", style: TextStyle(fontWeight: state==0?FontWeight.bold:FontWeight.normal),)),
+                icon: Icon(state==0?Icons.person:Icons.person_outline), title: Text("Personal", style: TextStyle(fontWeight: state==0?FontWeight.bold:FontWeight.normal),)),
             BottomNavigationBarItem(
-                icon: Icon(state == 1?Icons.people:Icons.people_outlined), title: Text("Groups", style: TextStyle(fontWeight: state==1?FontWeight.bold:FontWeight.normal),))
+                icon: Icon(state == 1?Icons.people:Icons.people_outline), title: Text("Groups", style: TextStyle(fontWeight: state==1?FontWeight.bold:FontWeight.normal),))
           ],
           selectedItemColor: Colors.black,
           unselectedItemColor: Colors.black,
