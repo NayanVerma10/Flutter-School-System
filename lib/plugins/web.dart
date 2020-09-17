@@ -1,36 +1,35 @@
 import 'dart:html' as html;
+import 'dart:typed_data';
 import 'package:Schools/Chat/CreateGroupUsersList.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase/firebase.dart' as fb;
-import 'package:mime_type/mime_type.dart';
 
 class UrlUtils {
   UrlUtils._();
-  static void open(FilePickerResult result, String name,
+  static void open(Uint8List data, String name,
       {DocumentReference docRef}) async {
-    var ref = fb.storage().ref(name + result.files.first.name.split('/').last);
-    String mimeType = mimeFromExtension(result.files.first.extension);
-    await ref
-        .put(result.files.first.bytes,
-            fb.UploadMetadata(contentType: mimeType))
-        .future;
+    var ref = fb.storage().ref(name);
+    await ref.put(data, fb.UploadMetadata(contentType: 'images/')).future;
     String str = (await ref.getDownloadURL()).toString();
     await docRef.updateData({'Icon': str});
     return;
   }
 
-  static void uploadFiles(
+  static void UploadFiles(
       FilePickerResult result, CollectionReference docRef, String path,
       {String name, String fromId, bool isTeacher}) async {
-    result.files.forEach((element) async {
-      String mimeType = mimeFromExtension(element.extension);
-      fb.StorageReference ref =
-          fb.storage().ref(path + element.name.split('/').last);
+    List<String> urls = List<String>();
 
-      await ref.put(element.bytes, fb.UploadMetadata(contentType: mimeType)).future;
+    result.files.forEach((element) async {
+      html.File file = html.File(element.bytes, element.name);
+
+      fb.StorageReference ref =
+          fb.storage().ref(path + timeToString() + ".txt");
+
+      await ref.put(file, fb.UploadMetadata(contentType: 'type')).future;
       await docRef.document(timeToString()).setData({
-        'text': element.name.split('/').last,
+        'text': element.path.split('\\').last,
         'name': name,
         'fromId': fromId,
         'type': 'File',
@@ -39,9 +38,5 @@ class UrlUtils {
         'date': DateTime.now().toIso8601String().toString(),
       });
     });
-  }
-
-  static Future<void> deleteFile(String url) async {
-    await fb.storage().refFromURL(url).delete();
   }
 }

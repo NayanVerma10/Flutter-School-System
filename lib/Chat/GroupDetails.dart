@@ -1,13 +1,16 @@
+import 'dart:typed_data';
+
 import 'package:Schools/Chat/CreateGroupUsersList.dart';
 import 'package:Schools/Chat/GroupChatBox.dart';
 import 'package:Schools/Screens/StudentScreens/main.dart';
 import 'package:Schools/Screens/TeacherScreens/main.dart';
-import 'package:Schools/plugins/url_launcher/url_launcher.dart';
+import 'package:Schools/plugins/url_launcher.dart';
 import 'package:Schools/widgets/AlertDialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class GroupDetails extends StatefulWidget {
   DocumentReference groupRef;
@@ -26,30 +29,11 @@ class _GroupDetailsState extends State<GroupDetails> {
   int adminCount = 1;
   CollectionReference teachersRef, studentsRef;
   _GroupDetailsState(this.groupRef);
-  String name, description, icon, id;
-  List<String> allowedExt;
+  String name, description, icon, id, iconFileName;
   List<Widget> list;
   @override
   void initState() {
     super.initState();
-    allowedExt = [
-      'xbm',
-      'tif',
-      'pjp',
-      'svg',
-      'jpg',
-      'jpeg',
-      'ico',
-      'tiff',
-      'gif',
-      'svgz',
-      'jfif',
-      'webp',
-      'png',
-      'bmp',
-      'pjpeg',
-      'avif'
-    ];
     id = widget.id + "_" + ((widget.isTeacher) ? "true" : "false");
     teachersRef = Firestore.instance
         .collection("School")
@@ -64,6 +48,7 @@ class _GroupDetailsState extends State<GroupDetails> {
         icon = value.data['Icon'];
         name = value.data["Name"];
         adminCount = value.data['AdminCount'];
+        iconFileName = value.data['IconFileName'];
         description = value.data["Description"];
         controller = TextEditingController(text: description);
         nameController = TextEditingController(text: name);
@@ -114,7 +99,7 @@ class _GroupDetailsState extends State<GroupDetails> {
                 'type': 'notification',
                 'text': '${widget.userName} changed group name to \'$value\''
               });
-              Navigator.of(context).pop();
+              Navigator.pop(context);
             }
           },
         ),
@@ -145,11 +130,11 @@ class _GroupDetailsState extends State<GroupDetails> {
                         ),
                         actions: [
                           FlatButton(
-                            onPressed: () async {
+                            onPressed: () {
                               groupRef
                                   .collection('Members')
                                   .getDocuments()
-                                  .then((value) async {
+                                  .then((value) {
                                 value.documents.forEach((element) async {
                                   bool isT = element.data['isTeacher'];
                                   String cid = element.data['id'];
@@ -166,26 +151,36 @@ class _GroupDetailsState extends State<GroupDetails> {
                                         .document(groupRef.documentID)
                                         .delete();
                                   }
-                                  await element.reference.delete();
-                                });
-                              });
-                              groupRef
-                                  .collection('ChatMessages')
-                                  .getDocuments()
-                                  .then((value) {
-                                value.documents.forEach((element1) async {
-                                  if (element1.data['type'].compareTo('File') ==
-                                      0) {
-                                    UrlUtils.deleteFile(element1.data['url']);
-                                  }
-                                  await element1.reference.delete();
-                                });
-                              });
-                              if (icon != null) {
-                                UrlUtils.deleteFile(icon);
-                              }
-                              await groupRef.delete();
+                                  await groupRef
+                                      .collection('ChatMessages')
+                                      .getDocuments()
+                                      .then((value) {
+                                    value.documents.forEach((element) async {
+                                      await element.reference.delete();
+                                    });
+                                  });
+                                  await groupRef
+                                      .collection('Members')
+                                      .getDocuments()
+                                      .then((value) {
+                                    value.documents.forEach((element) async {
+                                      await element.reference.delete();
+                                    });
+                                  });
+                                  await groupRef.delete();
+                                  // var ref = FirebaseStorage.instance.ref().child(
+                                  //     '${widget.schoolCode}/GroupChats/${groupRef.documentID}/$iconFileName');
+                                  //await ref.delete();
 
+                                  // ref.getPath().then((dir) {
+                                  //   dir.items.forEach((fileRef) async {
+                                  //     await fileRef.delete();
+                                  //   });
+                                  // }).catchError((error) {
+                                  //   print(error);
+                                  // });
+                                });
+                              });
                               Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(
@@ -208,7 +203,7 @@ class _GroupDetailsState extends State<GroupDetails> {
                           ),
                           FlatButton(
                             onPressed: () {
-                              Navigator.of(context).pop();
+                              Navigator.pop(context);
                             },
                             splashColor: Colors.black12,
                             child: Text(
@@ -274,37 +269,91 @@ class _GroupDetailsState extends State<GroupDetails> {
                                                     MaterialTapTargetSize
                                                         .padded,
                                                 onPressed: () async {
-                                                  final FilePickerResult
-                                                      result = await FilePicker
-                                                          .platform
-                                                          .pickFiles();
-                                                  if (result != null &&
-                                                      allowedExt.contains(result
-                                                          .files
-                                                          .first
-                                                          .extension)) {
-                                                    showLoaderDialog(context,
-                                                        "Uploading icon");
-                                                    UrlUtils.open(result,
-                                                        '${widget.schoolCode}/GroupChats/${widget.groupRef.documentID}/icon/',
-                                                        docRef: groupRef);
-                                                    if (icon != null) {
-                                                      UrlUtils.deleteFile(icon);
-                                                    }
+                                                  final PickedFile _pickedFile =
+                                                      await ImagePicker()
+                                                          .getImage(
+                                                              source:
+                                                                  ImageSource
+                                                                      .gallery);
+                                                  showLoaderDialog(context,
+                                                      "Uploading icon");
+                                                  if (_pickedFile != null) {
+                                                    Uint8List bytesData =
+                                                        await _pickedFile
+                                                            .readAsBytes();
 
-                                                    groupRef
-                                                        .get()
-                                                        .then((value) {
-                                                      setState(() {
-                                                        icon =
-                                                            value.data['Icon'];
+                                                    if (!kIsWeb) {
+                                                      StorageReference ref =
+                                                          FirebaseStorage
+                                                              .instance
+                                                              .ref()
+                                                              .child('${widget.schoolCode}/GroupChats/${widget.groupRef.documentID}/icon/' +
+                                                                  _pickedFile
+                                                                      .path
+                                                                      .toString()
+                                                                      .split(
+                                                                          '/')
+                                                                      .last +
+                                                                  '.txt');
+                                                      StorageUploadTask
+                                                          uploadTask =
+                                                          ref.putData(
+                                                              bytesData,
+                                                              StorageMetadata(
+                                                                  contentType:
+                                                                      'images/'));
+                                                      await uploadTask
+                                                          .onComplete;
+                                                      groupRef.updateData({
+                                                        'Icon': (await ref
+                                                                .getDownloadURL())
+                                                            .toString(),
+                                                        'IconFileName':
+                                                            _pickedFile.path
+                                                                    .toString()
+                                                                    .split('/')
+                                                                    .last +
+                                                                '.txt'
                                                       });
-                                                    });
-
-                                                    Navigator.popUntil(
-                                                        context,
-                                                        ModalRoute.withName(
-                                                            'GroupDetails'));
+                                                      ref
+                                                          .getDownloadURL()
+                                                          .then((value) {
+                                                        setState(() {
+                                                          icon =
+                                                              value.toString();
+                                                          iconFileName =
+                                                              _pickedFile.path
+                                                                      .toString()
+                                                                      .split(
+                                                                          '/')
+                                                                      .last +
+                                                                  '.txt';
+                                                        });
+                                                      });
+                                                    } else {
+                                                      UrlUtils.open(
+                                                          bytesData,
+                                                          '${widget.schoolCode}/GroupChats/${widget.groupRef.documentID}/icon/' +
+                                                              _pickedFile.path
+                                                                  .toString()
+                                                                  .split('/')
+                                                                  .last +
+                                                              '.txt',
+                                                          docRef: groupRef);
+                                                      await groupRef
+                                                          .updateData({
+                                                        'IconFileName':
+                                                            _pickedFile.path
+                                                                    .toString()
+                                                                    .split('/')
+                                                                    .last +
+                                                                '.txt'
+                                                      });
+                                                    }
+                                                      Navigator.popUntil(
+                                                          context,
+                                                          ModalRoute.withName(
+                                                              'GroupDetails'));
                                                     await groupRef
                                                         .collection(
                                                             'ChatMessages')
@@ -333,12 +382,19 @@ class _GroupDetailsState extends State<GroupDetails> {
                                               onPressed: icon == null
                                                   ? null
                                                   : () async {
-                                                      UrlUtils.deleteFile(icon);
+                                                      await FirebaseStorage
+                                                          .instance
+                                                          .ref()
+                                                          .child(
+                                                              '${widget.schoolCode}/GroupChats/${widget.groupRef.documentID}/icon/$iconFileName')
+                                                          .delete();
                                                       groupRef.updateData({
                                                         'Icon': null,
+                                                        'IconFileName': null,
                                                       }).then((value) {
                                                         setState(() {
                                                           icon = null;
+                                                          iconFileName = null;
                                                         });
                                                       });
                                                       await groupRef
@@ -351,8 +407,7 @@ class _GroupDetailsState extends State<GroupDetails> {
                                                         'text':
                                                             '${widget.userName} removed group icon'
                                                       });
-                                                      Navigator.of(context)
-                                                          .pop();
+                                                      Navigator.pop(context);
                                                     },
                                               child: Text("Remove Icon",
                                                   style: TextStyle(
@@ -368,15 +423,18 @@ class _GroupDetailsState extends State<GroupDetails> {
                 ]),
           ),
           Card(
-              margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
-              elevation: 5,
+            margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
+            elevation: 5,
+            child: Container(
               child: icon != null
-                  ? Image.network(
-                      icon,
-                      fit: BoxFit.contain,
-                    )
-                  : Image.asset('assets/images/coverimage.jpg',
-                      fit: BoxFit.contain)),
+                  ? Image.network(icon)
+                  : Center(
+                      child: Image.asset(
+                      'assets/images/coverimage.jpg',
+                      fit: BoxFit.cover,
+                    )),
+            ),
+          ),
           Card(
             margin: EdgeInsets.only(left: 5, right: 5, top: 15),
             elevation: 5,
@@ -405,7 +463,7 @@ class _GroupDetailsState extends State<GroupDetails> {
                       'type': 'notification',
                       'text': '${widget.userName} changed group description'
                     });
-                    Navigator.of(context).pop();
+                    Navigator.pop(context);
                   }
                 },
                 decoration: InputDecoration(
@@ -476,7 +534,7 @@ class _GroupDetailsState extends State<GroupDetails> {
                                                     });
                                                   });
                                                 });
-                                                Navigator.of(context).pop();
+                                                Navigator.pop(context);
                                               },
                                               child: Text(
                                                 isAdmin
@@ -518,11 +576,10 @@ class _GroupDetailsState extends State<GroupDetails> {
                                                 }
                                                 if (isAdmin) {
                                                   groupRef.updateData({
-                                                    'AdminCount': adminCount - 1
+                                                    'AdminCount': adminCount -1
                                                   }).then((value) {
                                                     setState(() {
-                                                      adminCount =
-                                                          adminCount - 1;
+                                                      adminCount = adminCount-1;
                                                     });
                                                   });
                                                 }
@@ -536,7 +593,7 @@ class _GroupDetailsState extends State<GroupDetails> {
                                                 });
                                                 await element.reference
                                                     .delete();
-                                                Navigator.of(context).pop();
+                                                Navigator.pop(context);
                                               },
                                               child: Text('Remove',
                                                   style: TextStyle(
@@ -596,15 +653,14 @@ class _GroupDetailsState extends State<GroupDetails> {
               elevation: 10,
               margin: EdgeInsets.fromLTRB(5, 15, 5, 15),
               child: FlatButton(
-                  onPressed: ((widget.isAdmin == true &&
-                              (adminCount - 1) > 0) ||
+                  onPressed: ((widget.isAdmin == true && (adminCount - 1) > 0) ||
                           widget.isAdmin == false)
                       ? () async {
                           if (widget.isAdmin) {
                             groupRef.updateData(
-                                {'AdminCount': adminCount - 1}).then((value) {
+                                {'AdminCount': adminCount-1}).then((value) {
                               setState(() {
-                                adminCount = adminCount - 1;
+                                adminCount = adminCount-1;
                               });
                             });
                           }

@@ -3,13 +3,16 @@ import 'dart:typed_data';
 import 'package:Schools/widgets/AlertDialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:image_picker/image_picker.dart';
 import 'CreateGroupUsersList.dart';
 import 'dart:async';
 import 'ChatList.dart';
-import 'package:Schools/plugins/url_launcher/url_launcher.dart';
+import '../plugins/url_launcher.dart';
+import 'GroupChatBox.dart';
 
 class GroupName extends StatefulWidget {
   String schoolCode;
@@ -29,38 +32,16 @@ class GroupName extends StatefulWidget {
 
 class _GroupNameState extends State<GroupName> {
   String name = "", description = "";
-  List<String> allowedExt;
+
+  final picker = ImagePicker();
   Image image;
   Uint8List bytesData;
   FilePickerResult result;
 
-  @override
-  void initState() { 
-    super.initState();
-     allowedExt = [
-      'xbm',
-      'tif',
-      'pjp',
-      'svg',
-      'jpg',
-      'jpeg',
-      'ico',
-      'tiff',
-      'gif',
-      'svgz',
-      'jfif',
-      'webp',
-      'png',
-      'bmp',
-      'pjpeg',
-      'avif'
-    ];
-  }
-
   Future getImageFromGallery() async {
     result = await FilePicker.platform
         .pickFiles(type: FileType.image, withData: true);
-    if (result != null && allowedExt.contains(result.files.first.extension)) {
+    if (result != null) {
       Uint8List bytesData1 = result.files.first.bytes;
       setState(() {
         bytesData = bytesData1;
@@ -82,7 +63,7 @@ class _GroupNameState extends State<GroupName> {
                         TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 onPressed: () async {
                   await getImageFromGallery();
-                  Navigator.of(context).pop();
+                  Navigator.pop(context);
                 }),
             FlatButton(
                 child: Text(
@@ -93,10 +74,10 @@ class _GroupNameState extends State<GroupName> {
                 onPressed: image == null
                     ? null
                     : () {
+                        Navigator.pop(context);
                         setState(() {
                           image = null;
                         });
-                        Navigator.of(context).pop();
                       }),
           ],
         ));
@@ -212,9 +193,16 @@ class _GroupNameState extends State<GroupName> {
                           'AdminCount': 1,
                         });
                         if (bytesData != null) {
-                          UrlUtils.open(result,
-                              "${widget.schoolCode}/GroupChats/${docRef.documentID}/icon/",
+                          UrlUtils.open(
+                              bytesData,
+                              "${widget.schoolCode}/GroupChats/${docRef.documentID}/icon/" +
+                                  result.files.first.path.split("/").last +
+                                  ".txt",
                               docRef: docRef);
+                          await docRef.updateData({
+                            "IconFileName":
+                                 result.files.first.path.split("/").last + ".txt"
+                          });
                         } else {
                           await docRef.updateData({"Icon": null});
                         }
@@ -264,7 +252,8 @@ class _GroupNameState extends State<GroupName> {
                           });
                         }
 
-                        Navigator.of(context).pop();
+                        Navigator.popUntil(
+                            context, ModalRoute.withName('GroupName'));
                         Navigator.pop(context, [
                           docRef,
                           widget.schoolCode,
