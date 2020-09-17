@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import '../ChatNecessary/URLLauncher.dart';
 import '../ChatNecessary/UploadFile.dart';
 import '../ChatNecessary/MessageBubble.dart';
+import 'ChatPersonProfile.dart';
 
 class ChatBox extends StatefulWidget {
   String schoolCode, sender_docId, reciever_docId;
@@ -26,8 +27,8 @@ class _ChatBoxState extends State<ChatBox> {
   _ChatBoxState(this.schoolCode, this.sender_docId, this.sender_isTeacher,
       this.reciever_docId, this.reciever_isTeacher);
 
-  static Map<String, dynamic> reciever={'first name': ' ' ,'last name': ' '};
-  static Map<String,dynamic> sender={'first name': ' ' ,'last name': ' '};
+  static Map<String, dynamic> reciever = {'first name': ' ', 'last name': ' '};
+  static Map<String, dynamic> sender = {'first name': ' ', 'last name': ' '};
   bool loading = true;
   final _firestore = Firestore.instance;
   int limitOfMessages = 40;
@@ -168,7 +169,7 @@ class _ChatBoxState extends State<ChatBox> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        leading: Padding(padding: EdgeInsets.only(left:35)),
+        leading: Padding(padding: EdgeInsets.only(left: 35)),
         titleSpacing: 0,
         title: Row(
           children: <Widget>[
@@ -186,7 +187,16 @@ class _ChatBoxState extends State<ChatBox> {
             SizedBox(
               width: 10,
             ),
-            Text((reciever['first name'] ?? '') + ' ' + (reciever['last name']))
+            FlatButton(
+              splashColor: Colors.black12,
+              child: Text((reciever['first name'] ?? '') +
+                  ' ' +
+                  (reciever['last name']), style: TextStyle(color: Colors.black),),
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder:(context)=>ChatPersonProfile(
+                    schoolCode, reciever_docId, reciever_isTeacher)));
+              },
+            ),
           ],
         ),
         actions: <Widget>[
