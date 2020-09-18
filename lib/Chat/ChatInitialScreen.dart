@@ -74,7 +74,7 @@ class _MainChatState extends State<MainChat> {
     stream2 = Firestore.instance
         .collection('School')
         .document(schoolCode)
-        .collection("Student")
+        .collection(isTeacher ? 'Teachers' : 'Student')
         .document(docId)
         .collection("GroupsJoined")
         .snapshots();

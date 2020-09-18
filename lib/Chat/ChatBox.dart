@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import '../ChatNecessary/URLLauncher.dart';
 import '../ChatNecessary/UploadFile.dart';
 import '../ChatNecessary/MessageBubble.dart';
+import 'ChatPersonProfile.dart';
 
 class ChatBox extends StatefulWidget {
   String schoolCode, sender_docId, reciever_docId;
@@ -175,7 +176,7 @@ class _ChatBoxState extends State<ChatBox> {
             reciever['url'] != null
                 ? CircleAvatar(
                     backgroundColor: Colors.grey[300],
-                    backgroundImage: NetworkImage(reciever['url']),
+                    backgroundImage: Image.network(reciever['url']).image,
                   )
                 : CircleAvatar(
                     backgroundColor: Colors.grey[300],
@@ -186,7 +187,16 @@ class _ChatBoxState extends State<ChatBox> {
             SizedBox(
               width: 10,
             ),
-            Text((reciever['first name'] ?? '') + ' ' + (reciever['last name']))
+            FlatButton(
+              splashColor: Colors.black12,
+              child: Text((reciever['first name'] ?? '') +
+                  ' ' +
+                  (reciever['last name']), style: TextStyle(color: Colors.black),),
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder:(context)=>ChatPersonProfile(
+                    schoolCode, reciever_docId, reciever_isTeacher)));
+              },
+            ),
           ],
         ),
         actions: <Widget>[
