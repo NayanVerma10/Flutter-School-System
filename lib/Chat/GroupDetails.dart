@@ -633,7 +633,15 @@ class _GroupDetailsState extends State<GroupDetails> {
                                     );
                                   });
                             }
-                          : null,
+                          : () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ChatPersonProfile(
+                                          widget.schoolCode,
+                                          element.data['id'],
+                                          element.data['isTeacher'])));
+                            },
                       leading: element.data["imgURL"] != null
                           ? CircleAvatar(
                               backgroundImage: Image.network(
@@ -671,7 +679,11 @@ class _GroupDetailsState extends State<GroupDetails> {
                         ],
                       ),
                     ));
-                    list.add(Divider(thickness: 0.8,color: Colors.black54,indent: 70,));
+                    list.add(Divider(
+                      thickness: 0.8,
+                      color: Colors.black54,
+                      indent: 70,
+                    ));
                   });
                   return list.length > 0
                       ? Column(children: list)
