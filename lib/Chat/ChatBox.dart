@@ -169,7 +169,7 @@ class _ChatBoxState extends State<ChatBox> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        leading: Padding(padding: EdgeInsets.only(left:35)),
+        leadingWidth: 30,
         titleSpacing: 0,
         title: Row(
           children: <Widget>[
