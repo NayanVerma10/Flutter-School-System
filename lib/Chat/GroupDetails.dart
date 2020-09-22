@@ -14,6 +14,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import 'ChatPersonProfile.dart';
+
 class GroupDetails extends StatefulWidget {
   DocumentReference groupRef;
   String schoolCode, id, userName;
@@ -96,7 +98,7 @@ class _GroupDetailsState extends State<GroupDetails> {
             suffixIcon: IconButton(
               icon: Icon(
                 widget.isAdmin ? Icons.edit : Icons.edit_off,
-                color: Colors.black,
+                color: widget.isAdmin ? Colors.black : Colors.black54,
                 semanticLabel: 'Edit',
               ),
               tooltip: widget.isAdmin
@@ -127,8 +129,9 @@ class _GroupDetailsState extends State<GroupDetails> {
           IconButton(
             icon: Text(
               'delete group',
-              style:
-                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  color: widget.isAdmin ? Colors.black : Colors.black54,
+                  fontWeight: FontWeight.bold),
             ),
             iconSize: 50,
             onPressed: widget.isAdmin
@@ -248,7 +251,7 @@ class _GroupDetailsState extends State<GroupDetails> {
                   IconButton(
                     icon: Icon(
                       widget.isAdmin ? Icons.edit : Icons.edit_off,
-                      color: Colors.black,
+                      color: widget.isAdmin ? Colors.black : Colors.black54,
                     ),
                     tooltip: widget.isAdmin
                         ? "Change Group Icon"
@@ -304,7 +307,6 @@ class _GroupDetailsState extends State<GroupDetails> {
                                                             value.data['Icon'];
                                                       });
                                                     });
-
                                                     Navigator.popUntil(
                                                         context,
                                                         ModalRoute.withName(
@@ -419,7 +421,7 @@ class _GroupDetailsState extends State<GroupDetails> {
                   suffixIcon: IconButton(
                     icon: Icon(
                       widget.isAdmin ? Icons.edit : Icons.edit_off,
-                      color: Colors.black,
+                      color: widget.isAdmin ? Colors.black : Colors.black54,
                     ),
                     tooltip: widget.isAdmin
                         ? "Change Group Description"
@@ -483,7 +485,7 @@ class _GroupDetailsState extends State<GroupDetails> {
                                                                     'isTeacher'])));
                                               },
                                               child: Text(
-                                                'View Profile',
+                                                "View Profile",
                                                 style: TextStyle(
                                                     color: Colors.black,
                                                     fontSize: 20,
@@ -590,9 +592,10 @@ class _GroupDetailsState extends State<GroupDetails> {
                             },
                       leading: element.data["imgURL"] != null
                           ? CircleAvatar(
-                              backgroundImage: NetworkImage(
+                              backgroundImage: Image.network(
                                 element.data["imgURL"],
-                              ),
+                                fit: BoxFit.cover,
+                              ).image,
                             )
                           : CircleAvatar(
                               backgroundColor: Colors.grey[300],
@@ -623,6 +626,11 @@ class _GroupDetailsState extends State<GroupDetails> {
                           if (isAdmin) Text("Admin"),
                         ],
                       ),
+                    ));
+                    list.add(Divider(
+                      thickness: 0.8,
+                      color: Colors.black54,
+                      indent: 70,
                     ));
                   });
                   return list.length > 0

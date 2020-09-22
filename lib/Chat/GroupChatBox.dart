@@ -94,15 +94,7 @@ class _GroupChatBoxState extends State<GroupChatBox> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                    builder: (BuildContext context) => (widget.isTeacher)
-                        ? MyAppTeacher(widget.schoolCode, widget.userId)
-                        : MyAppStudent(widget.schoolCode, widget.userId)),
-                (route) => false)),
+        leadingWidth: 35, // to make it look like whatsapp
         titleSpacing: 0,
         title: Row(
           children: <Widget>[
@@ -225,6 +217,9 @@ class _GroupChatBoxState extends State<GroupChatBox> {
                       }
                     }
                   : null),
+          IconButton(
+              icon: Icon(Icons.more_vert),
+              onPressed: () {}), // the 3 dots for more options
         ],
       ),
       /*---------------------------This the Main body of the page -----------------------------------------------*/

@@ -169,14 +169,14 @@ class _ChatBoxState extends State<ChatBox> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        leading: Padding(padding: EdgeInsets.only(left: 35)),
+        leadingWidth: 30,
         titleSpacing: 0,
         title: Row(
           children: <Widget>[
             reciever['url'] != null
                 ? CircleAvatar(
                     backgroundColor: Colors.grey[300],
-                    backgroundImage: NetworkImage(reciever['url']),
+                    backgroundImage: Image.network(reciever['url']).image,
                   )
                 : CircleAvatar(
                     backgroundColor: Colors.grey[300],
