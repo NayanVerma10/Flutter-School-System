@@ -37,7 +37,7 @@ class _GroupNameState extends State<GroupName> {
   Uint8List bytesData;
   FilePickerResult result;
   @override
-  void initState() { 
+  void initState() {
     super.initState();
     allowedExt = [
       'xbm',
@@ -63,12 +63,15 @@ class _GroupNameState extends State<GroupName> {
     result = await FilePicker.platform
         .pickFiles(type: FileType.image, withData: true);
     if (result != null) {
-      Uint8List bytesData1 = result.files.first.bytes;
-      setState(() {
-        bytesData = bytesData1;
-        image = Image.memory(bytesData);
-      });
+      if (allowedExt.contains(result.files.first.extension)) {
+        Uint8List bytesData1 = result.files.first.bytes;
+        setState(() {
+          bytesData = bytesData1;
+          image = Image.memory(bytesData);
+        });
+      }
     }
+                  Navigator.of(context).pop();
   }
 
   Widget editImage() {
@@ -84,7 +87,6 @@ class _GroupNameState extends State<GroupName> {
                         TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 onPressed: () async {
                   await getImageFromGallery();
-                  Navigator.of(context).pop();
                 }),
             FlatButton(
                 child: Text(

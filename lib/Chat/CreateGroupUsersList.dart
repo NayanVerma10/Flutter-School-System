@@ -1,6 +1,4 @@
 import 'dart:async';
-
-import 'package:Schools/Chat/GroupChatBox.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -191,7 +189,8 @@ class CreateGroup extends StatefulWidget {
 }
 
 class _CreateGroupState extends State<CreateGroup> {
-  String schoolCode, userId;
+  Map<String, bool> classes, section, subject, gender;
+  String schoolCode, userId, rollno;
   bool isTeacher, value, filtersApplied = false;
   List<dynamic> alreadyAdded;
   _CreateGroupState(this.schoolCode, this.userId, this.isTeacher,
@@ -204,6 +203,10 @@ class _CreateGroupState extends State<CreateGroup> {
   int count = 0;
   dynamic user;
   void loadData() async {
+    classes = Map();
+    section = Map();
+    subject = Map();
+    gender = Map();
     await Firestore.instance
         .collection('School')
         .document(schoolCode)
@@ -225,9 +228,26 @@ class _CreateGroupState extends State<CreateGroup> {
                 gender: element.data['gender'],
                 subjects: element.data['subjects'] ?? [],
               );
+              if (currentUser.id.compareTo(widget.userId) == 0 &&
+                  widget.isTeacher == false) {
+                user = currentUser;
+              }
               //print(currentUser.toMap().toString());
-              if (alreadyAdded == null || !alreadyAdded.contains(currentUser)) {
+              if ((alreadyAdded == null ||
+                      !alreadyAdded.contains(currentUser)) &&
+                  currentUser != user) {
                 users.add(currentUser);
+                if (currentUser.classNumber != '') {
+                  classes[currentUser.classNumber] = false;
+                }
+                if (currentUser.section != '') {
+                  section[currentUser.section] = false;
+                }
+                if (currentUser.subjects.isNotEmpty)
+                  currentUser.subjects.forEach((ele) {
+                    subject[ele] = false;
+                  });
+                gender[currentUser.gender] = false;
               }
             }));
 
@@ -255,57 +275,32 @@ class _CreateGroupState extends State<CreateGroup> {
                 isAdmin: false,
                 classes: element.data['classes'] ?? [],
               );
-              print(currentUser.toMap().toString());
-              if (alreadyAdded == null || !alreadyAdded.contains(currentUser)) {
+              if (currentUser.id.compareTo(widget.userId) == 0 &&
+                  widget.isTeacher == true) {
+                user = currentUser;
+              }
+              if ((alreadyAdded == null ||
+                      !alreadyAdded.contains(currentUser)) &&
+                  currentUser != user) {
                 users.add(currentUser);
+                if (currentUser.classNumber != '') {
+                  classes[currentUser.classNumber] = false;
+                }
+                if (currentUser.section != '') {
+                  section[currentUser.section] = false;
+                }
+                if (currentUser.classes.isNotEmpty) {
+                  currentUser.classes.forEach((classs) {
+                    if (classs != null) {
+                      classes[classs['Class']] = false;
+                      section[classs['Section']] = false;
+                      subject[classs['Subject']] = false;
+                    }
+                  });
+                }
+                gender[currentUser.gender] = false;
               }
             }));
-
-    await Firestore.instance
-        .collection("School")
-        .document(schoolCode)
-        .collection(isTeacher ? "Teachers" : "Student")
-        .document(userId)
-        .get()
-        .then((value) {
-      setState(() {
-        if (widget.isTeacher) {
-          user = Teacher(
-            id: value.documentID,
-            name: (value.data["first name"] ?? '') +
-                " " +
-                (value.data["last name"] ?? ''),
-            mobile: (value.data["mobile"] ?? ''),
-            classNumber: value.data['classteacher'] != null
-                ? value.data['classteacher']['class']
-                : '',
-            section: value.data['classteacher'] != null
-                ? value.data['classteacher']['section']
-                : '',
-            classes: value.data['classes'] ?? [],
-            gender: value.data['gender'],
-            imgURL: value.data["url"],
-            isAdmin: false,
-          );
-        } else {
-          user = Student(
-            id: value.documentID,
-            name: (value.data["first name"] ?? '') +
-                " " +
-                (value.data["last name"] ?? ''),
-            rollno: value.data['rollno'] ?? '',
-            classNumber: value.data['class'] ?? '',
-            section: value.data['section'] ?? '',
-            imgURL: value.data['url'],
-            isAdmin: false,
-            subjects: value.data['subjects'] ?? [],
-            mobile: value.data['mobile'] ?? '',
-            gender: value.data['gender'],
-          );
-        }
-      });
-    });
-    users.remove(user);
     setState(() {
       filteredUsers = users;
       loading = false;
@@ -318,6 +313,7 @@ class _CreateGroupState extends State<CreateGroup> {
     loadData();
     totalUsers = Map();
     value = false;
+    rollno = "";
   }
 
   @override
@@ -438,7 +434,7 @@ class _CreateGroupState extends State<CreateGroup> {
                         color: Colors.black, fontWeight: FontWeight.bold),
                   ),
                   leading: Checkbox(
-                      value: value,
+                      value: filteredUsers.where((element) => totalUsers[element.id +"_" +(element.isTeacher ? "true" : "false")] == false).length>0?false:true,
                       onChanged: (val) {
                         setState(() {
                           value = val;
@@ -577,20 +573,38 @@ class _CreateGroupState extends State<CreateGroup> {
               tooltip: "Filter",
               child: Icon(Icons.filter_alt_rounded),
               onPressed: () async {
-                var result;
-                if (filtersApplied) {
-                  result = await Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (BuildContext context) => FiltersScreen(
-                                oldUsers: users,
-                              )));
-                } else {}
-                if (result != null)
+                var result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (BuildContext context) => FiltersScreen(
+                              oldUsers: users,
+                              classes: classes,
+                              section: section,
+                              subject: subject,
+                              gender: gender,
+                              rollno: rollno,
+                            )));
+                print(result.toString());
+                if (result != null) {
                   setState(() {
-                    filteredUsers = result;
-                    filtersApplied = true;
+                    classes = result[1];
+                    section = result[2];
+                    subject = result[3];
+                    gender = result[4];
+                    rollno = result[5];
+                    filteredUsers = result[0];
                   });
+                  filteredUsers.forEach((element) {
+                    if (!totalUsers[element.id +
+                        "_" +
+                        (element.isTeacher ? "true" : "false")]) {
+                      setState(() {
+                        value = false;
+                      });
+                      return;
+                    }
+                  });
+                }
               })
           : null,
     );

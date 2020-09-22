@@ -31,7 +31,7 @@ class GroupChatBox extends StatefulWidget {
 
 class _GroupChatBoxState extends State<GroupChatBox> {
   String groupName, icon, name;
-  List<User> members;
+  List<dynamic> members;
   bool isAdmin = false, inProcess1 = true, inProcess2 = true;
   final _firestore = Firestore.instance;
   int limitOfMessages = 40;
@@ -60,6 +60,7 @@ class _GroupChatBoxState extends State<GroupChatBox> {
     });
     widget.GroupRef.snapshots().listen((event) {
       setState(() {
+        if(event.data['Icon']!=null&&event.data['Icon']!="")
         icon = event.data['Icon'];
         groupName = event.data['Name'];
       });
@@ -171,7 +172,6 @@ class _GroupChatBoxState extends State<GroupChatBox> {
                         setState(() {
                           value.documents.forEach((element) {
                             if (element.data['isTeacher']) {
-                              print(Teacher.fromMap(element.data).toString());
                               members.add(Teacher.fromMap(element.data));
                             } else {
                               members.add(Student.fromMap(element.data));
