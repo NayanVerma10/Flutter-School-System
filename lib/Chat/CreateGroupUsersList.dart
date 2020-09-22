@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:Schools/Chat/GroupChatBox.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'ChatList.dart';
+import 'FiltersScreen.dart';
 import 'GroupName.dart';
 
 class Debouncer {
@@ -21,11 +23,160 @@ class Debouncer {
   }
 }
 
+class Student extends User {
+  List<dynamic> subjects;
+  String rollno;
+  bool isAdmin;
+
+  Student({
+    id,
+    name,
+    this.rollno,
+    mobile,
+    classNumber,
+    section,
+    imgURL,
+    gender,
+    this.isAdmin = false,
+    this.subjects,
+  }) : super(
+          id: id,
+          name: name,
+          mobile: mobile,
+          classNumber: classNumber,
+          section: section,
+          isTeacher: false,
+          imgURL: imgURL,
+          gender: gender,
+        );
+  @override
+  Student.fromMap(Map<String, dynamic> map) {
+    this.id = map['id'];
+    this.name = map['name'];
+    this.rollno = map['rollno'];
+    this.mobile = map['mobile'];
+    this.classNumber = map['classNumber'];
+    this.section = map['section'];
+    this.isTeacher = false;
+    this.isAdmin = map['isAdmin'];
+    this.imgURL = map['imgURL'];
+    this.gender = map['gender'];
+    this.subjects = map['subjects'];
+  }
+  Map<String, dynamic> toMap() {
+    return {
+      "id": id,
+      "name": name,
+      "rollno": rollno,
+      "mobile": mobile,
+      "classNumber": classNumber,
+      "section": section,
+      "isTeacher": false,
+      "isAdmin": isAdmin,
+      "imgURL": imgURL,
+      "gender": gender,
+      "subjects": subjects,
+    };
+  }
+
+  bool operator ==(b) {
+    if (b.runtimeType == Student) return Comparator(this, b);
+    return false;
+  }
+
+  bool Comparator(Student a, Student b) {
+    Map<String, dynamic> map1 = a.toMap(), map2 = b.toMap();
+    for (String s in map1.keys) {
+      if (s.compareTo("subjects") == 0) {
+        if (!listEquals<dynamic>(map1[s], map2[s])) return false;
+      } else if (map1[s] != map2[s]) {
+        return false;
+      }
+    }
+    return true;
+  }
+}
+
+class Teacher extends User {
+  List<dynamic> classes;
+  bool isAdmin;
+  Teacher({
+    id,
+    name,
+    mobile,
+    classNumber,
+    section,
+    gender,
+    isTeacher,
+    imgURL,
+    this.isAdmin = false,
+    this.classes,
+  }) : super(
+            id: id,
+            name: name,
+            mobile: mobile,
+            gender: gender,
+            classNumber: classNumber,
+            section: section,
+            isTeacher: true,
+            imgURL: imgURL);
+  @override
+  Teacher.fromMap(Map<String, dynamic> map) {
+    this.id = map['id'];
+    this.name = map['name'];
+    this.mobile = map['mobile'];
+    this.classNumber = map['classNumber'];
+    this.section = map['section'];
+    this.isTeacher = true;
+    this.isAdmin = map['isAdmin'];
+    this.imgURL = map['imgURL'];
+    this.gender = map['gender'];
+    this.classes = map['classes'];
+  }
+  Map<String, dynamic> toMap() {
+    return {
+      "id": id,
+      "name": name,
+      "mobile": mobile,
+      "classNumber": classNumber,
+      "section": section,
+      "isTeacher": true,
+      "isAdmin": isAdmin,
+      "imgURL": imgURL,
+      "gender": gender,
+      "classes": classes,
+    };
+  }
+
+  bool operator ==(b) {
+    if (b.runtimeType == Teacher) return Comparator(this, b);
+    return false;
+  }
+
+  bool Comparator(Teacher a, Teacher b) {
+    Map<String, dynamic> map1 = a.toMap(), map2 = b.toMap();
+    for (String s in map1.keys) {
+      if (s.compareTo("classes") == 0) {
+        for (int i = 0; i < map1[s].length; i++) {
+          for (String str in map1[s][i].keys) {
+            if (map1[s][i][str].compareTo(map2[s][i][str]) != 0) {
+              return false;
+            }
+          }
+        }
+      } else if (map1[s] != map2[s]) {
+        return false;
+      }
+    }
+    return true;
+  }
+}
+
 class CreateGroup extends StatefulWidget {
   String schoolCode, userId;
   static DocumentReference _docRef;
   bool isTeacher;
-  List<User> alreadyAdded;
+  List<dynamic> alreadyAdded;
   static set docRef(DocumentReference value) {
     _docRef = value;
   }
@@ -41,17 +192,17 @@ class CreateGroup extends StatefulWidget {
 
 class _CreateGroupState extends State<CreateGroup> {
   String schoolCode, userId;
-  bool isTeacher, value;
-  List<User> alreadyAdded;
+  bool isTeacher, value, filtersApplied = false;
+  List<dynamic> alreadyAdded;
   _CreateGroupState(this.schoolCode, this.userId, this.isTeacher,
       {this.alreadyAdded});
   Debouncer _debouncer = new Debouncer(milliseconds: 500);
-  List<User> users = List();
-  List<User> filteredUsers = List();
+  List<dynamic> users = List();
+  List<dynamic> filteredUsers = List();
   bool loading = true;
   Map<String, bool> totalUsers;
   int count = 0;
-  User user;
+  dynamic user;
   void loadData() async {
     await Firestore.instance
         .collection('School')
@@ -60,18 +211,21 @@ class _CreateGroupState extends State<CreateGroup> {
         .getDocuments()
         .then((value) => value.documents.forEach((element) {
               totalUsers[element.documentID + "_false"] = false;
-              User currentUser = User(
+              Student currentUser = Student(
                 mobile: (element.data['mobile'] ?? ''),
                 id: element.documentID,
+                rollno: element.data['rollno'] ?? "",
                 name: (element.data['first name'] ?? '') +
                     ' ' +
                     (element.data['last name'] ?? ''),
                 classNumber: element.data['class'] ?? '',
                 section: element.data['section'] ?? '',
-                isTeacher: false,
                 imgURL: element.data['url'],
                 isAdmin: false,
+                gender: element.data['gender'],
+                subjects: element.data['subjects'] ?? [],
               );
+              //print(currentUser.toMap().toString());
               if (alreadyAdded == null || !alreadyAdded.contains(currentUser)) {
                 users.add(currentUser);
               }
@@ -84,7 +238,7 @@ class _CreateGroupState extends State<CreateGroup> {
         .getDocuments()
         .then((value) => value.documents.forEach((element) {
               totalUsers[element.documentID + "_true"] = false;
-              User currentUser = User(
+              Teacher currentUser = Teacher(
                 mobile: element.data['mobile'] ?? '',
                 id: element.documentID,
                 name: (element.data['first name'] ?? '') +
@@ -96,10 +250,12 @@ class _CreateGroupState extends State<CreateGroup> {
                 section: element.data['classteacher'] != null
                     ? element.data['classteacher']['section']
                     : '',
-                isTeacher: true,
                 imgURL: element.data['url'],
+                gender: element.data['gender'],
                 isAdmin: false,
+                classes: element.data['classes'] ?? [],
               );
+              print(currentUser.toMap().toString());
               if (alreadyAdded == null || !alreadyAdded.contains(currentUser)) {
                 users.add(currentUser);
               }
@@ -113,22 +269,40 @@ class _CreateGroupState extends State<CreateGroup> {
         .get()
         .then((value) {
       setState(() {
-        user = User(
-          id: value.documentID,
-          name: (value.data["first name"] ?? '') +
-              " " +
-              (value.data["last name"] ?? ''),
-          mobile: (value.data["mobile"] ?? ''),
-          classNumber: value.data['classteacher'] != null
-              ? value.data['classteacher']['class']
-              : (value.data['class'] ?? ''),
-          section: value.data['classteacher'] != null
-              ? value.data['classteacher']['section']
-              : (value.data['section'] ?? ''),
-          isTeacher: isTeacher,
-          imgURL: value.data["url"],
-          isAdmin: false,
-        );
+        if (widget.isTeacher) {
+          user = Teacher(
+            id: value.documentID,
+            name: (value.data["first name"] ?? '') +
+                " " +
+                (value.data["last name"] ?? ''),
+            mobile: (value.data["mobile"] ?? ''),
+            classNumber: value.data['classteacher'] != null
+                ? value.data['classteacher']['class']
+                : '',
+            section: value.data['classteacher'] != null
+                ? value.data['classteacher']['section']
+                : '',
+            classes: value.data['classes'] ?? [],
+            gender: value.data['gender'],
+            imgURL: value.data["url"],
+            isAdmin: false,
+          );
+        } else {
+          user = Student(
+            id: value.documentID,
+            name: (value.data["first name"] ?? '') +
+                " " +
+                (value.data["last name"] ?? ''),
+            rollno: value.data['rollno'] ?? '',
+            classNumber: value.data['class'] ?? '',
+            section: value.data['section'] ?? '',
+            imgURL: value.data['url'],
+            isAdmin: false,
+            subjects: value.data['subjects'] ?? [],
+            mobile: value.data['mobile'] ?? '',
+            gender: value.data['gender'],
+          );
+        }
       });
     });
     users.remove(user);
@@ -154,10 +328,10 @@ class _CreateGroupState extends State<CreateGroup> {
             icon: Icon(Icons.arrow_back),
             onPressed: () {
               if (alreadyAdded != null)
-              Navigator.pop(context);
-              
-                // Navigator.popUntil(
-                //     context, ModalRoute.withName('GroupChatBox'));
+                Navigator.pop(context);
+
+              // Navigator.popUntil(
+              //     context, ModalRoute.withName('GroupChatBox'));
               else {
                 Navigator.pop(context);
               }
@@ -167,7 +341,7 @@ class _CreateGroupState extends State<CreateGroup> {
             onPressed: count == 0
                 ? null
                 : () async {
-                    List<User> usersList = List();
+                    List<dynamic> usersList = List();
                     users.forEach((element) {
                       if (totalUsers[element.id +
                           "_" +
@@ -175,7 +349,6 @@ class _CreateGroupState extends State<CreateGroup> {
                         usersList.add(element);
                       }
                     });
-                    //print("length " + alreadyAdded.length.toString());
                     if (alreadyAdded == null || alreadyAdded.length == 0) {
                       user.isAdmin = true;
                       usersList.add(user);
@@ -184,7 +357,6 @@ class _CreateGroupState extends State<CreateGroup> {
                           MaterialPageRoute(
                               settings: RouteSettings(name: 'GroupName'),
                               builder: (context) => GroupName(
-                              
                                   schoolCode, usersList, userId, isTeacher)));
                       if (results != null) {
                         Navigator.pop(context, results);
@@ -285,8 +457,13 @@ class _CreateGroupState extends State<CreateGroup> {
                 Expanded(
                   child: ListView.separated(
                     padding: EdgeInsets.all(0),
-                    itemCount: filteredUsers.length,
+                    itemCount: filteredUsers.length + 1,
                     itemBuilder: (BuildContext context, int index) {
+                      if (filteredUsers.length == index) {
+                        return SizedBox(
+                          height: 30,
+                        );
+                      }
                       return Card(
                         margin: EdgeInsets.symmetric(vertical: 0),
                         elevation: 0,
@@ -346,11 +523,13 @@ class _CreateGroupState extends State<CreateGroup> {
                                           value ? count++ : count--;
                                         });
                                       }),
-                                  filteredUsers[index].imgURL != null
+                                  filteredUsers[index].imgURL != null &&
+                                          filteredUsers[index].imgURL != ''
                                       ? CircleAvatar(
                                           backgroundColor: Colors.grey[300],
-                                          backgroundImage: NetworkImage(
-                                              filteredUsers[index].imgURL),
+                                          backgroundImage: Image.network(
+                                                  filteredUsers[index].imgURL)
+                                              .image,
                                         )
                                       : CircleAvatar(
                                           backgroundColor: Colors.grey[300],
@@ -393,6 +572,27 @@ class _CreateGroupState extends State<CreateGroup> {
                 ),
               ],
             ),
+      floatingActionButton: users.length > 0
+          ? FloatingActionButton(
+              tooltip: "Filter",
+              child: Icon(Icons.filter_alt_rounded),
+              onPressed: () async {
+                var result;
+                if (filtersApplied) {
+                  result = await Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (BuildContext context) => FiltersScreen(
+                                oldUsers: users,
+                              )));
+                } else {}
+                if (result != null)
+                  setState(() {
+                    filteredUsers = result;
+                    filtersApplied = true;
+                  });
+              })
+          : null,
     );
   }
 }

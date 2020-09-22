@@ -27,7 +27,12 @@ class _MyAppTeacherState extends State<MyAppTeacher> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        theme: ThemeData(primaryColor: Colors.white, accentColor: Colors.black),
+        theme: ThemeData(
+          primaryColor: Colors.white, 
+          accentColor: Colors.black,
+          cursorColor: Colors.black,
+          textSelectionHandleColor: Colors.black,
+        ),
         debugShowCheckedModeBanner: false,
         title: 'Aatmanirbhar Institutions',
         home: MyAppTeacherScaffold(schoolCode,teachersId));

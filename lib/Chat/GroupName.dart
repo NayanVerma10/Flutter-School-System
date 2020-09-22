@@ -11,12 +11,12 @@ import 'package:image_picker/image_picker.dart';
 import 'CreateGroupUsersList.dart';
 import 'dart:async';
 import 'ChatList.dart';
-import '../plugins/url_launcher.dart';
+import '../plugins/url_launcher/url_launcher.dart';
 import 'GroupChatBox.dart';
 
 class GroupName extends StatefulWidget {
   String schoolCode;
-  List<User> list = List<User>();
+  List<dynamic> list = List<dynamic>();
   String userId;
   bool isTeacher;
   GroupName(
@@ -32,11 +32,32 @@ class GroupName extends StatefulWidget {
 
 class _GroupNameState extends State<GroupName> {
   String name = "", description = "";
-
-  final picker = ImagePicker();
+  List<String> allowedExt;
   Image image;
   Uint8List bytesData;
   FilePickerResult result;
+  @override
+  void initState() { 
+    super.initState();
+    allowedExt = [
+      'xbm',
+      'tif',
+      'pjp',
+      'svg',
+      'jpg',
+      'jpeg',
+      'ico',
+      'tiff',
+      'gif',
+      'svgz',
+      'jfif',
+      'webp',
+      'png',
+      'bmp',
+      'pjpeg',
+      'avif'
+    ];
+  }
 
   Future getImageFromGallery() async {
     result = await FilePicker.platform
@@ -63,7 +84,7 @@ class _GroupNameState extends State<GroupName> {
                         TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 onPressed: () async {
                   await getImageFromGallery();
-                  Navigator.pop(context);
+                  Navigator.of(context).pop();
                 }),
             FlatButton(
                 child: Text(
@@ -74,10 +95,10 @@ class _GroupNameState extends State<GroupName> {
                 onPressed: image == null
                     ? null
                     : () {
-                        Navigator.pop(context);
                         setState(() {
                           image = null;
                         });
+                        Navigator.of(context).pop();
                       }),
           ],
         ));
@@ -193,16 +214,9 @@ class _GroupNameState extends State<GroupName> {
                           'AdminCount': 1,
                         });
                         if (bytesData != null) {
-                          UrlUtils.open(
-                              bytesData,
-                              "${widget.schoolCode}/GroupChats/${docRef.documentID}/icon/" +
-                                  result.files.first.path.split("/").last +
-                                  ".txt",
+                          UrlUtils.open(result,
+                              "${widget.schoolCode}/GroupChats/${docRef.documentID}/icon/",
                               docRef: docRef);
-                          await docRef.updateData({
-                            "IconFileName":
-                                 result.files.first.path.split("/").last + ".txt"
-                          });
                         } else {
                           await docRef.updateData({"Icon": null});
                         }
@@ -252,8 +266,7 @@ class _GroupNameState extends State<GroupName> {
                           });
                         }
 
-                        Navigator.popUntil(
-                            context, ModalRoute.withName('GroupName'));
+                        Navigator.of(context).pop();
                         Navigator.pop(context, [
                           docRef,
                           widget.schoolCode,

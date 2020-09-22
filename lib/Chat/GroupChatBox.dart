@@ -4,11 +4,10 @@ import 'package:Schools/ChatNecessary/MessageBubble.dart';
 import 'package:Schools/ChatNecessary/UploadFile.dart';
 import 'package:Schools/Screens/StudentScreens/main.dart';
 import 'package:Schools/Screens/TeacherScreens/main.dart';
-import 'package:Schools/plugins/url_launcher.dart';
+import 'package:Schools/plugins/url_launcher/url_launcher.dart';
 import 'package:bubble/bubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'ChatList.dart';
@@ -160,7 +159,7 @@ class _GroupChatBoxState extends State<GroupChatBox> {
               ),
               onPressed: isAdmin
                   ? () async {
-                      members = List<User>();
+                      members = List<dynamic>();
                       await Firestore.instance
                           .collection("School")
                           .document(widget.schoolCode)
@@ -171,11 +170,16 @@ class _GroupChatBoxState extends State<GroupChatBox> {
                           .then((value) {
                         setState(() {
                           value.documents.forEach((element) {
-                            members.add(User.fromMap(element.data));
+                            if (element.data['isTeacher']) {
+                              print(Teacher.fromMap(element.data).toString());
+                              members.add(Teacher.fromMap(element.data));
+                            } else {
+                              members.add(Student.fromMap(element.data));
+                            }
                           });
                         });
                       });
-                      List<User> newUsers =
+                      List<dynamic> newUsers =
                           await Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => CreateGroup(
                                     widget.schoolCode,
@@ -253,7 +257,10 @@ class _GroupChatBoxState extends State<GroupChatBox> {
                               margin: BubbleEdges.all(4),
                               color: Colors.black,
                               alignment: Alignment.center,
-                              child: Text(doc.data['text'], style: TextStyle(color: Colors.white),),
+                              child: Text(
+                                doc.data['text'],
+                                style: TextStyle(color: Colors.white),
+                              ),
                             );
                           }
                           return Message(
@@ -312,25 +319,16 @@ class _GroupChatBoxState extends State<GroupChatBox> {
                             final result = await FilePicker.platform
                                 .pickFiles(allowMultiple: true);
                             if (result != null) {
-                              List<PlatformFile> pFiles = result.files;
-                              if (kIsWeb) {
-                                UrlUtils.UploadFiles(
-                                  result,
-                                  widget.GroupRef.collection('ChatMessages'),
-                                  "${widget.schoolCode}/GroupChats/${widget.GroupRef.documentID}/",
-                                  name: name,
-                                  isTeacher: widget.isTeacher,
-                                  fromId: widget.userId,
-                                );
-                              } else {
-                                pFiles.forEach((element) async {
-                                  List<String> fileData = await uploadToFirebase(
-                                      "${widget.schoolCode}/GroupChats/${widget.GroupRef.documentID}/",
-                                      File(element.path));
-                                  await callback('File', fileData[1],
-                                      fileURL: fileData[0]);
-                                });
-                              }
+                              if (result != null) {
+                              UrlUtils.uploadFiles(
+                                result,
+                                widget.GroupRef.collection('ChatMessages'),
+                                "${widget.schoolCode}/GroupChats/${widget.GroupRef.documentID}/",
+                                name: name,
+                                isTeacher: widget.isTeacher,
+                                fromId: widget.userId,
+                              );
+                            }
                             }
                           },
                         ),

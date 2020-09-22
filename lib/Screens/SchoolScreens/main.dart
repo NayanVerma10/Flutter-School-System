@@ -59,7 +59,10 @@ class _MyAppSchoolState extends State<MyAppSchool> {
         "add_announcement": (_) => AddAnnouncementPage(),
       },
       title: 'Aatmanirbhar Institutions',
-      theme: ThemeData(primaryColor: Colors.white, accentColor: Colors.black),
+      theme: ThemeData(primaryColor: Colors.white, 
+        accentColor: Colors.black, 
+        cursorColor: Colors.black,
+        textSelectionHandleColor: Colors.black,),
       debugShowCheckedModeBanner: false,
       home: DefaultTabController(
         length: 5, // Number of Tabs you want

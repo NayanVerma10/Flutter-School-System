@@ -39,6 +39,7 @@ dependencies:
   grouped_buttons:
   image_picker:
   image_picker_for_web:
+  mime_type:
   image_cropper:
   flutter_speed_dial:
   table_calendar:

@@ -28,7 +28,12 @@ class _MyAppStudentState extends State<MyAppStudent> {
   Widget build(BuildContext context) {
     Widget home;
     return MaterialApp(
-      theme: ThemeData(primaryColor: Colors.white, accentColor: Colors.black),
+      theme: ThemeData(
+        primaryColor: Colors.white, 
+        accentColor: Colors.black, 
+        cursorColor: Colors.black,
+        textSelectionHandleColor: Colors.black,
+      ),
       debugShowCheckedModeBanner: false,
       title: 'Aatmanirbhar Institutions',
       home: MyAppStudentScaffold(schoolCode,studentId),

@@ -46,26 +46,29 @@ class _GroupChatState extends State<GroupChat> {
               ));
             } else {
               DocumentSnapshot snapshotData = snap.data;
+
               return ListTile(
-                  onTap: element.documentID!=null?() {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          settings: RouteSettings(name: 'GroupChatBox'),
-                            builder: (context) => GroupChatBox(
-                                  Firestore.instance
-                                      .collection('School')
-                                      .document(schoolCode)
-                                      .collection("GroupChats")
-                                      .document(element.documentID),
-                                  schoolCode,
-                                  docId,
-                                  isTeacher,
-                                  
-                                )));
-                  }:null,
+                  onTap: element.documentID != null
+                      ? () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  settings: RouteSettings(name: 'GroupChatBox'),
+                                  builder: (context) => GroupChatBox(
+                                        Firestore.instance
+                                            .collection('School')
+                                            .document(schoolCode)
+                                            .collection("GroupChats")
+                                            .document(element.documentID),
+                                        schoolCode,
+                                        docId,
+                                        isTeacher,
+                                      )));
+                        }
+                      : null,
                   leading: snapshotData.data["Icon"] != null
                       ? CircleAvatar(
+                          radius: 28,
                           backgroundImage: Image.network(
                                   snapshotData.data['Icon'],
                                   fit: BoxFit.cover)
@@ -83,6 +86,59 @@ class _GroupChatState extends State<GroupChat> {
                     snapshotData.data['Name'],
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
+                  trailing: StreamBuilder(
+                      stream: Firestore.instance
+                          .collection("School")
+                          .document(schoolCode)
+                          .collection("GroupChats")
+                          .document(element.documentID)
+                          .collection("ChatMessages")
+                          .snapshots(),
+                      builder: (context, snap) {
+                        if (!snap.hasData) {
+                          return Text(
+                            "",
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          );
+                        }
+                        List<DocumentSnapshot> docs = snap.data.documents ?? [];
+                        if (docs.last.data['type'] != 'notification') {
+                          String dateOfMessage =
+                              docs.last.data['date'].toString().split('T')[0];
+                          String timeOfMessage = docs.last.data['date']
+                              .toString()
+                              .split('T')[1]
+                              .split('.')[0]
+                              .substring(0, 5);
+                          String string = 'Testing';
+
+                          if (dateOfMessage ==
+                              DateTime.now().toIso8601String().toString().split('T')[0])
+                            string = timeOfMessage;
+                          else if (dateOfMessage ==
+                              DateTime.now()
+                                  .subtract(Duration(days: 1))
+                                  .toIso8601String()
+                                  .toString()
+                                  .split('T')[0])
+                            string = 'Yesterday';
+                          else
+                  string = dateOfMessage;
+                          return Text(
+                              string,
+                              textScaleFactor: 0.8,
+                            );
+                        } else {
+                          return Text(
+                            "",
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          );
+                        }
+                      }),
                   subtitle: StreamBuilder(
                       stream: Firestore.instance
                           .collection("School")
@@ -139,7 +195,10 @@ class _GroupChatState extends State<GroupChat> {
       );
     } else {
       return Center(
-        child: Text("Nothing to show here!",style: TextStyle(fontSize: 18),),
+        child: Text(
+          "Nothing to show here!",
+          style: TextStyle(fontSize: 18),
+        ),
       );
     }
   }

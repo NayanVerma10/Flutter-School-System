@@ -50,7 +50,7 @@ class _ChatPersonProfileState extends State<ChatPersonProfile> {
                           backgroundColor: Colors.grey[300],
                           foregroundColor: Colors.black54,
                           child: Text(snap['first name'][0].toUpperCase() +
-                              snap['last name'][0].toUpperCase()),
+                              snap['last name'][0].toUpperCase(), style: TextStyle(fontSize: 50),),
                         ),
                 ),
                 ListTile(
@@ -68,28 +68,47 @@ class _ChatPersonProfileState extends State<ChatPersonProfile> {
                   title: Title("Mobile"),
                   subtitle: Subtitle(snap['mobile']),
                 ),
-                seperator(),
+                seperator(),                
                 ListTile(
-                  title: Title("Name"),
-                  subtitle:
-                      Subtitle(snap['first name'] + " " + snap['last name']),
+                  title: Title("Gender"),
+                  subtitle: Subtitle(snap['gender']),
                 ),
                 seperator(),
                 ListTile(
-                  title: Title("Father 's Name"),
-                  subtitle: Subtitle(snap['father \'s name']),
+                  title: Title(widget.isTeacher?"Qualification":"Father 's Name"),
+                  subtitle: Subtitle(widget.isTeacher?snap['qualification']:snap['father \'s name']),
                 ),
                 seperator(),
                 ListTile(
-                  title: Title("Mother 's Name"),
-                  subtitle: Subtitle(snap['mother \'s name']),
+                  title: Title(widget.isTeacher?"Address":"Mother 's Name"),
+                  subtitle: Subtitle(widget.isTeacher?snap['address']:snap['mother \'s name']),
                 ),
                 seperator(),
                 ListTile(
-                  title: Title("Roll Number"),
-                  subtitle: Subtitle(snap['rollno']),
+                  title: Title(widget.isTeacher?"Designation":"Roll Number"),
+                  subtitle: Subtitle(widget.isTeacher?snap['designation']:snap['rollno']),
                 ),
                 seperator(),
+                widget.isTeacher?((snap['classteacher']['isclassteacher']!=null && snap['classteacher']['isclassteacher'])?
+                Container(
+                  height: 80,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: ListTile(
+                          title: Title("Class"),
+                          subtitle: Subtitle(snap['classteacher']['class']),
+                        ),
+                      ),
+                      Expanded(
+                        child: ListTile(
+                          title: Title("Section"),
+                          subtitle: Subtitle(snap['classteacher']['section']),
+                        ),
+                      ),
+                    ],
+                  ),
+                ):SizedBox()):
                 Container(
                   height: 80,
                   child: Row(
@@ -109,18 +128,14 @@ class _ChatPersonProfileState extends State<ChatPersonProfile> {
                     ],
                   ),
                 ),
+                (!widget.isTeacher||(snap['classteacher']['isclassteacher']!=null && snap['classteacher']['isclassteacher']))?
                 Container(
                     child: Row(
                   children: [
                     Expanded(child: seperator()),
                     Expanded(child: seperator()),
                   ],
-                )),
-                ListTile(
-                  title: Title("Gender"),
-                  subtitle: Subtitle(snap['gender']),
-                ),
-                seperator(),
+                )):SizedBox(),
               ],
             );
           }
@@ -138,7 +153,7 @@ Widget Title(String str) {
 }
 
 Widget Subtitle(String str) {
-  return str != null && str.compareTo("") != 0 ? Text("\n"+str) : notavl();
+  return str != null && str.compareTo("") != 0 ? Text("\n"+str, style: TextStyle(color: Colors.black,),) : notavl();
 }
 
 Widget notavl() {
@@ -152,7 +167,7 @@ Widget seperator() {
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 16),
     child: Divider(
-      color: Colors.black54,
+      color: Colors.black38,
       thickness: 0.8,
     ),
   );
