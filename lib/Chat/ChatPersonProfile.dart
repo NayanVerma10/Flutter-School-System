@@ -89,7 +89,7 @@ class _ChatPersonProfileState extends State<ChatPersonProfile> {
                   subtitle: Subtitle(widget.isTeacher?snap['designation']:snap['rollno']),
                 ),
                 seperator(),
-                widget.isTeacher?((snap['classteacher']['isclassteacher']!=null && snap['classteacher']['isclassteacher'])?
+                widget.isTeacher?((snap['classteacher']!=null && snap['classteacher']['isclassteacher'])?
                 Container(
                   height: 80,
                   child: Row(
@@ -128,7 +128,7 @@ class _ChatPersonProfileState extends State<ChatPersonProfile> {
                     ],
                   ),
                 ),
-                (!widget.isTeacher||(snap['classteacher']['isclassteacher']!=null && snap['classteacher']['isclassteacher']))?
+                (!widget.isTeacher||(snap['classteacher']!=null && snap['classteacher']['isclassteacher']))?
                 Container(
                     child: Row(
                   children: [
