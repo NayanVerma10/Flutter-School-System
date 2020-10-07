@@ -46,20 +46,19 @@ class _TutorialUploadState extends State<TutorialUpload> {
     try {
       if (_multiPick) {
         _path = null;
-        _paths = await FilePicker.getMultiFilePath(
-          type: _pickingType,
+        (await FilePicker.platform.pickFiles(
+          allowMultiple: true,type: _pickingType,
           allowedExtensions: (_extension?.isNotEmpty ?? false)
               ? _extension?.replaceAll(' ', '')?.split(',')
-              : null,
-        );
+              : null,)).toString();
       } else {
         _paths = null;
-        _path = await FilePicker.getFilePath(
+        _path = (await FilePicker.platform.pickFiles(
           type: _pickingType,
           allowedExtensions: (_extension?.isNotEmpty ?? false)
               ? _extension?.replaceAll(' ', '')?.split(',')
               : null,
-        );
+        )).toString();
       }
     } on PlatformException catch (e) {
       print("Unsupported operation" + e.toString());
@@ -74,7 +73,7 @@ class _TutorialUploadState extends State<TutorialUpload> {
   }
 
   void _clearCachedFiles() {
-    FilePicker.clearTemporaryFiles().then((result) {
+    FilePicker.platform.clearTemporaryFiles().then((result) {
       _scaffoldKey.currentState.showSnackBar(
         SnackBar(
           backgroundColor: result ? Colors.green : Colors.red,
@@ -88,7 +87,7 @@ class _TutorialUploadState extends State<TutorialUpload> {
 
   void _selectFolder() {
 
-    FilePicker.getDirectoryPath().then((value) {
+    FilePicker.platform.getDirectoryPath().then((value) {
       setState(() => _path = value);
     });
   }

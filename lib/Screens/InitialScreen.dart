@@ -13,7 +13,7 @@ class InitialScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         
-        leadingWidth: 40,
+        leading: Padding(padding:EdgeInsets.only(left:40)),
         
         titleSpacing: 10,
         title: Row(

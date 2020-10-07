@@ -38,6 +38,8 @@ dependencies:
   # Other Dependencies
   grouped_buttons:
   image_picker:
+  image_picker_for_web:
+  mime_type:
   image_cropper:
   flutter_speed_dial:
   table_calendar:
@@ -50,10 +52,11 @@ dependencies:
   provider:           #Added by Ayush for Vo/Vicalling
   universal_platform: #Added by Ishita for differentiating by different platforms
   universal_html:
+  universal_io:
   shared_preferences: #Added by Nayan for storing the data locally
   flutter_staggered_animations: #Added By Ishita for Students List
   awesome_dialog: #Added By Ishita for Student List
-  file_picker:  #Added By Nayan for chat
+  file_picker: ^2.0.0 #Added By Nayan for chat
   file_picker_web:  #Added By Nayan for chat
   dio:  #Added By Nayan for downloading files
   path_provider:  #Added By Nayan for downloading files

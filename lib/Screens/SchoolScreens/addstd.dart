@@ -71,6 +71,7 @@ class _AddStdState extends State<AddStd> {
     });
     final pickedFile = await picker.getImage(source: ImageSource.gallery);
     _image = File(pickedFile.path);
+    print(pickedFile.path);
 
     if (_image != null) {
       File cropped = await ImageCropper.cropImage(
