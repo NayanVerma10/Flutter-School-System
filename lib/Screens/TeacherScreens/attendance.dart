@@ -184,7 +184,8 @@ class _AttendanceState extends State<Attendance> {
                     color: Colors.grey,
                   ),
                   onPressed: null,
-                  tooltip: details[map.keys.elementAt(i - 1)].toString(),
+                  tooltip: "Total classes attended : ${details[map.keys.elementAt(i - 1)].toString()}",
+
                 ),
                 onTap: () {
                   setState(() {
