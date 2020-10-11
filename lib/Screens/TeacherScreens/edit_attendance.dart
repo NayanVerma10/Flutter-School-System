@@ -1,5 +1,6 @@
 import 'package:Schools/Screens/StudentScreens/attendDetails.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:toast/toast.dart';
 import 'package:universal_html/html.dart';
@@ -21,15 +22,19 @@ class _EditAttendanceState extends State<EditAttendance> {
   Map<String, bool> map;
   int count = 0;
   bool editMode = false;
+  List<String> keys;
   _EditAttendanceState(this.path, this.snapshot);
   @override
   void initState() {
     super.initState();
     map = Map<String, bool>();
+    keys = List();
     snapshot.data.forEach((key, value) {
       map[key] = value;
       if (value) count++;
     });
+    keys = map.keys.toList();
+    mergeSort<String>(keys);
   }
 
   @override
@@ -37,7 +42,7 @@ class _EditAttendanceState extends State<EditAttendance> {
     List<Widget> list = List<Widget>();
     List<Widget> list1 = List<Widget>();
     list.add(Padding(
-      padding: const EdgeInsets.symmetric(vertical:10.0),
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: Wrap(
         alignment: WrapAlignment.center,
         runSpacing: 10,
@@ -78,7 +83,7 @@ class _EditAttendanceState extends State<EditAttendance> {
         ],
       ),
     ));
-    map.forEach((key, value) {
+    keys.forEach((key) {
       list.add(Card(
         child: ListTile(
           leading: Checkbox(
@@ -147,8 +152,12 @@ class _EditAttendanceState extends State<EditAttendance> {
         onPressed: () async {
           if (editMode) {
             showLoaderDialog(context, 'Updating data....');
-            await snapshot.reference.setData(map).catchError(
-                (error) => Toast.show('Error while updating data....', context)).whenComplete(() => Toast.show('Updated Successfully', context));
+            await snapshot.reference
+                .setData(map)
+                .catchError((error) =>
+                    Toast.show('Error while updating data....', context))
+                .whenComplete(
+                    () => Toast.show('Updated Successfully', context));
             Navigator.of(context).pop();
           }
           setState(() {

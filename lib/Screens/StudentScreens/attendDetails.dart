@@ -10,14 +10,14 @@ class AttendDetails extends StatefulWidget {
 
   @override
   _AttendDetailsState createState() =>
-      _AttendDetailsState(path, rollNo, name, id,);
+      _AttendDetailsState(path, rollNo, name, id,mode);
 }
 
 class _AttendDetailsState extends State<AttendDetails> {
   String rollNo, name, id;
   bool mode = true; // false if teacher is redirected here
   String path;
-  _AttendDetailsState(this.path, this.rollNo, this.name, this.id, [this.mode = true]
+  _AttendDetailsState(this.path, this.rollNo, this.name, this.id, [this.mode=true]
       );
   @override
   Widget build(BuildContext context) {
