@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:toast/toast.dart';
-import 'package:universal_html/html.dart';
 import 'attendance.dart';
 
 class EditAttendance extends StatefulWidget {
