@@ -67,12 +67,11 @@ class _AttendanceState extends State<Attendance> {
           });
         });
         setState(() {
-        map = tempMap;
-        details = tempMap1;
-        inProcess = false;
+          map = tempMap;
+          details = tempMap1;
+          inProcess = false;
+        });
       });
-      });
-      
     });
   }
 
@@ -127,6 +126,8 @@ class _AttendanceState extends State<Attendance> {
                                 .setData(map)
                                 .catchError((error) {
                               Toast.show('error', context);
+                            }).whenComplete(() {
+                              Toast.show('Uploaded Successfully', context);
                             });
                             Navigator.of(context).pop();
                           },

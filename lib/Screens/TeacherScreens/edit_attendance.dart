@@ -148,7 +148,7 @@ class _EditAttendanceState extends State<EditAttendance> {
           if (editMode) {
             showLoaderDialog(context, 'Updating data....');
             await snapshot.reference.setData(map).catchError(
-                () => Toast.show('Error while updating data....', context));
+                (error) => Toast.show('Error while updating data....', context)).whenComplete(() => Toast.show('Updated Successfully', context));
             Navigator.of(context).pop();
           }
           setState(() {
