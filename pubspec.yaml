@@ -39,6 +39,8 @@ dependencies:
   grouped_buttons:
   image_picker:
   image_picker_for_web:
+  date_utils: #Added by Tushar for attendance
+  flutter_downloader:
   mime_type:
   image_cropper:
   flutter_speed_dial:

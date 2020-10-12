@@ -2,6 +2,7 @@ import 'package:Schools/Screens/TeacherScreens/attendance_register.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:toast/toast.dart';
+import 'package:date_utils/date_utils.dart' as Utils;
 
 String schoolname;
 String classTeacher;
@@ -115,6 +116,8 @@ class _AttendanceState extends State<Attendance> {
                               style: TextStyle(color: Colors.white)),
                           onPressed: () async {
                             showLoaderDialog(context, 'Please Wait....');
+                            String str = timeToString();
+                            //str = str.replaceRange(4, 6, '02');
                             await Firestore.instance
                                 .collection('School')
                                 .document(schoolCode)
@@ -122,7 +125,7 @@ class _AttendanceState extends State<Attendance> {
                                 .document(
                                     classNumber + '_' + section + '_' + subject)
                                 .collection('Attendance')
-                                .document(timeToString())
+                                .document(str)
                                 .setData(map)
                                 .catchError((error) {
                               Toast.show('error', context);
@@ -184,7 +187,8 @@ class _AttendanceState extends State<Attendance> {
                     color: Colors.grey,
                   ),
                   onPressed: null,
-                  tooltip: details[map.keys.elementAt(i - 1)].toString(),
+                  tooltip:
+                      "Total class attended : ${details[map.keys.elementAt(i - 1)].toString()}",
                 ),
                 onTap: () {
                   setState(() {
@@ -203,8 +207,20 @@ String timeToString() {
   return DateTime.now().toString().replaceAll(RegExp(r'\.|:|-| '), "");
 }
 
+int nums(String dT) {
+  int year = int.parse(dT.substring(0, 4));
+  int month = int.parse(dT.substring(4, 6));
+  int day = int.parse(dT.substring(6, 8));
+  int hours = int.parse(dT.substring(8, 10));
+  int min = int.parse(dT.substring(10, 12));
+  return Utils.Utils.lastDayOfMonth(DateTime(year, month, day, hours, min)).day;
+}
+
+int day(String dT) {
+  return int.parse(dT.substring(6, 8));
+}
+
 List<String> stringToTime(String createdAt) {
-  print('yes');
   List<String> months = [
     'Jan',
     'Feb',
@@ -236,6 +252,23 @@ List<String> stringToTime(String createdAt) {
     hours = '12';
   }
   return ["$month $date, $year", "$hours:$min $mode"];
+}
+
+String stringToMonth(String mon) {
+  Map<String, String> m = Map<String, String>();
+  m['01'] = 'January';
+  m['02'] = 'February';
+  m['03'] = 'March';
+  m['04'] = 'April';
+  m['05'] = 'May';
+  m['06'] = 'June';
+  m['07'] = 'July';
+  m['08'] = 'August';
+  m['09'] = 'September';
+  m['10'] = 'October';
+  m['11'] = 'November';
+  m['12'] = 'December';
+  return m[mon];
 }
 
 showLoaderDialog(BuildContext context, String text) {

@@ -8,11 +8,23 @@
          FlutterApplication and put your custom class here. -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    
     <application
         tools:replace="android:label"
         android:name="io.flutter.app.FlutterApplication"
         android:label="Aatmanirbhar Institutions"
         android:icon="@mipmap/launcher_icon">
+        
+        <provider
+            android:name="vn.hunghd.flutterdownloader.DownloadedFileProvider"
+            android:authorities="${applicationId}.flutter_downloader.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths"/>
+        </provider>
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"

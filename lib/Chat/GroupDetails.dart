@@ -84,14 +84,16 @@ class _GroupDetailsState extends State<GroupDetails> {
       appBar: AppBar(
         elevation: 0.0,
         leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pushAndRemoveUntil(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            
+            Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                    settings: RouteSettings(name: 'GroupChatBox'),
-                    builder: (BuildContext context) => GroupChatBox(groupRef,
-                        widget.schoolCode, widget.id, widget.isTeacher)),
-                (route) => false)),
+                    builder: (context) => GroupChatBox(groupRef,
+                        widget.schoolCode, widget.id, widget.isTeacher)));
+          },
+        ),
         title: TextField(
           keyboardType: TextInputType.text,
           decoration: InputDecoration(

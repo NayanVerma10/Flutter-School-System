@@ -22,12 +22,12 @@ class _GroupChatState extends State<GroupChat> {
   @override
   void initState() {
     super.initState();
-    list = List();
   }
 
   @override
   Widget build(BuildContext context) {
     List<DocumentSnapshot> groupIds = snapshot.data.documents;
+    list = List();
     groupIds.forEach((element) {
       list.add(StreamBuilder(
           stream: Firestore.instance
@@ -115,7 +115,10 @@ class _GroupChatState extends State<GroupChat> {
                           String string = 'Testing';
 
                           if (dateOfMessage ==
-                              DateTime.now().toIso8601String().toString().split('T')[0])
+                              DateTime.now()
+                                  .toIso8601String()
+                                  .toString()
+                                  .split('T')[0])
                             string = timeOfMessage;
                           else if (dateOfMessage ==
                               DateTime.now()
@@ -125,11 +128,11 @@ class _GroupChatState extends State<GroupChat> {
                                   .split('T')[0])
                             string = 'Yesterday';
                           else
-                  string = dateOfMessage;
+                            string = dateOfMessage;
                           return Text(
-                              string,
-                              textScaleFactor: 0.8,
-                            );
+                            string,
+                            textScaleFactor: 0.8,
+                          );
                         } else {
                           return Text(
                             "",

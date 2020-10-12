@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:Schools/ChatNecessary/MessageBubble.dart';
@@ -37,7 +38,7 @@ class _GroupChatBoxState extends State<GroupChatBox> {
   int limitOfMessages = 40;
   TextEditingController messageController = TextEditingController();
   ScrollController scrollController = ScrollController();
-
+  StreamSubscription<DocumentSnapshot> sub;
   @override
   void initState() {
     // TODO: implement initState
@@ -58,10 +59,10 @@ class _GroupChatBoxState extends State<GroupChatBox> {
         });
       }
     });
-    widget.GroupRef.snapshots().listen((event) {
+    sub = widget.GroupRef.snapshots().listen((event) {
       setState(() {
-        if(event.data['Icon']!=null&&event.data['Icon']!="")
-        icon = event.data['Icon'];
+        if (event.data['Icon'] != null && event.data['Icon'] != "")
+          icon = event.data['Icon'];
         groupName = event.data['Name'];
       });
     });
@@ -125,7 +126,8 @@ class _GroupChatBoxState extends State<GroupChatBox> {
               onPressed: (groupName == null || name == null || isAdmin == null)
                   ? null
                   : () {
-                      Navigator.push(
+                      sub.cancel();
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                           settings: RouteSettings(name: 'GroupDetails'),
@@ -315,15 +317,15 @@ class _GroupChatBoxState extends State<GroupChatBox> {
                                 .pickFiles(allowMultiple: true);
                             if (result != null) {
                               if (result != null) {
-                              UrlUtils.uploadFiles(
-                                result,
-                                widget.GroupRef.collection('ChatMessages'),
-                                "${widget.schoolCode}/GroupChats/${widget.GroupRef.documentID}/",
-                                name: name,
-                                isTeacher: widget.isTeacher,
-                                fromId: widget.userId,
-                              );
-                            }
+                                UrlUtils.uploadFiles(
+                                  result,
+                                  widget.GroupRef.collection('ChatMessages'),
+                                  "${widget.schoolCode}/GroupChats/${widget.GroupRef.documentID}/",
+                                  name: name,
+                                  isTeacher: widget.isTeacher,
+                                  fromId: widget.userId,
+                                );
+                              }
                             }
                           },
                         ),
