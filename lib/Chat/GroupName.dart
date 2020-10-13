@@ -71,7 +71,6 @@ class _GroupNameState extends State<GroupName> {
         });
       }
     }
-                  Navigator.of(context).pop();
   }
 
   Widget editImage() {
@@ -87,6 +86,7 @@ class _GroupNameState extends State<GroupName> {
                         TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 onPressed: () async {
                   await getImageFromGallery();
+                  Navigator.of(context, rootNavigator: true).pop('edit');
                 }),
             FlatButton(
                 child: Text(
@@ -100,7 +100,7 @@ class _GroupNameState extends State<GroupName> {
                         setState(() {
                           image = null;
                         });
-                        Navigator.of(context).pop();
+                        Navigator.of(context, rootNavigator: true).pop('edit');
                       }),
           ],
         ));
@@ -150,6 +150,8 @@ class _GroupNameState extends State<GroupName> {
                               onPressed: () {
                                 showDialog(
                                     context: context,
+                                    useRootNavigator: true,
+                                    routeSettings: RouteSettings(name: 'edit'),
                                     builder: (_) => AlertDialog(
                                           title: Text(
                                             'Edit Photo',
@@ -216,9 +218,9 @@ class _GroupNameState extends State<GroupName> {
                           'AdminCount': 1,
                         });
                         if (bytesData != null) {
-                          UrlUtils.open(result,
-                              "${widget.schoolCode}/GroupChats/${docRef.documentID}/icon/",
-                              docRef: docRef);
+                          await UrlUtils.open(result,
+                              "${widget.schoolCode}/GroupChats/${docRef.documentID}/icon/", context,
+                              docRef: docRef, );
                         } else {
                           await docRef.updateData({"Icon": null});
                         }

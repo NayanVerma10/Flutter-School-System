@@ -60,11 +60,9 @@ class _GroupChatBoxState extends State<GroupChatBox> {
       }
     });
     sub = widget.GroupRef.snapshots().listen((event) {
-      setState(() {
         if (event.data['Icon'] != null && event.data['Icon'] != "")
           icon = event.data['Icon'];
         groupName = event.data['Name'];
-      });
     });
   }
 
@@ -125,8 +123,8 @@ class _GroupChatBoxState extends State<GroupChatBox> {
               ),
               onPressed: (groupName == null || name == null || isAdmin == null)
                   ? null
-                  : () {
-                      sub.cancel();
+                  : () async {
+                      sub.pause();
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
@@ -309,7 +307,7 @@ class _GroupChatBoxState extends State<GroupChatBox> {
                         ),
                         FloatingActionButton(
                           elevation: 0,
-                          tooltip: 'Start Meeting',
+                          tooltip: 'Upload Files',
                           child: Icon(Icons.attach_file),
                           heroTag: null,
                           onPressed: () async {
@@ -317,10 +315,10 @@ class _GroupChatBoxState extends State<GroupChatBox> {
                                 .pickFiles(allowMultiple: true);
                             if (result != null) {
                               if (result != null) {
-                                UrlUtils.uploadFiles(
+                                await UrlUtils.uploadFiles(
                                   result,
                                   widget.GroupRef.collection('ChatMessages'),
-                                  "${widget.schoolCode}/GroupChats/${widget.GroupRef.documentID}/",
+                                  "${widget.schoolCode}/GroupChats/${widget.GroupRef.documentID}/", context,
                                   name: name,
                                   isTeacher: widget.isTeacher,
                                   fromId: widget.userId,

@@ -86,7 +86,6 @@ class _GroupDetailsState extends State<GroupDetails> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            
             Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
@@ -186,13 +185,13 @@ class _GroupDetailsState extends State<GroupDetails> {
                                 value.documents.forEach((element1) async {
                                   if (element1.data['type'].compareTo('File') ==
                                       0) {
-                                    UrlUtils.deleteFile(element1.data['url']);
+                                    await UrlUtils.deleteFile(element1.data['url']);
                                   }
                                   await element1.reference.delete();
                                 });
                               });
                               if (icon != null) {
-                                UrlUtils.deleteFile(icon);
+                                await UrlUtils.deleteFile(icon);
                               }
                               await groupRef.delete();
                               Navigator.pushAndRemoveUntil(
@@ -294,19 +293,25 @@ class _GroupDetailsState extends State<GroupDetails> {
                                                           .extension)) {
                                                     showLoaderDialog(context,
                                                         "Uploading icon");
-                                                    UrlUtils.open(result,
+                                                    await UrlUtils.open(
+                                                        result,
                                                         '${widget.schoolCode}/GroupChats/${widget.groupRef.documentID}/icon/',
+                                                        context,
                                                         docRef: groupRef);
                                                     if (icon != null) {
-                                                      UrlUtils.deleteFile(icon);
+                                                      await UrlUtils.deleteFile(icon);
                                                     }
 
                                                     groupRef
                                                         .get()
                                                         .then((value) {
                                                       setState(() {
+                                                        print('1\n');
                                                         icon =
                                                             value.data['Icon'];
+                                                        print(
+                                                            value.data['Icon']);
+                                                        print('2\n');
                                                       });
                                                     });
                                                     Navigator.popUntil(
@@ -341,7 +346,7 @@ class _GroupDetailsState extends State<GroupDetails> {
                                               onPressed: icon == null
                                                   ? null
                                                   : () async {
-                                                      UrlUtils.deleteFile(icon);
+                                                      await UrlUtils.deleteFile(icon);
                                                       groupRef.updateData({
                                                         'Icon': null,
                                                       }).then((value) {
