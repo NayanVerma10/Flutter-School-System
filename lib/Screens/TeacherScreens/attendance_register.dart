@@ -150,7 +150,7 @@ class _AttendanceRegisterState extends State<AttendanceRegister> {
                     .elementAt(i)
                     .data
                     .values
-                    .where((element) => true)
+                    .where((element) => element)
                     .length;
                 int absent = docs.elementAt(i).data.length - present;
                 return Card(
