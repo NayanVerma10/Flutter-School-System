@@ -76,6 +76,15 @@ class _GroupDetailsState extends State<GroupDetails> {
         nameController = TextEditingController(text: name);
       });
     });
+    groupRef
+        .collection('Members')
+        .document(widget.id + '_' + widget.isTeacher.toString())
+        .snapshots()
+        .listen((event) {
+      setState(() {
+        widget.isAdmin = event.exists ? event.data['isAdmin'] : false;
+      });
+    });
   }
 
   @override
@@ -185,7 +194,8 @@ class _GroupDetailsState extends State<GroupDetails> {
                                 value.documents.forEach((element1) async {
                                   if (element1.data['type'].compareTo('File') ==
                                       0) {
-                                    await UrlUtils.deleteFile(element1.data['url']);
+                                    await UrlUtils.deleteFile(
+                                        element1.data['url']);
                                   }
                                   await element1.reference.delete();
                                 });
@@ -294,14 +304,14 @@ class _GroupDetailsState extends State<GroupDetails> {
                                                     showLoaderDialog(context,
                                                         "Uploading icon");
                                                     if (icon != null) {
-                                                      await UrlUtils.deleteFile(icon);
+                                                      await UrlUtils.deleteFile(
+                                                          icon);
                                                     }
                                                     await UrlUtils.open(
                                                         result,
                                                         '${widget.schoolCode}/GroupChats/${widget.groupRef.documentID}/icon/',
                                                         context,
                                                         docRef: groupRef);
-                                                    
 
                                                     groupRef
                                                         .get()
@@ -347,7 +357,8 @@ class _GroupDetailsState extends State<GroupDetails> {
                                               onPressed: icon == null
                                                   ? null
                                                   : () async {
-                                                      await UrlUtils.deleteFile(icon);
+                                                      await UrlUtils.deleteFile(
+                                                          icon);
                                                       groupRef.updateData({
                                                         'Icon': null,
                                                       }).then((value) {

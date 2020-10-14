@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class GroupChat extends StatefulWidget {
-  AsyncSnapshot snapshot;
+  List<DocumentSnapshot> snapshot;
   String docId, schoolCode;
   bool isTeacher;
 
@@ -15,7 +15,7 @@ class GroupChat extends StatefulWidget {
 
 class _GroupChatState extends State<GroupChat> {
   List<Widget> list;
-  AsyncSnapshot snapshot;
+  List<DocumentSnapshot> snapshot;
   String docId, schoolCode, name;
   bool isTeacher;
   _GroupChatState(this.snapshot, this.docId, this.schoolCode, this.isTeacher);
@@ -26,8 +26,9 @@ class _GroupChatState extends State<GroupChat> {
 
   @override
   Widget build(BuildContext context) {
+    print(snapshot);
     list = List<Widget>();
-    List<DocumentSnapshot> groupIds = snapshot.data.documents;
+    List<DocumentSnapshot> groupIds = snapshot;
     groupIds.forEach((element) {
       list.add(StreamBuilder(
           stream: Firestore.instance
@@ -37,7 +38,7 @@ class _GroupChatState extends State<GroupChat> {
               .document(element.documentID)
               .snapshots(),
           builder: (context, snap) {
-            if (!snap.hasData) {
+            if (!snap.hasData || (snap.hasData && snap.data.data == null)) {
               return ListTile(
                   title: Text(
                 "Please wait fetching group details....",
@@ -70,10 +71,9 @@ class _GroupChatState extends State<GroupChat> {
                       ? CircleAvatar(
                           radius: 28,
                           backgroundImage: NetworkImage(
-                                  snapshotData.data['Icon'],
-                                  //"https://firebasestorage.googleapis.com/v0/b/aatmanirbhar-51cd2.appspot.com/o/6789%2FGroupChats%2F9DOoEgj2wpV7RkvspoHT%2Ficon%2Fimages.jpeg?alt=media&token=773d9609-d57c-41c5-b119-648581211590"
-                                  )
-                        )
+                            snapshotData.data['Icon'],
+                            //"https://firebasestorage.googleapis.com/v0/b/aatmanirbhar-51cd2.appspot.com/o/6789%2FGroupChats%2F9DOoEgj2wpV7RkvspoHT%2Ficon%2Fimages.jpeg?alt=media&token=773d9609-d57c-41c5-b119-648581211590"
+                          ))
                       : CircleAvatar(
                           radius: 28,
                           child: Icon(
@@ -186,6 +186,8 @@ class _GroupChatState extends State<GroupChat> {
             }
           }));
     });
+    print(list.length);
+    print(snapshot.length);
     if (list.length > 0) {
       return ListView.separated(
         itemCount: list.length,

@@ -245,16 +245,15 @@ class _MainChatState extends State<MainChat> {
             onRefresh: ()async{
               await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>widget.isTeacher?MyAppTeacher(widget.schoolCode, widget.docId):MyAppStudent(widget.schoolCode, widget.docId)));
             },
-                      child: StreamBuilder<QuerySnapshot>(
+            child: StreamBuilder(
                 stream: stream2,
                 builder: (context, snapshot) {
-                  if (!snapshot.hasData ||
-                      snapshot.connectionState == ConnectionState.waiting) {
+                  if (!snapshot.hasData) {
                     return Center(
                       child: CircularProgressIndicator(),
                     );
                   }
-                  return GroupChat(snapshot, docId, schoolCode, isTeacher);
+                  return GroupChat(snapshot.data.documents, docId, schoolCode, isTeacher);
                 }),
           ),
         ),
