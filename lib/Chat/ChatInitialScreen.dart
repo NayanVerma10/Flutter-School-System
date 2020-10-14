@@ -1,4 +1,6 @@
 import 'package:Schools/Chat/GroupChatBox.dart';
+import 'package:Schools/Screens/StudentScreens/main.dart';
+import 'package:Schools/Screens/TeacherScreens/main.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -239,17 +241,22 @@ class _MainChatState extends State<MainChat> {
     } else {
       return Scaffold(
         body: Container(
-          child: StreamBuilder<QuerySnapshot>(
-              stream: stream2,
-              builder: (context, snapshot) {
-                if (!snapshot.hasData ||
-                    snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                return GroupChat(snapshot, docId, schoolCode, isTeacher);
-              }),
+          child: RefreshIndicator(
+            onRefresh: ()async{
+              await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>widget.isTeacher?MyAppTeacher(widget.schoolCode, widget.docId):MyAppStudent(widget.schoolCode, widget.docId)));
+            },
+                      child: StreamBuilder<QuerySnapshot>(
+                stream: stream2,
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData ||
+                      snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  return GroupChat(snapshot, docId, schoolCode, isTeacher);
+                }),
+          ),
         ),
         floatingActionButton: FloatingActionButton(
             tooltip: "Create a group",

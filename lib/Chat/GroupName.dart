@@ -270,7 +270,7 @@ class _GroupNameState extends State<GroupName> {
                           });
                         }
 
-                        Navigator.of(context).pop();
+                        Navigator.of(context, rootNavigator: true).pop('loading');
                         Navigator.pop(context, [
                           docRef,
                           widget.schoolCode,

@@ -293,14 +293,15 @@ class _GroupDetailsState extends State<GroupDetails> {
                                                           .extension)) {
                                                     showLoaderDialog(context,
                                                         "Uploading icon");
+                                                    if (icon != null) {
+                                                      await UrlUtils.deleteFile(icon);
+                                                    }
                                                     await UrlUtils.open(
                                                         result,
                                                         '${widget.schoolCode}/GroupChats/${widget.groupRef.documentID}/icon/',
                                                         context,
                                                         docRef: groupRef);
-                                                    if (icon != null) {
-                                                      await UrlUtils.deleteFile(icon);
-                                                    }
+                                                    
 
                                                     groupRef
                                                         .get()

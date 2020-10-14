@@ -61,8 +61,7 @@ class _MyAppSchoolState extends State<MyAppSchool> {
       title: 'Aatmanirbhar Institutions',
       theme: ThemeData(primaryColor: Colors.white, 
         accentColor: Colors.black, 
-        cursorColor: Colors.black,
-        textSelectionHandleColor: Colors.black,),
+        textSelectionTheme: TextSelectionThemeData(cursorColor: Colors.black, selectionHandleColor: Colors.black),),
       debugShowCheckedModeBanner: false,
       home: DefaultTabController(
         length: 5, // Number of Tabs you want

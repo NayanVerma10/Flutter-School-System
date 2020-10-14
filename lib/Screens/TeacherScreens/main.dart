@@ -30,8 +30,7 @@ class _MyAppTeacherState extends State<MyAppTeacher> {
         theme: ThemeData(
           primaryColor: Colors.white, 
           accentColor: Colors.black,
-          cursorColor: Colors.black,
-          textSelectionHandleColor: Colors.black,
+          textSelectionTheme: TextSelectionThemeData(cursorColor: Colors.black, selectionHandleColor: Colors.black),
         ),
         debugShowCheckedModeBanner: false,
         title: 'Aatmanirbhar Institutions',

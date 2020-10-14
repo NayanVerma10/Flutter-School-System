@@ -31,8 +31,7 @@ class _MyAppStudentState extends State<MyAppStudent> {
       theme: ThemeData(
         primaryColor: Colors.white, 
         accentColor: Colors.black, 
-        cursorColor: Colors.black,
-        textSelectionHandleColor: Colors.black,
+        textSelectionTheme: TextSelectionThemeData(cursorColor: Colors.black, selectionHandleColor: Colors.black),
       ),
       debugShowCheckedModeBanner: false,
       title: 'Aatmanirbhar Institutions',

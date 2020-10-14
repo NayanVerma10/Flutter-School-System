@@ -99,10 +99,9 @@ class _GroupChatBoxState extends State<GroupChatBox> {
           children: <Widget>[
             icon != null
                 ? CircleAvatar(
-                    backgroundImage: Image.network(
+                    backgroundImage: NetworkImage(
                     icon,
-                    fit: BoxFit.cover,
-                  ).image)
+                  ))
                 : CircleAvatar(
                     child: Icon(
                       Icons.people,

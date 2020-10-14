@@ -37,8 +37,8 @@ class UrlUtils {
               stream: task.events,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
-                    Navigator.of(context, rootNavigator: true).pop('dialog');
-                  }
+                  Navigator.of(context, rootNavigator: true).pop('dialog');
+                }
                 if (snapshot.hasData) {
                   StorageTaskEvent event = snapshot.data;
                   StorageTaskSnapshot snap = event.snapshot;
@@ -46,6 +46,10 @@ class UrlUtils {
                   print(snap.bytesTransferred);
                   print(snap.totalByteCount);
                   print(val);
+                  print(event.type);
+                  if (event.type == StorageTaskEventType.success) {
+                    Navigator.of(context, rootNavigator: true).pop('dialog');
+                  }
                 }
                 return AlertDialog(
                   content: Row(
@@ -78,38 +82,46 @@ class UrlUtils {
 
       var task = ref.putFile(file, StorageMetadata(contentType: mimeType));
       double val = 0;
-    await showDialog(
-        routeSettings: RouteSettings(name: 'dialog'),
-        useRootNavigator: true,
-        barrierDismissible: false,
-        context: context,
-        builder: (context) {
-          return StreamBuilder(
-              stream: task.events,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
+      await showDialog(
+          routeSettings: RouteSettings(name: 'dialog'),
+          useRootNavigator: true,
+          barrierDismissible: false,
+          context: context,
+          builder: (context) {
+            return StreamBuilder(
+                stream: task.events,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
                     Navigator.of(context, rootNavigator: true).pop('dialog');
                   }
-                if (snapshot.hasData) {
-                  StorageTaskEvent event = snapshot.data;
-                  StorageTaskSnapshot snap = event.snapshot;
-                  val = snap.bytesTransferred * 100.0 / snap.totalByteCount;
-                  print(snap.bytesTransferred);
-                  print(snap.totalByteCount);
-                  print(val);
-                }
-                return AlertDialog(
-                  content: Row(
-                    children: [
-                      CircularProgressIndicator(value: val/100.0, backgroundColor: Colors.white,),
-                      Container(
-                          margin: EdgeInsets.only(left: 7),
-                          child: Text('${val.round().toString()} % uploaded')),
-                    ],
-                  ),
-                );
-              });
-        });
+                  if (snapshot.hasData) {
+                    StorageTaskEvent event = snapshot.data;
+                    StorageTaskSnapshot snap = event.snapshot;
+                    val = snap.bytesTransferred * 100.0 / snap.totalByteCount;
+                    print(snap.bytesTransferred);
+                    print(snap.totalByteCount);
+                    print(val);
+                    if (event.type == StorageTaskEventType.success) {
+                      print('yes');
+                      Navigator.of(context, rootNavigator: true).pop('dialog');
+                    }
+                  }
+                  return AlertDialog(
+                    content: Row(
+                      children: [
+                        CircularProgressIndicator(
+                          value: val / 100.0,
+                          backgroundColor: Colors.white,
+                        ),
+                        Container(
+                            margin: EdgeInsets.only(left: 7),
+                            child:
+                                Text('${val.round().toString()} % uploaded')),
+                      ],
+                    ),
+                  );
+                });
+          });
       await docRef.document(timeToString()).setData({
         'text': element.name,
         'name': name,
@@ -124,7 +136,7 @@ class UrlUtils {
 
   static Future<void> deleteFile(String url) async {
     await FirebaseStorage.instance.getReferenceFromUrl(url).then((value) async {
-      //print(value.toString());
+      print("here"+value.toString());
       await value.delete();
     });
   }
