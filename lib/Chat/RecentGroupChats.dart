@@ -178,9 +178,13 @@ class _GroupChatState extends State<GroupChat> {
                             )
                           ]);
                         else
-                          return Text(
-                            docs.last.data['text'],
-                            style: TextStyle(color: Colors.black),
+                          return Expanded(
+                                                      child: Text(
+                              docs.last.data['text'],
+                              style: TextStyle(color: Colors.black),
+                              overflow: TextOverflow.ellipsis,
+                              softWrap: false,
+                            ),
                           );
                       }));
             }
