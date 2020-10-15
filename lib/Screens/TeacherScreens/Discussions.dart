@@ -210,7 +210,7 @@ class _DiscussionsState extends State<Discussions> {
                             .then((files) => files.forEach((file) async {
                                   List<String> fileData = await uploadToFirebase(
                                       '$schoolCode/$classNumber/$section/$subject/',
-                                      file);
+                                      file, context);
                                   await callback('File', fileData[1],
                                       fileURL: fileData[0]);
                                 }));

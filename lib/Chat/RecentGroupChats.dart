@@ -173,7 +173,7 @@ class _GroupChatState extends State<GroupChat> {
                               style: TextStyle(color: Colors.blue[900]),
                             ),
                             Text(
-                              docs.last.data['text'],
+                              docs.last.data['text'].toString().length>25?docs.last.data['text'].toString().substring(0,25)+"...":docs.last.data['text'].toString(),
                               style: TextStyle(color: Colors.black),
                             )
                           ]);

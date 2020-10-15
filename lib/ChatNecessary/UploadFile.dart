@@ -8,41 +8,30 @@
 
 import 'dart:convert';
 
+import 'package:Schools/plugins/url_launcher/url_launcher.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 
 //  import 'package:file_picker_web/file_picker_web.dart';
 //  import 'package:http/http.dart';
 //  import 'package:universal_html/html.dart';
 //  import 'package:firebase/firebase.dart' as fb;
 
-Future<List<File>> attachment() async {
-  List<File> files;
-  files = (await FilePicker.platform.pickFiles(allowMultiple: true)).files.cast();
+Future<List<PlatformFile>> attachment() async {
+  List<PlatformFile> files = List<PlatformFile>();
+  FilePickerResult result =
+      await FilePicker.platform.pickFiles(allowMultiple: true);
+  if (result != null) files = result.files;
   return files;
 }
 
-Future<List<String>> uploadToFirebase(String path, File file) async {
-  // This is for MOBILE
-  String downloadURL;
-  String fileName;
-
-  StorageReference storageRef =
-      FirebaseStorage.instance.ref().child(path + file.path.split('/').last);
-  final StorageUploadTask uploadTask = storageRef.putFile(
-    file,
-    StorageMetadata(
-      contentType: 'type',
-    ),
-  );
-  await uploadTask.onComplete.then((value) async {
-    downloadURL = (await value.ref.getDownloadURL()).toString();
-    fileName = await value.ref.getName();
-  });
-  print(downloadURL);
-  return [downloadURL, fileName];
+Future<List<String>> uploadToFirebase(
+    String path, PlatformFile file, BuildContext context) async {
+  List<String> str = await UrlUtils.uploadFileToFirebase(file, path, context);
+  return str;
 }
 
 //  Future<List<String>> uploadToFirebase(String path, File file) async {
@@ -68,7 +57,8 @@ Future<List<String>> uploadToFirebase(String path, File file) async {
 
 /*--For Mobile ------*/
 
-Future<void> readCSVTeacher(File file, String schoolCode) async {
+Future<void> readCSVTeacher(PlatformFile file1, String schoolCode) async {
+  File file = File(file1.path);
   Stream<List> inputStream = file.openRead();
 
   inputStream
@@ -122,7 +112,8 @@ Future<void> readCSVTeacher(File file, String schoolCode) async {
   });
 }
 
-Future<void> readCSVStudents(File file, String schoolCode) async {
+Future<void> readCSVStudents(PlatformFile file1, String schoolCode) async {
+  File file = File(file1.path);
   Stream<List> inputStream = file.openRead();
 
   inputStream

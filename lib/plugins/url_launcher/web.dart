@@ -12,15 +12,7 @@ import 'package:mime_type/mime_type.dart';
 
 class UrlUtils {
   UrlUtils._();
-
-  static Future<void> open(
-      FilePickerResult result, String name, BuildContext context,
-      {DocumentReference docRef}) async {
-    var ref = fb.storage().ref(name + result.files.first.name.split('/').last);
-    String mimeType = mimeFromExtension(result.files.first.extension);
-    fb.UploadTask task = ref.put(
-        result.files.first.bytes, fb.UploadMetadata(contentType: mimeType));
-    //await showProgress(context, task);
+  static Future showProgress(fb.UploadTask task, BuildContext context) async {
     double val = 0;
     await showDialog(
         routeSettings: RouteSettings(name: 'dialog'),
@@ -32,8 +24,8 @@ class UrlUtils {
               stream: task.onStateChanged,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
-                    Navigator.of(context, rootNavigator: true).pop('dialog');
-                  }
+                  Navigator.of(context, rootNavigator: true).pop('dialog');
+                }
                 if (snapshot.hasData) {
                   fb.UploadTaskSnapshot snap = snapshot.data;
                   val = snap.bytesTransferred * 100.0 / snap.totalBytes;
@@ -56,68 +48,50 @@ class UrlUtils {
                 );
               });
         });
+  }
+
+  static Future<String> open(
+      FilePickerResult result, String name, BuildContext context,
+      {DocumentReference docRef, bool isTrue = true}) async {
+    var ref = fb.storage().ref(name + result.files.first.name.split('/').last);
+    String mimeType = mimeFromExtension(result.files.first.extension);
+    fb.UploadTask task = ref.put(
+        result.files.first.bytes, fb.UploadMetadata(contentType: mimeType));
+    await showProgress(task, context);
+
     String str = (await ref.getDownloadURL()).toString();
-    await docRef.updateData({'Icon': str});
-    return;
+    if (isTrue) await docRef.updateData({'Icon': str});
+    return str;
   }
 
   static Future<void> uploadFiles(FilePickerResult result,
       CollectionReference docRef, String path, BuildContext context,
       {String name, String fromId, bool isTeacher}) async {
     result.files.forEach((element) async {
-      String mimeType = mimeFromExtension(element.extension);
-      fb.StorageReference ref =
-          fb.storage().ref(path + element.name.split('/').last);
-
-      var task =
-          ref.put(element.bytes, fb.UploadMetadata(contentType: mimeType));
-      //await showProgress(context, task);
-      double val = 0;
-      await showDialog(
-          routeSettings: RouteSettings(name: 'dialog'),
-          useRootNavigator: true,
-          barrierDismissible: false,
-          context: context,
-          builder: (context) {
-            return StreamBuilder(
-                stream: task.onStateChanged,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    Navigator.of(context, rootNavigator: true).pop('dialog');
-                  }
-                  if (snapshot.hasData) {
-                    fb.UploadTaskSnapshot snap = snapshot.data;
-                    val = snap.bytesTransferred * 100.0 / snap.totalBytes;
-                    print(snap.bytesTransferred);
-                    print(snap.totalBytes);
-                    print(val);
-                  }
-                  return AlertDialog(
-                    content: Row(
-                      children: [
-                        CircularProgressIndicator(
-                          value: val / 100.0,
-                          backgroundColor: Colors.white,
-                        ),
-                        Container(
-                            margin: EdgeInsets.only(left: 7),
-                            child:
-                                Text('${val.round().toString()} % uploaded')),
-                      ],
-                    ),
-                  );
-                });
-          });
+      List<String> str = await UrlUtils.uploadFileToFirebase(element, path, context);
       await docRef.document(timeToString()).setData({
-        'text': element.name.split('/').last,
+        'text': str[1],
         'name': name,
         'fromId': fromId,
         'type': 'File',
         'isTeacher': isTeacher,
-        'url': (await ref.getDownloadURL()).toString(),
+        'url': str[0],
         'date': DateTime.now().toIso8601String().toString(),
       });
     });
+  }
+
+  static Future<List<String>> uploadFileToFirebase(
+      PlatformFile file, String path, BuildContext context) async {
+    List<String> str = List<String>();
+    String mimeType = mimeFromExtension(file.extension);
+    fb.StorageReference ref =
+        fb.storage().ref(path + file.name.split('/').last);
+
+    var task = ref.put(file.bytes, fb.UploadMetadata(contentType: mimeType));
+    await showProgress(task, context);
+    str = [(await ref.getDownloadURL()).toString(), ref.name];
+    return str;
   }
 
   static Future<void> deleteFile(String url) async {

@@ -289,7 +289,7 @@ class _ChatBoxState extends State<ChatBox> {
                       await attachment()
                           .then((files) => files.forEach((file) async {
                                 List<String> fileData = await uploadToFirebase(
-                                    '$schoolCode Chats/$sender_docId/', file);
+                                    '$schoolCode Chats/$sender_docId/', file, context);
                                 await callback('File', fileData[1],
                                     fileURL: fileData[0]);
                               }));

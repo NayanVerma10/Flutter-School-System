@@ -1,4 +1,5 @@
 import 'package:Schools/Screens/TeacherScreens/attendance_register.dart';
+import 'package:Schools/widgets/AlertDialog.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:toast/toast.dart';
@@ -132,7 +133,7 @@ class _AttendanceState extends State<Attendance> {
                             }).whenComplete(() {
                               Toast.show('Uploaded Successfully', context);
                             });
-                            Navigator.of(context).pop();
+                            Navigator.pop(context);
                           },
                           color: Colors.black),
                       RaisedButton(
@@ -269,22 +270,4 @@ String stringToMonth(String mon) {
   m['11'] = 'November';
   m['12'] = 'December';
   return m[mon];
-}
-
-showLoaderDialog(BuildContext context, String text) {
-  AlertDialog alert = AlertDialog(
-    content: new Row(
-      children: [
-        CircularProgressIndicator(),
-        Container(margin: EdgeInsets.only(left: 7), child: Text(text)),
-      ],
-    ),
-  );
-  showDialog(
-    barrierDismissible: false,
-    context: context,
-    builder: (BuildContext context) {
-      return alert;
-    },
-  );
 }

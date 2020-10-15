@@ -203,6 +203,7 @@ class _GroupDetailsState extends State<GroupDetails> {
                               if (icon != null) {
                                 await UrlUtils.deleteFile(icon);
                               }
+                              await groupRef.setData({});
                               await groupRef.delete();
                               Navigator.pushAndRemoveUntil(
                                   context,
@@ -396,8 +397,12 @@ class _GroupDetailsState extends State<GroupDetails> {
             margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
             elevation: 5,
             child: Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
               child: icon != null
-                  ? Image.network(icon)
+                  ? Image.network(
+                      icon,
+                    )
                   : Center(
                       child: Image.asset(
                       'assets/images/coverimage.jpg',
@@ -467,8 +472,20 @@ class _GroupDetailsState extends State<GroupDetails> {
                       style: TextStyle(fontSize: 20),
                     ),
                   ));
-                  QuerySnapshot snapshotData = snapshot.data;
-                  snapshotData.documents.forEach((element) {
+                  List<DocumentSnapshot> docs = snapshot.data.documents;
+                  docs.any((element) =>
+                          element.documentID.compareTo(
+                              widget.id + '_' + widget.isTeacher.toString()) ==
+                          0)
+                      ? null
+                      : Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => widget.isTeacher
+                                  ? MyAppTeacher(widget.schoolCode, widget.id)
+                                  : MyAppStudent(
+                                      widget.schoolCode, widget.id)));
+                  docs.forEach((element) {
                     bool isAdmin = element.data['isAdmin'];
                     list.add(ListTile(
                       onTap: element.documentID.compareTo(id) != 0 &&

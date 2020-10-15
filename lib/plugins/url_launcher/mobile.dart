@@ -16,16 +16,8 @@ import 'package:toast/toast.dart';
 
 class UrlUtils {
   UrlUtils._();
-  static Future<void> open(
-      FilePickerResult result, String name, BuildContext context,
-      {DocumentReference docRef}) async {
-    File file = File(result.files.first.path);
-    String mimeType = mimeFromExtension(result.files.first.extension);
-    StorageReference ref =
-        FirebaseStorage.instance.ref().child(name + result.files.first.name);
-
-    StorageUploadTask task =
-        ref.putFile(file, StorageMetadata(contentType: mimeType));
+  static Future showProgress(
+      StorageUploadTask task, BuildContext context) async {
     double val = 0;
     await showDialog(
         routeSettings: RouteSettings(name: 'dialog'),
@@ -43,10 +35,6 @@ class UrlUtils {
                   StorageTaskEvent event = snapshot.data;
                   StorageTaskSnapshot snap = event.snapshot;
                   val = snap.bytesTransferred * 100.0 / snap.totalByteCount;
-                  print(snap.bytesTransferred);
-                  print(snap.totalByteCount);
-                  print(val);
-                  print(event.type);
                   if (event.type == StorageTaskEventType.success) {
                     Navigator.of(context, rootNavigator: true).pop('dialog');
                   }
@@ -66,77 +54,56 @@ class UrlUtils {
                 );
               });
         });
+  }
+
+  static Future<String> open(
+      FilePickerResult result, String name, BuildContext context,
+      {DocumentReference docRef, bool isTrue = true}) async {
+    File file = File(result.files.first.path);
+    String mimeType = mimeFromExtension(result.files.first.extension);
+    StorageReference ref =
+        FirebaseStorage.instance.ref().child(name + result.files.first.name);
+
+    StorageUploadTask task =
+        ref.putFile(file, StorageMetadata(contentType: mimeType));
+    await (UrlUtils.showProgress(task, context));
     String str = (await ref.getDownloadURL()).toString();
-    await docRef.updateData({'Icon': str});
-    return;
+    if (isTrue) await docRef.updateData({'Icon': str});
+    return str;
   }
 
   static Future<void> uploadFiles(FilePickerResult result,
       CollectionReference docRef, String path, BuildContext context,
       {String name, String fromId, bool isTeacher}) async {
     result.files.forEach((element) async {
-      File file = File(element.path);
-      String mimeType = mimeFromExtension(element.extension);
-      StorageReference ref =
-          FirebaseStorage.instance.ref().child(path + element.name);
-
-      var task = ref.putFile(file, StorageMetadata(contentType: mimeType));
-      double val = 0;
-      await showDialog(
-          routeSettings: RouteSettings(name: 'dialog'),
-          useRootNavigator: true,
-          barrierDismissible: false,
-          context: context,
-          builder: (context) {
-            return StreamBuilder(
-                stream: task.events,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    Navigator.of(context, rootNavigator: true).pop('dialog');
-                  }
-                  if (snapshot.hasData) {
-                    StorageTaskEvent event = snapshot.data;
-                    StorageTaskSnapshot snap = event.snapshot;
-                    val = snap.bytesTransferred * 100.0 / snap.totalByteCount;
-                    print(snap.bytesTransferred);
-                    print(snap.totalByteCount);
-                    print(val);
-                    if (event.type == StorageTaskEventType.success) {
-                      print('yes');
-                      Navigator.of(context, rootNavigator: true).pop('dialog');
-                    }
-                  }
-                  return AlertDialog(
-                    content: Row(
-                      children: [
-                        CircularProgressIndicator(
-                          value: val / 100.0,
-                          backgroundColor: Colors.white,
-                        ),
-                        Container(
-                            margin: EdgeInsets.only(left: 7),
-                            child:
-                                Text('${val.round().toString()} % uploaded')),
-                      ],
-                    ),
-                  );
-                });
-          });
+      List<String> str =
+          await UrlUtils.uploadFileToFirebase(element, path, context);
       await docRef.document(timeToString()).setData({
-        'text': element.name,
+        'text': str[1],
         'name': name,
         'fromId': fromId,
         'type': 'File',
         'isTeacher': isTeacher,
-        'url': (await ref.getDownloadURL()).toString(),
+        'url': str[0],
         'date': DateTime.now().toIso8601String().toString(),
       });
     });
   }
 
+  static Future<List<String>> uploadFileToFirebase(
+      PlatformFile file, String path, BuildContext context) async {
+    File file1 = File(file.path);
+    String mimeType = mimeFromExtension(file.extension);
+    StorageReference ref =
+        FirebaseStorage.instance.ref().child(path + file.name);
+    var task = ref.putFile(file1, StorageMetadata(contentType: mimeType));
+    await UrlUtils.showProgress(task, context);
+    return [(await ref.getDownloadURL()).toString(), await ref.getName()];
+  }
+
   static Future<void> deleteFile(String url) async {
     await FirebaseStorage.instance.getReferenceFromUrl(url).then((value) async {
-      print("here"+value.toString());
+      print("here" + value.toString());
       await value.delete();
     });
   }
