@@ -172,15 +172,23 @@ class _GroupChatState extends State<GroupChat> {
                                   " : ",
                               style: TextStyle(color: Colors.blue[900]),
                             ),
-                            Text(
-                              docs.last.data['text'],
-                              style: TextStyle(color: Colors.black),
+                            Expanded(
+                                                          child: Text(
+                                docs.last.data['text'],
+                                style: TextStyle(color: Colors.black),
+                                overflow: TextOverflow.ellipsis,
+                                softWrap: false,
+                              ),
                             )
                           ]);
                         else
-                          return Text(
-                            docs.last.data['text'],
-                            style: TextStyle(color: Colors.black),
+                          return Expanded(
+                                                      child: Text(
+                              docs.last.data['text'],
+                              style: TextStyle(color: Colors.black),
+                              overflow: TextOverflow.ellipsis,
+                              softWrap: false,
+                            ),
                           );
                       }));
             }
