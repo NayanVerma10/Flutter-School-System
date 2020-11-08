@@ -1,11 +1,10 @@
+import 'package:Schools/Screens/TeacherScreens/gradesUpload.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import './studentsGrid.dart';
 import './assignment.dart';
 import './attendance.dart';
-import './behavior.dart';
 import '../Icons/iconssss_icons.dart';
-import '../Icons/my_flutter_app_icons.dart';
 import './students.dart';
 import './tutorials.dart';
 import '../Icons/iconsss_icons.dart';
@@ -74,7 +73,8 @@ class _ClassDetailsState extends State<ClassDetails> {
               className, schoolCode, teachersId, classNumber, section, subject)
           : StudentsGrid(
               className, schoolCode, teachersId, classNumber, section, subject),
-      TutorialUpload(),
+      UploadGrades(schoolCode, classNumber, section, subject),
+      TutorialUpload(schoolCode, classNumber, section, subject),
       if (!kIsWeb)
       Assignment()
       else AssignmentWeb(),
@@ -177,6 +177,17 @@ class _ClassDetailsState extends State<ClassDetails> {
                   ),
                 ),
               ),
+              //backgroundColor: Colors.grey
+            ),
+            BottomNavigationBarItem(
+              backgroundColor: Colors.black,
+              icon: Icon(Icons.grade, size: 22,),
+              title: Container(
+                  margin: EdgeInsets.only(top: 2),
+                  child: Text(
+                    'Grades',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  )),
               //backgroundColor: Colors.grey
             ),
             BottomNavigationBarItem(

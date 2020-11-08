@@ -1,105 +1,205 @@
+import 'package:Schools/Chat/CreateGroupUsersList.dart';
+import 'package:Schools/plugins/url_launcher/url_launcher.dart';
 import 'package:Schools/widgets/ClassTutorial.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
-
-
-Future savePdf(List<int> asset, String name) async {
-
-  StorageReference reference = FirebaseStorage.instance.ref().child(name);
-  StorageUploadTask uploadTask = reference.putData(asset);
-  String url = await (await uploadTask.onComplete).ref.getDownloadURL();
-  print(url);
-  return  url;
-}
-
-
+import 'package:toast/toast.dart';
 
 class TutorialUpload extends StatefulWidget {
-
+  final String schoolCode, classNumber, section, subject;
+  TutorialUpload(this.schoolCode, this.classNumber, this.section, this.subject);
   @override
-  _TutorialUploadState createState() => new _TutorialUploadState();
+  _TutorialUploadState createState() =>
+      new _TutorialUploadState(schoolCode, classNumber, section, subject);
 }
 
 class _TutorialUploadState extends State<TutorialUpload> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  String _fileName;
-  String _path;
-  Map<String, String> _paths;
-  String _extension;
-  bool _loadingPath = false;
-  bool _multiPick = false;
-  FileType _pickingType = FileType.any;
-  TextEditingController _controller = new TextEditingController();
+  final String schoolCode, classNumber, section, subject;
+  FilePickerResult result;
+  _TutorialUploadState(
+      this.schoolCode, this.classNumber, this.section, this.subject);
+  Map<PlatformFile, bool> showPath;
+  List<Widget> list;
+  List<PlatformFile> files;
 
   @override
   void initState() {
     super.initState();
-    _controller.addListener(() => _extension = _controller.text);
-  }
-
-  void _openFileExplorer() async {
-
-    setState(() => _loadingPath = true);
-    try {
-      if (_multiPick) {
-        _path = null;
-        (await FilePicker.platform.pickFiles(
-          allowMultiple: true,type: _pickingType,
-          allowedExtensions: (_extension?.isNotEmpty ?? false)
-              ? _extension?.replaceAll(' ', '')?.split(',')
-              : null,)).toString();
-      } else {
-        _paths = null;
-        _path = (await FilePicker.platform.pickFiles(
-          type: _pickingType,
-          allowedExtensions: (_extension?.isNotEmpty ?? false)
-              ? _extension?.replaceAll(' ', '')?.split(',')
-              : null,
-        )).toString();
-      }
-    } on PlatformException catch (e) {
-      print("Unsupported operation" + e.toString());
-    }
-    if (!mounted) return;
-    setState(() {
-      _loadingPath = false;
-      _fileName = _path != null
-          ? _path.split('/').last
-          : _paths != null ? _paths.keys.toString() : '...';
-    });
-  }
-
-  void _clearCachedFiles() {
-    FilePicker.platform.clearTemporaryFiles().then((result) {
-      _scaffoldKey.currentState.showSnackBar(
-        SnackBar(
-          backgroundColor: result ? Colors.green : Colors.red,
-          content: Text((result
-              ? 'Temporary files removed with success.'
-              : 'Failed to clean temporary files')),
-        ),
-      );
-    });
-  }
-
-  void _selectFolder() {
-
-    FilePicker.platform.getDirectoryPath().then((value) {
-      setState(() => _path = value);
-    });
+    result = FilePickerResult([]);
+    showPath = Map<PlatformFile, bool>();
+    list = List<Widget>();
+    files = List<PlatformFile>();
   }
 
   @override
   Widget build(BuildContext context) {
-
+    list = List<Widget>();
+    list.add(
+      new Padding(
+        padding: const EdgeInsets.only(top: 50.0, bottom: 20.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            new IconButton(
+              tooltip: 'Select files',
+              iconSize: 100,
+              icon: Icon(
+                Icons.folder_open_rounded,
+                size: 100,
+                color: Colors.black,
+              ),
+              onPressed: () async {
+                final res = await FilePicker.platform.pickFiles(
+                  allowMultiple: true,
+                  withData: true,
+                );
+                if (res != null) {
+                  res.files.forEach((element) {
+                    showPath[element] = false;
+                    files.add(element);
+                  });
+                  setState(() {
+                    result = res;
+                  });
+                }
+              },
+            ),
+            SizedBox(
+              width: 20,
+            ),
+            new IconButton(
+              iconSize: 100,
+              icon: Icon(
+                Icons.upload_file,
+                size: 100,
+              ),
+              color: Colors.black,
+              tooltip: "Upload",
+              onPressed: () async {
+                if (result != null) {
+                  files.forEach((element) async {
+                    List<String> list = await UrlUtils.uploadFileToFirebase(
+                        element,
+                        "$schoolCode/$classNumber-$section-$subject/tutorials/",
+                        context);
+                    Firestore.instance
+                        .collection('School')
+                        .document(schoolCode)
+                        .collection('Classes')
+                        .document(classNumber + '_' + section + '_' + subject)
+                        .collection('Tutorials')
+                        .document(timeToString())
+                        .setData({
+                      'name': list[1],
+                      'url': list[0],
+                      'size': element.size.toString()
+                    }).whenComplete(() {
+                      Toast.show('${list[1]} Uploaded successfully', context);
+                    }).catchError((e) {
+                      print(e);
+                      Toast.show('Some error occured', context);
+                    });
+                  });
+                } else {
+                  Toast.show(
+                      'Select at least one file before uploading', context,
+                      duration: 3);
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+    if (result.count > 0 && list.length < 3) {
+      list.add(ListTile(
+          title: Column(
+        children: [
+          Text(
+            'Details of picked files :',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ],
+      )));
+    }
+    files.forEach((element) {
+      list.add(Card(
+        child: ListTile(
+          trailing: IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: () {
+              setState(() {
+                files.remove(element);
+              });
+            },
+          ),
+          title: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClassTutorial(
+                title1: 'Name : ',
+                title2: element.name.split('\\').last,
+                size: 15,
+                weight: FontWeight.normal,
+                c1: Colors.black,
+                c2: Colors.blue,
+              ),
+              ClassTutorial(
+                title1: 'Size : ',
+                title2: element.size.toString() + ' KB',
+                size: 15,
+                weight: FontWeight.normal,
+                c1: Colors.black,
+                c2: Colors.blue,
+              ),
+              kIsWeb
+                  ? SizedBox()
+                  : showPath[element]
+                      ? ClassTutorial(
+                        title1: 'Path : ',
+                        title2: element.path,
+                        size: 15,
+                        weight: FontWeight.normal,
+                        c1: Colors.black,
+                        c2: Colors.blue,
+                      )
+                      : TextButton(
+                          onPressed: () {
+                            setState(() {
+                              showPath[element] = (!showPath[element]);
+                            });
+                          },
+                          child: Text(
+                            'Show Path',
+                            style: TextStyle(
+                                color: Colors.blue[800], fontSize: 15),
+                          ),
+                        )
+            ],
+          ),
+        ),
+      ));
+    });
+    result = FilePickerResult([]);
+    print(list.length);
     return new MaterialApp(
       debugShowCheckedModeBanner: false,
       home: new Scaffold(
         appBar: AppBar(
-          title: ClassTutorial(),
+          title: ClassTutorial(
+            title1: 'Class',
+            title2: 'Tutorials',
+            size: 28,
+            c1: Colors.black54,
+            c2: Colors.black87,
+          ),
           centerTitle: true,
           brightness: Brightness.light,
           elevation: 0.0,
@@ -109,139 +209,12 @@ class _TutorialUploadState extends State<TutorialUpload> {
         key: _scaffoldKey,
         body: new Center(
             child: new Padding(
-              padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-              child: new SingleChildScrollView(
-                child: new Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    new Padding(
-                      padding: const EdgeInsets.only(top: 20.0),
-                      child: new DropdownButton(
-                          hint: new Text('LOAD PATH FROM'),
-                          value: _pickingType,
-                          items: <DropdownMenuItem>[
-                            new DropdownMenuItem(
-                              child: new Text('Audio'),
-                              value: FileType.audio,
-                            ),
-                            new DropdownMenuItem(
-                              child: new Text('Image'),
-                              value: FileType.image,
-                            ),
-                            new DropdownMenuItem(
-                              child: new Text('Video'),
-                              value: FileType.video,
-                            ),
-                            new DropdownMenuItem(
-                              child: new Text('Media'),
-                              value: FileType.media,
-                            ),
-                            new DropdownMenuItem(
-                              child: new Text('Document'),
-                              value: FileType.any,
-                            ),
-                            new DropdownMenuItem(
-                              child: new Text('Custom Format'),
-                              value: FileType.custom,
-                            ),
-                          ],
-                          onChanged: (value) => setState(() {
-                            _pickingType = value;
-                            if (_pickingType != FileType.custom) {
-                              _controller.text = _extension = '';
-                            }
-                          })),
-                    ),
-                    new ConstrainedBox(
-                      constraints: BoxConstraints.tightFor(width: 100.0),
-                      child: _pickingType == FileType.custom
-                          ? new TextFormField(
-                        maxLength: 15,
-                        autovalidate: true,
-                        controller: _controller,
-                        decoration:
-                        InputDecoration(labelText: 'File extension'),
-                        keyboardType: TextInputType.text,
-                        textCapitalization: TextCapitalization.none,
-                      )
-                          : new Container(),
-                    ),
-                    new ConstrainedBox(
-                      constraints: BoxConstraints.tightFor(width: 200.0),
-                      child: new SwitchListTile.adaptive(
-                        title: new Text('Multiple files',
-                            textAlign: TextAlign.right),
-                        onChanged: (bool value) =>
-                            setState(() => _multiPick = value),
-                        value: _multiPick,
-                      ),
-                    ),
-                    new Padding(
-                      padding: const EdgeInsets.only(top: 50.0, bottom: 20.0),
-                      child: Column(
-                        children: <Widget>[
-                          new RaisedButton(
-                            onPressed: () => _openFileExplorer(),
-                            child: new Text("Open file picker"),
-                          ),
-                          new RaisedButton(
-                            onPressed: () => _selectFolder(),
-                            child: new Text("Pick folder"),
-                          ),
-                          new RaisedButton(
-                            onPressed: () => _clearCachedFiles(),
-                            child: new Text("Clear temporary files"),
-                          ),
-                          new RaisedButton(
-                            onPressed: () {},
-                            child: new Text("Upload"),
-                          ),
-                        ],
-                      ),
-                    ),
-                    new Builder(
-                      builder: (BuildContext context) => _loadingPath
-                          ? Padding(
-                           padding: const EdgeInsets.only(bottom: 10.0),
-                           child: const CircularProgressIndicator())
-                          : _path != null || _paths != null
-                          ? new Container(
-                           padding: const EdgeInsets.only(bottom: 30.0),
-                           height: MediaQuery.of(context).size.height * 0.50,
-                           child: new Scrollbar(
-                            child: new ListView.separated(
-                              itemCount: _paths != null && _paths.isNotEmpty
-                                  ? _paths.length
-                                  : 1,
-                              itemBuilder: (BuildContext context, int index) {
-                                final bool isMultiPath =
-                                    _paths != null && _paths.isNotEmpty;
-                                final String name = 'File $index: ' +
-                                    (isMultiPath
-                                        ? _paths.keys.toList()[index]
-                                        : _fileName ?? '...');
-                                final path = isMultiPath
-                                    ? _paths.values.toList()[index].toString()
-                                    : _path;
-
-                                return new ListTile(
-                                  title: new Text(
-                                    name,
-                                  ),
-                                  subtitle: new Text(path),
-                                );
-                              },
-                              separatorBuilder:
-                                  (BuildContext context, int index) =>
-                              new Divider(),
-                            )),
-                      )
-                          : new Container(),
-                    ),
-                  ],
-                ),
-              ),
-            )),
+          padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+          child: new SingleChildScrollView(
+            child: new Column(
+                mainAxisAlignment: MainAxisAlignment.center, children: list),
+          ),
+        )),
       ),
     );
   }

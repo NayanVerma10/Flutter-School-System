@@ -1,25 +1,19 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:Schools/ChatNecessary/MessageBubble.dart';
-import 'package:Schools/ChatNecessary/UploadFile.dart';
-import 'package:Schools/Screens/StudentScreens/main.dart';
-import 'package:Schools/Screens/TeacherScreens/main.dart';
 import 'package:Schools/plugins/url_launcher/url_launcher.dart';
 import 'package:bubble/bubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'ChatList.dart';
 import 'CreateGroupUsersList.dart';
 import 'ChatBox.dart';
 import 'GroupDetails.dart';
 
 class GroupChatBox extends StatefulWidget {
-  DocumentReference GroupRef;
-  String schoolCode, userId;
-  bool isTeacher;
+  final DocumentReference GroupRef;
+  final String schoolCode, userId;
+  final bool isTeacher;
   GroupChatBox(
     this.GroupRef,
     this.schoolCode,

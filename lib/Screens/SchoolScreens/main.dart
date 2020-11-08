@@ -59,9 +59,14 @@ class _MyAppSchoolState extends State<MyAppSchool> {
         "add_announcement": (_) => AddAnnouncementPage(),
       },
       title: 'Aatmanirbhar Institutions',
-      theme: ThemeData(primaryColor: Colors.white, 
-        accentColor: Colors.black, 
-        textSelectionTheme: TextSelectionThemeData(cursorColor: Colors.black, selectionHandleColor: Colors.black),),
+      theme: ThemeData(
+        primaryColor: Colors.white,
+        accentColor: Colors.black,
+        textSelectionTheme: TextSelectionThemeData(
+          cursorColor: Colors.black, 
+          selectionHandleColor: Colors.black
+        ),
+      ),
       debugShowCheckedModeBanner: false,
       home: DefaultTabController(
         length: 5, // Number of Tabs you want
@@ -116,14 +121,19 @@ class _MyAppSchoolState extends State<MyAppSchool> {
                 style: TextStyle(fontSize: 20),
               ),
               actions: <Widget>[
+              //   IconButton(
+              //   icon: Icon(Icons.notifications),
+              //   onPressed: (){},
+              // ),
                 FlatButton(onPressed: (){logoutTheUser();}, child: Text('Logout',style: TextStyle(color:Theme.of(context).accentColor,))),
+                
               ],
             ),
             body: TabBarView(
               children: [
                 //What each tab will contain
                 Studnets(schoolCode),
-                Management(schoolCode),
+                Management(schoolName, schoolCode),
                 Academics(),
                 Staff(schoolCode),
                 Profile(schoolCode)

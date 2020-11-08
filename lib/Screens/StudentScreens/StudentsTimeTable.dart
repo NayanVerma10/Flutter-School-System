@@ -1,224 +1,158 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class StudentsTimeTable extends StatefulWidget {
-  final Color color;
-  final bool edit;
-
-  StudentsTimeTable({this.color, this.edit = false});
-
-  _StudentsTimeTableState createState() => _StudentsTimeTableState();
+  String cn, sn, scode;
+  StudentsTimeTable(this.scode, this.cn, this.sn);
+  _StudentsTimeTableState createState() =>
+      _StudentsTimeTableState(scode, cn, sn);
 }
 
 const List<String> tabNames = const <String>[
   'Monday',
   'Tuesday',
   'Wednesday',
-  'Thrusday',
+  'Thursday',
   'Friday',
-  'Saturday'
+  'Saturday',
+  'Sunday',
 ];
 
-class _StudentsTimeTableState extends State<StudentsTimeTable>  with SingleTickerProviderStateMixin {
-  TabController _tabController;
-  bool edit = false;
+class _StudentsTimeTableState extends State<StudentsTimeTable> {
+  String cn, sn, scode;
+  _StudentsTimeTableState(this.scode, this.cn, this.sn);
+  List<BottomNavigationBarItem> items;
+  DocumentSnapshot doc;
+  bool inProcess;
+  String index;
+  Map<String, List<Widget>> list;
   @override
   void initState() {
     super.initState();
-    _tabController =
-        TabController(vsync: this, initialIndex: 0, length: tabNames.length);
+    items = List<BottomNavigationBarItem>();
+    list = Map<String, List<Widget>>();
+    index = 'Monday';
+    tabNames.forEach((element) {
+      list[element] = List<Widget>();
+      items.add(BottomNavigationBarItem(
+          icon: Text(
+            element,
+            style: TextStyle(
+                fontWeight: index.compareTo(element) == 0
+                    ? FontWeight.bold
+                    : FontWeight.normal),
+          ),
+          title: Text('')));
+    });
+    loadData();
+    inProcess = true;
   }
+
+  Future<void> loadData() async {
+    setState(() {
+      inProcess = true;
+    });
+    await Firestore.instance
+        .collection('School')
+        .document(scode)
+        .collection('Time Table')
+        .document(cn + '-' + sn)
+        .get()
+        .then((event) {
+      if (event != null && event.data != null) {
+        Map<String, List<Widget>> tempList = Map<String, List<Widget>>();
+        tabNames.forEach((element) {
+          tempList[element] = List<Widget>();
+        });
+        event.data.forEach((key, value) {
+          list[key] = List<Widget>();
+          value.forEach((lecture) {
+            tempList[key].add(_buildListTile(lecture['start time'],
+                lecture['end time'], lecture['subject']));
+          });
+        });
+        setState(() {
+          list = tempList;
+        });
+      }
+      setState(() {
+        inProcess = false;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    edit = widget.edit;
-    return Scaffold(
-      backgroundColor: widget.color ?? Colors.white,
-      body: Padding(
-        padding: const EdgeInsets.all(0.0),
-        child: ListView.builder(
-          itemCount: 8,
-          itemBuilder: (context, index) => buildListTile(index),
-        ),
-
-      ),
-      bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-
-          Container(),
-          AnimatedCrossFade(
-            firstChild: Material(
-              color: Theme.of(context).primaryColor,
-              child: TabBar(
-                indicatorColor: Colors.white,
-                controller: _tabController,
-                isScrollable: true,
-                tabs: List.generate(tabNames.length, (index) {
-                  return Container(
-                    height: 50,
-                    child: Center(
-                      child: Text(
-                        tabNames[index].toUpperCase(),
-                        style: TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.w600),
-                      ),
-                    ),
-                  );
-                }),
-              ),
-            ),
-            secondChild: Container(),
-            crossFadeState: CrossFadeState.showFirst,
-            duration: const Duration(milliseconds: 300),
+    items = List<BottomNavigationBarItem>();
+    tabNames.forEach((element) {
+      items.add(BottomNavigationBarItem(
+          icon: Text(
+            element,
+            style: TextStyle(
+                fontWeight: index.compareTo(element) == 0
+                    ? FontWeight.bold
+                    : FontWeight.normal),
           ),
-        ],
+          title: Text('')));
+    });
+    return Scaffold(
+      body: inProcess
+          ? Center(child: CircularProgressIndicator())
+          : RefreshIndicator(
+              onRefresh: () async {
+                await loadData();
+              },
+              child: list[index].isNotEmpty
+                  ? ListView(children: list[index])
+                  : Stack(
+                      children: <Widget>[
+                        Center(
+                          child: Text('Nothing to show here!',
+                              style: TextStyle(fontSize: 20)),
+                        ),
+                        ListView(),
+                      ],
+                    ),
+            ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: tabNames.indexOf(index),
+        items: items,
+        onTap: (i) {
+          setState(() {
+            index = tabNames[i];
+          });
+        },
       ),
     );
   }
 
-  Card buildListTile(int index) {
+  Widget _buildListTile(String st, String et, String subject) {
     return Card(
-      elevation: 5,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: <Widget>[
-          ListTile(
-            title: !edit
-                ? Text(
-              'Lecture ${index + 1}',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            )
-                : TextField(
-              maxLines: 1,
-              expands: false,
-              controller: TextEditingController(text: 'Subject name'),
-              enableInteractiveSelection: true,
-              keyboardType: TextInputType.text,
-              autocorrect: true,
-              textInputAction: TextInputAction.done,
-              decoration: InputDecoration(
-                labelText: 'Lecture ${index + 1}',
-                labelStyle: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            onLongPress: () {
-              edit = !edit;
-              setState(() {});
-            },
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                SizedBox(
-                  height: 6,
-                ),
-                !edit
-                    ? Text(
-                  "Teacher ${index + 1}",
-                  style: TextStyle(fontWeight: FontWeight.w500),
-                )
-                    : TextField(
-                  maxLines: 1,
-                  expands: false,
-                  controller: TextEditingController(text: 'Teacher name'),
-                  enableInteractiveSelection: true,
-                  keyboardType: TextInputType.text,
-                  autocorrect: true,
-                  textInputAction: TextInputAction.done,
-                  decoration: InputDecoration(
-                    labelText: 'Teacher name',
-                    labelStyle: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Divider(
-            height: 2,
-            indent: 20,
-            endIndent: 20,
-          ),
-          Padding(
-            padding: EdgeInsets.only(
-                left: !edit ? 25 : 15, top: 5, right: !edit ? 25 : 15),
-            child: !edit
-                ? Text(
-              "$index:00 A.M  to  ${index + 1}:30 A.M",
-              style: TextStyle(fontWeight: FontWeight.bold
-                // fontFamily: 'Ninto',
-              ),
-            )
-                : Row(
-              children: <Widget>[
-                Expanded(
-                  child: TextField(
-                    maxLines: 1,
-                    expands: false,
-                    controller:
-                    TextEditingController(text: '$index:00 A.M'),
-                    enableInteractiveSelection: true,
-                    keyboardType: TextInputType.datetime,
-                    autocorrect: true,
-                    textInputAction: TextInputAction.done,
-                    decoration: InputDecoration(
-                      labelText: 'Start time',
-                      labelStyle: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-                Text(
-                  " to ",
+        elevation: 5,
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: <Widget>[
+              ListTile(
+                title: Text(
+                  subject,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 20,
                   ),
                 ),
-                Expanded(
-                  child: TextField(
-                    maxLines: 1,
-                    expands: false,
-                    controller: TextEditingController(
-                        text: '${index + 1}:30 A.M'),
-                    enableInteractiveSelection: true,
-                    keyboardType: TextInputType.datetime,
-                    autocorrect: true,
-                    textInputAction: TextInputAction.done,
-                    decoration: InputDecoration(
-                      labelText: 'End time',
-                      labelStyle: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: 5,
-          ),
-          edit
-              ? FlatButton(
-            onPressed: () {},
-            child: Text(
-              'Save',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
               ),
-            ),
-          )
-              : Container(),
-        ],
-      ),
-    );
+              Divider(
+                height: 2,
+                indent: 20,
+                endIndent: 20,
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 15, top: 5, right: 15),
+                child: Text(
+                  "$st  to  $et",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ]));
   }
 }

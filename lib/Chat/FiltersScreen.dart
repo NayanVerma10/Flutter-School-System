@@ -5,9 +5,9 @@ import 'package:flutter/rendering.dart';
 import 'CreateGroupUsersList.dart';
 
 class FiltersScreen extends StatefulWidget {
-  List<dynamic> oldUsers;
-  Map<String, bool> classes, section, subject, gender;
-  String rollno = "";
+  final List<dynamic> oldUsers;
+  final Map<String, bool> classes, section, subject, gender;
+  final String rollno;
   FiltersScreen(
       {this.oldUsers,
       this.classes,

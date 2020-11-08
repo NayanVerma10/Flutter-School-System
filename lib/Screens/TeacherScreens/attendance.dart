@@ -24,15 +24,21 @@ class _AttendanceState extends State<Attendance> {
   bool inProcess = true;
   Map<String, bool> map = Map<String, bool>();
   Map<String, int> details = Map<String, int>();
+  List<String> keys;
   int count = 0;
   @override
   void initState() {
     LoadData();
   }
 
+  int comp(String s1, String s2) {
+    return s1.compareTo(s1);
+  }
+
   void LoadData() {
     Map<String, bool> tempMap = Map<String, bool>();
     Map<String, int> tempMap1 = Map<String, int>();
+    keys = List<String>();
     Firestore.instance
         .collection('School')
         .document(schoolCode)
@@ -50,9 +56,11 @@ class _AttendanceState extends State<Attendance> {
             element['last name'] +
             '#' +
             element.documentID;
+        keys.add(item);
         tempMap[item] = false;
         tempMap1[item] = 0;
       });
+      keys..sort();
       Firestore.instance
           .collection('School')
           .document(schoolCode)
@@ -84,7 +92,7 @@ class _AttendanceState extends State<Attendance> {
             child: CircularProgressIndicator(),
           )
         : ListView.builder(
-            itemCount: map.keys.length + 1,
+            itemCount: keys.length+1,
             itemBuilder: (context, i) {
               if (i == 0) {
                 return Padding(
@@ -172,16 +180,16 @@ class _AttendanceState extends State<Attendance> {
               return Card(
                   child: ListTile(
                 leading: Checkbox(
-                  value: map[map.keys.elementAt(i - 1)],
+                  value: map[keys[i-1]],
                   onChanged: (value) {
                     setState(() {
-                      map[map.keys.elementAt(i - 1)] = value;
+                      map[keys[i - 1]] = value;
                       count += value ? 1 : -1;
                     });
                   },
                 ),
-                title: Text(map.keys.elementAt(i - 1).split('#')[1]),
-                subtitle: Text(map.keys.elementAt(i - 1).split('#')[0]),
+                title: Text(keys[i-1].split('#')[1]),
+                subtitle: Text(keys[i - 1].split('#')[0]),
                 trailing: IconButton(
                   icon: Icon(
                     Icons.info,
@@ -189,13 +197,13 @@ class _AttendanceState extends State<Attendance> {
                   ),
                   onPressed: null,
                   tooltip:
-                      "Total class attended : ${details[map.keys.elementAt(i - 1)].toString()}",
+                      "Total class attended : ${details[keys[i - 1]].toString()}",
                 ),
                 onTap: () {
                   setState(() {
-                    count += map[map.keys.elementAt(i - 1)] ? -1 : 1;
-                    map[map.keys.elementAt(i - 1)] =
-                        (!map[map.keys.elementAt(i - 1)]);
+                    count += map[keys[i - 1]] ? -1 : 1;
+                    map[keys[i - 1]] =
+                        (!map[keys[i - 1]]);
                   });
                 },
               ));

@@ -35,14 +35,14 @@ class SubjectDetails extends StatefulWidget {
       : super(key: key);
   @override
   _SubjectDetailsState createState() => _SubjectDetailsState(
-      schoolCode, studentId, classNumber, section, subject);
+      schoolCode, studentId, classNumber, section, rollNo, subject);
 }
 
 class _SubjectDetailsState extends State<SubjectDetails>
     with SingleTickerProviderStateMixin {
-  final String schoolCode, studentId, classNumber, section, subject;
+  final String schoolCode, studentId, classNumber, section, subject, rollNo;
   _SubjectDetailsState(this.schoolCode, this.studentId, this.classNumber,
-      this.section, this.subject);
+      this.section, this.rollNo, this.subject);
 
   String teacherName = '';
   CollectionReference ref;
@@ -209,13 +209,12 @@ class _SubjectDetailsState extends State<SubjectDetails>
                                 color: Colors.black,
                               ),
                               onTap: () {
-                                //                                  <-- onTap
-                                setState(() {
-//                                  Navigator.push(
-//                                      context,
-//                                      MaterialPageRoute(
-//                                          builder: (context) => LoadFirbaseStoragePdf()));
-                                });
+                                
+                                 Navigator.push(
+                                     context,
+                                     MaterialPageRoute(
+                                         builder: (context) => StudentTutorial(schoolCode, classNumber, section, subject)));
+                                
                               },
                             ),
                           ))),
@@ -382,24 +381,35 @@ class _SubjectDetailsState extends State<SubjectDetails>
                                                         20.0,
                                                     chartRadius: 110,
                                                     colorList: colorlist,
-                                                    legendPosition:
-                                                        LegendPosition
-                                                            .bottom,
+                                                    legendOptions:
+                                                        LegendOptions(
+                                                          legendPosition: LegendPosition.bottom),
                                                     chartType:
                                                         ChartType.ring,
-                                                    chartValueBackgroundColor:
-                                                        Colors.grey[200],
-                                                    chartValueStyle:
-                                                        defaultChartValueStyle
+                                                    chartValuesOptions: ChartValuesOptions(
+                                                      showChartValuesInPercentage: true,
+                                                      chartValueBackgroundColor: Colors.grey[200], 
+                                                      chartValueStyle: defaultChartValueStyle
                                                             .copyWith(
                                                       color: Colors
                                                           .blueGrey[900]
                                                           .withOpacity(
-                                                              0.9),
-                                                    ),
-                                                    showChartValueLabel:
+                                                              0.9),),
+                                                    showChartValuesOutside:
                                                         true,
+                                                    // chartValueBackgroundColor:
+                                                    //     Colors.grey[200],
+                                                    // chartValueStyle:
+                                                    //     defaultChartValueStyle
+                                                    //         .copyWith(
+                                                    //   color: Colors
+                                                    //       .blueGrey[900]
+                                                    //       .withOpacity(
+                                                    //           0.9),
+                                                    // ),
+                                                    
                                                   ),
+                                                ),
                                                 ),
                                               ]),
                                         ]),
@@ -515,10 +525,7 @@ class _SubjectDetailsState extends State<SubjectDetails>
                                         fontWeight: FontWeight.bold,
                                         fontSize: 17),
                                   ),
-                                  Text(
-                                    'Grades uploaded!',
-                                    style: TextStyle(fontSize: 15),
-                                  ),
+                                  
                                 ],
                               ),
                               trailing: Icon(
@@ -531,7 +538,7 @@ class _SubjectDetailsState extends State<SubjectDetails>
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => Grades()));
+                                          builder: (context) => Grades(schoolCode, studentId, classNumber, section, rollNo, subject)));
                                 });
                               },
                             ),

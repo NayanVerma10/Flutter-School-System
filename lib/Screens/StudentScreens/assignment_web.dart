@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'database.dart';
-import 'package:Schools/Screens/TeacherScreens/create_quiz.dart';
 import 'package:Schools/Screens/TeacherScreens/quiz_play.dart';
 import 'package:Schools/widgets/widget.dart';
 

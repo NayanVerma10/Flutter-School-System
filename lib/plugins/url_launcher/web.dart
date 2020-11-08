@@ -1,5 +1,5 @@
+import 'dart:convert';
 import 'dart:html' as html;
-import 'dart:io';
 import 'dart:typed_data';
 import 'package:Schools/Chat/CreateGroupUsersList.dart';
 import 'package:Schools/Screens/service.dart';
@@ -35,14 +35,16 @@ class UrlUtils {
                 }
                 return AlertDialog(
                   content: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       CircularProgressIndicator(
                         value: val / 100.0,
-                        backgroundColor: Colors.white,
+                        valueColor: AlwaysStoppedAnimation(Colors.black),
+                        backgroundColor: Colors.black26,
                       ),
                       Container(
                           margin: EdgeInsets.only(left: 7),
-                          child: Text('${val.round().toString()} % uploaded')),
+                          child: Text('${val.round().toString()}% uploaded')),
                     ],
                   ),
                 );
@@ -68,7 +70,8 @@ class UrlUtils {
       CollectionReference docRef, String path, BuildContext context,
       {String name, String fromId, bool isTeacher}) async {
     result.files.forEach((element) async {
-      List<String> str = await UrlUtils.uploadFileToFirebase(element, path, context);
+      List<String> str =
+          await UrlUtils.uploadFileToFirebase(element, path, context);
       await docRef.document(timeToString()).setData({
         'text': str[1],
         'name': name,
@@ -89,7 +92,12 @@ class UrlUtils {
         fb.storage().ref(path + file.name.split('/').last);
 
     var task = ref.put(file.bytes, fb.UploadMetadata(contentType: mimeType));
-    await showProgress(task, context);
+    try {
+      await showProgress(task, context);
+    } catch (e) {
+      print(e);
+    }
+    await Future.delayed(const Duration(milliseconds: 1000), () {});
     str = [(await ref.getDownloadURL()).toString(), ref.name];
     return str;
   }
@@ -116,7 +124,7 @@ class UrlUtils {
       if (s[i].isNotEmpty) {
         var blob = html.Blob([s[i]], 'text/csv', 'native');
 
-        var anchorElement = html.AnchorElement(
+        html.AnchorElement(
           href: html.Url.createObjectUrlFromBlob(blob).toString(),
         )
           ..setAttribute("download", "${months.first}.csv")
@@ -126,10 +134,24 @@ class UrlUtils {
     }
   }
 
-  static Future<void> download(String url, String text, BuildContext context) {
-    html.AnchorElement anchorElement = new html.AnchorElement(href: url)
+  static Future<void> download(
+      String url, String text, BuildContext context) async {
+    html.AnchorElement(href: url)
       ..setAttribute("download", text)
       ..target = '_blank'
       ..click();
+  }
+
+  static Future<void> downloadGradesExcel(
+      List<int> value, String name, BuildContext context) async {
+    final _base64 = base64Encode(value);
+    final anchor = html.AnchorElement(
+        href:
+            'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,$_base64')
+      ..target = 'blank';
+    anchor.download = name + '.xlsx';
+    html.document.body.append(anchor);
+    anchor.click();
+    anchor.remove();
   }
 }

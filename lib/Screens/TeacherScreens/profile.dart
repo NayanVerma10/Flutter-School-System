@@ -8,6 +8,8 @@ import 'dart:async';
 import 'package:image_picker/image_picker.dart';
 //import 'package:image_picker_web/image_picker_web.dart';
 import 'package:universal_platform/universal_platform.dart';
+
+import '../LogoutTheUser.dart';
 //import 'dart:html';
 /*class Profile extends StatelessWidget {
   String schoolCode,teachersId;
@@ -29,18 +31,18 @@ import 'package:universal_platform/universal_platform.dart';
 }*/
 class Profile1 extends StatefulWidget 
 {
-  String schoolCode,teacherId;
-  Profile1(this.schoolCode,this.teacherId);
+  String schoolCode,teacherId, teacherName;
+  Profile1(this.schoolCode,this.teacherId, this.teacherName);
   @override
   //final DocumentSnapshot post;
 //  Profile({this.post,this.schoolCode});
-  MapScreenState createState() => MapScreenState(schoolCode,teacherId);
+  MapScreenState createState() => MapScreenState(schoolCode,teacherId,teacherName);
 }
 
 class MapScreenState extends State<Profile1>with SingleTickerProviderStateMixin 
 { 
-  String schoolCode,teacherId;
-  MapScreenState(this.schoolCode,this.teacherId);
+  String schoolCode,teacherId,teacherName;
+  MapScreenState(this.schoolCode,this.teacherId, this.teacherName);
   TextEditingController controller1;
   TextEditingController controller2;
   TextEditingController controller3;
@@ -221,6 +223,14 @@ var fromPicker = await ImagePickerWeb.getImage(  outputType: ImageType.file);
     rt2=datas.data['mobile'];
     });
        return new Scaffold(
+        appBar: AppBar(
+            title: Text(
+              teacherName,
+              style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold),
+            ),
+          ),
         body: new Container(
           color: Colors.white,
           child: new ListView(

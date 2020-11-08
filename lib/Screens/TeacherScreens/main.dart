@@ -65,10 +65,10 @@ class _MyAppTeacherScaffoldState extends State<MyAppTeacherScaffold> {
     loadData();
     tabs = [
       Classes(schoolCode, teachersId),
-      TeachersTimeTable(),
+      TeachersTimeTable(schoolCode, teachersId),
       Announcements(schoolCode),
       MainChat(schoolCode, teachersId, true),
-      Profile1(schoolCode, teachersId)
+      Profile1(schoolCode, teachersId, teachersName)
     ];
   }
 
@@ -86,6 +86,10 @@ class _MyAppTeacherScaffoldState extends State<MyAppTeacherScaffold> {
                   fontWeight: FontWeight.bold),
             ),
             actions: <Widget>[
+              // IconButton(
+              //   icon: Icon(Icons.notifications),
+              //   onPressed: (){},
+              // ),
               FlatButton(
                   onPressed: () {
                     logoutTheUser();
@@ -94,6 +98,7 @@ class _MyAppTeacherScaffoldState extends State<MyAppTeacherScaffold> {
                     'Logout',
                     style: TextStyle(color: Theme.of(context).accentColor),
                   )),
+              
             ],
           ),
           body: tabs[_currentIndex],
@@ -194,6 +199,10 @@ class _MyAppTeacherScaffoldState extends State<MyAppTeacherScaffold> {
               style: TextStyle(fontSize: 20),
             ),
             actions: <Widget>[
+              // IconButton(
+              //   icon: Icon(Icons.notifications),
+              //   onPressed: (){},
+              // ),
               FlatButton(
                   onPressed: () {
                     logoutTheUser();

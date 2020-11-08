@@ -1,6 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
-import 'package:Schools/widgets/AlertDialog.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:mime_type/mime_type.dart';
 import 'package:Schools/Chat/CreateGroupUsersList.dart';
@@ -8,11 +6,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:toast/toast.dart';
+import 'package:path/path.dart';
 
 class UrlUtils {
   UrlUtils._();
@@ -44,11 +41,12 @@ class UrlUtils {
                     children: [
                       CircularProgressIndicator(
                         value: val / 100.0,
-                        backgroundColor: Colors.white,
+                        valueColor: AlwaysStoppedAnimation(Colors.black),
+                        backgroundColor: Colors.black26,
                       ),
                       Container(
                           margin: EdgeInsets.only(left: 7),
-                          child: Text('${val.round().toString()} % uploaded')),
+                          child: Text('${val.round().toString()}% uploaded')),
                     ],
                   ),
                 );
@@ -154,5 +152,13 @@ class UrlUtils {
       openFileFromNotification:
           true, // click on notification to open downloaded file (for Android)
     );
+  }
+
+  static Future<void> downloadGradesExcel(List<int> value, String name, BuildContext context) async {
+    final path = (await getExternalStorageDirectory()).path+'/$name.xlsx';
+    File(join(path))
+          ..createSync(recursive: true)
+          ..writeAsBytesSync(value);
+    Toast.show('Saved at $path', context, duration: 2);
   }
 }

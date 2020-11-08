@@ -1,4 +1,6 @@
 import 'package:Schools/Screens/SchoolScreens/calendar.dart';
+import 'package:Schools/Screens/SchoolScreens/employee.dart';
+import 'package:Schools/Screens/SchoolScreens/timetable.dart';
 import 'package:Schools/widgets/ColumnReusableCardButton.dart';
 import 'package:Schools/widgets/RowReusableCardButton.dart';
 import 'package:flutter/material.dart';
@@ -105,32 +107,25 @@ class _ManagementState extends State<Management> {
 }
 */
 
-
-
 class Management extends StatefulWidget {
-  final String schoolCode;
+  final String schoolCode, schoolname;
 
-  Management(this.schoolCode);
+  Management(this.schoolname, this.schoolCode);
   @override
-  _ManagementState createState() => _ManagementState(schoolCode);
+  _ManagementState createState() => _ManagementState(schoolname, schoolCode);
 }
 
-
 class _ManagementState extends State<Management> {
-  String schoolCode;
+  String schoolCode, schoolname ;
 
-  _ManagementState(this.schoolCode);
+  _ManagementState(this.schoolname, this.schoolCode);
   @override
   Widget build(BuildContext context) {
-    
     return SafeArea(
       child: Scaffold(
-
-
         extendBody: true,
         body: Padding(
-          padding: EdgeInsets.only(left: 10.0, right: 10.0,top: 10),
-
+          padding: EdgeInsets.only(left: 10.0, right: 10.0, top: 10),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -143,16 +138,13 @@ class _ManagementState extends State<Management> {
                       height: 70,
                       tileColor: Colors.red[900],
                       icon: Icons.delete_outline,
-                      onPressed: () {
-                                         },
+                      onPressed: () {},
                     ),
-
                     Container(
                       height: 110,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-
                           RowReusableCardButton(
                             label: 'Event Calendar',
                             tileColor: Colors.black87,
@@ -160,7 +152,8 @@ class _ManagementState extends State<Management> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => Calendar(schoolCode)));
+                                      builder: (context) =>
+                                          Calendar(schoolCode)));
                             },
                             icon: Icons.calendar_today,
                           ),
@@ -172,6 +165,7 @@ class _ManagementState extends State<Management> {
                             tileColor: Colors.black87,
                             icon: Icons.av_timer,
                             onPressed: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (context)=>TimeTable(schoolname, schoolCode)));
                             },
                           ),
                         ],
@@ -186,7 +180,9 @@ class _ManagementState extends State<Management> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => Announcements(schoolCode)));                      },
+                                builder: (context) =>
+                                    Announcements(schoolCode)));
+                      },
                     ),
                     ColumnReusableCardButton(
                       label: 'Edit Profile',
@@ -194,7 +190,7 @@ class _ManagementState extends State<Management> {
                       tileColor: Colors.black54,
                       icon: Icons.edit_attributes,
                       onPressed: () {
-                       /* Navigator.push(
+                        /* Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => Profile(schoolCode)));*/
@@ -205,18 +201,17 @@ class _ManagementState extends State<Management> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-
                           RowReusableCardButton(
-                            label: 'Teachers DB',
-                            tileColor: Colors.black87,
-                            icon:Icons.tag_faces,
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => AddCSVTeachers(schoolCode)));
-                            }
-                          ),
+                              label: 'Teachers DB',
+                              tileColor: Colors.black87,
+                              icon: Icons.tag_faces,
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            AddCSVTeachers(schoolCode)));
+                              }),
                           SizedBox(
                             width: 5,
                           ),
@@ -228,24 +223,20 @@ class _ManagementState extends State<Management> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => AddCSVStudents(schoolCode)));
+                                      builder: (context) =>
+                                          AddCSVStudents(schoolCode)));
                             },
                           ),
                         ],
                       ),
                     ),
-
-
-
-                        ],
-                      ),
-                    ),
-
                   ],
                 ),
               ),
+            ],
           ),
-        );
+        ),
+      ),
+    );
   }
 }
-

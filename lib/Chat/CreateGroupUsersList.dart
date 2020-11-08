@@ -171,14 +171,9 @@ class Teacher extends User {
 }
 
 class CreateGroup extends StatefulWidget {
-  String schoolCode, userId;
-  static DocumentReference _docRef;
-  bool isTeacher;
-  List<dynamic> alreadyAdded;
-  static set docRef(DocumentReference value) {
-    _docRef = value;
-  }
-
+  final String schoolCode, userId;
+  final bool isTeacher;
+  final List<dynamic> alreadyAdded;
   CreateGroup(this.schoolCode, this.userId, this.isTeacher,
       {this.alreadyAdded});
 

@@ -4,11 +4,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:toast/toast.dart';
-import 'attendance.dart';
+import 'attendance.dart' as at;
 
 class EditAttendance extends StatefulWidget {
-  DocumentSnapshot snapshot;
-  String path;
+  final DocumentSnapshot snapshot;
+  final String path;
   EditAttendance(this.path, this.snapshot);
 
   @override
@@ -140,7 +140,10 @@ class _EditAttendanceState extends State<EditAttendance> {
       height: 50,
     ));
     return Scaffold(
-      appBar: AppBar(title: Text(stringToTime(snapshot.documentID)[0])),
+      appBar: AppBar(
+        title: Text(at.stringToTime(snapshot.documentID)[0]),
+        
+      ),
       body: ListView(
         children: editMode ? list : list1,
       ),

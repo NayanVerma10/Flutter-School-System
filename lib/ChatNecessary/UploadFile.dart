@@ -6,14 +6,14 @@
 
 */
 
-import 'dart:convert';
+import 'dart:io';
 
 import 'package:Schools/plugins/url_launcher/url_launcher.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
-import 'dart:io';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:universal_platform/universal_platform.dart';
 
 //  import 'package:file_picker_web/file_picker_web.dart';
 //  import 'package:http/http.dart';
@@ -58,113 +58,116 @@ Future<List<String>> uploadToFirebase(
 /*--For Mobile ------*/
 
 Future<void> readCSVTeacher(PlatformFile file1, String schoolCode) async {
-  File file = File(file1.path);
-  Stream<List> inputStream = file.openRead();
+  var bytes;
+  if (UniversalPlatform.isAndroid) {
+    File file = File(file1.path);
+    bytes = file.readAsBytesSync();
+  } else {
+    bytes = file1.bytes;
+  }
+  var decoder = Excel.decodeBytes(bytes);
+  var sheetName = await decoder.getDefaultSheet();
+  int i = 0;
+  decoder.sheets[sheetName].rows.forEach((row) {
+    if (i > 0) {
+      print(row.toString());
 
-  inputStream
-      .transform(utf8.decoder) // Decode bytes to UTF-8.
-      .transform(new LineSplitter()) // Convert stream to individual lines.
-      .listen((String line) {
-    // Process results.
+      String firstName = row[0].toString();
+      String lastName = row[1].toString();
+      String mobile = row[2].toString();
+      String address = row[3].toString();
+      String designation = row[4].toString();
+      String dob = row[5].toString();
+      String email = row[6].toString();
+      String gender = row[7].toString();
+      String location = row[8].toString();
+      String password = row[9].toString();
+      String qualification = row[10].toString();
+      print(schoolCode);
 
-    List row = line.split(','); // split by comma
-    print(row);
-
-    String firstName = row[0];
-    String lastName = row[1];
-    String mobile = row[2];
-    String address = row[3];
-    String designation = row[4];
-    String dob = row[5];
-    String email = row[6];
-    String gender = row[7];
-    String location = row[8];
-    String password = row[9];
-    String qualification = row[10];
-    print(schoolCode);
-
-    print(
-        '$firstName, $lastName, $mobile,$address,$designation,$dob,$email,$gender,$location,$password,$qualification');
-    Firestore.instance
-        .collection("School")
-        .document(schoolCode)
-        .collection("Teachers")
-        .document()
-        .setData({
-      "first name": "$firstName",
-      "last name": "$lastName",
-      "address": "$address",
-      "designation": "$designation",
-      "dob": "$dob",
-      "email": "$email",
-      "gender": "$gender",
-      "mobile": "$mobile",
-      "qualification": "$qualification",
-      "location": "$location",
-      "password": "$password"
-    }, merge: true).then((_) {
-      print("success!");
-    });
-  }, onDone: () {
-    print('File is now closed.');
-  }, onError: (e) {
-    print(e.toString());
+      print(
+          '$firstName, $lastName, $mobile,$address,$designation,$dob,$email,$gender,$location,$password,$qualification');
+      Firestore.instance
+          .collection("School")
+          .document(schoolCode)
+          .collection("Teachers")
+          .document()
+          .setData({
+        "first name": "$firstName",
+        "last name": "$lastName",
+        "address": "$address",
+        "designation": "$designation",
+        "dob": "$dob",
+        "email": "$email",
+        "gender": "$gender",
+        "mobile": "$mobile",
+        "qualification": "$qualification",
+        "location": "$location",
+        "password": "$password"
+      }, merge: true).then((_) {
+        print("success!");
+      }, onError: (e) {
+        print(e.toString());
+      });
+    }
+    i++;
   });
 }
 
 Future<void> readCSVStudents(PlatformFile file1, String schoolCode) async {
-  File file = File(file1.path);
-  Stream<List> inputStream = file.openRead();
+  var bytes;
+  if (UniversalPlatform.isAndroid) {
+    File file = File(file1.path);
+    bytes = file.readAsBytesSync();
+  } else {
+    bytes = file1.bytes;
+  }
+  var decoder = Excel.decodeBytes(bytes);
+  var sheetName = await decoder.getDefaultSheet();
+  int i = 0;
+  decoder.sheets[sheetName].rows.forEach((row) {
+    if (i > 0) {
+      String firstName = row[0].toString();
+      String lastName = row[1].toString();
+      String address = row[2].toString();
+      String classNo = row[3].toString();
+      String section = row[4].toString();
+      String rollNo = row[5].toString();
+      String email = row[6].toString();
+      String dob = row[7].toString();
+      String gender = row[8].toString();
+      String fathersName = row[9].toString();
+      String mothersName = row[10].toString();
+      String mobile = row[11].toString();
+      String password = row[12].toString();
 
-  inputStream
-      .transform(utf8.decoder) // Decode bytes to UTF-8.
-      .transform(new LineSplitter()) // Convert stream to individual lines.
-      .listen((String line) {
-    // Process results.
-
-    List row = line.split(','); // split by comma
-
-    String firstName = row[0];
-    String lastName = row[1];
-    String address = row[2];
-    String classNo = row[3];
-    String section = row[4];
-    String rollNo = row[5];
-    String email = row[6];
-    String dob = row[7];
-    String gender = row[8];
-    String fathersName = row[9];
-    String mothersName = row[10];
-    String mobile = row[11];
-    String password = row[12];
-
-    print(
-        '$firstName, $lastName,$address, $classNo,$section,$rollNo,$email,$dob,$gender,$fathersName,$mothersName,$mobile,$password');
-    Firestore.instance
-        .collection("Schools")
-        .document(schoolCode)
-        .collection("Students")
-        .document(mobile)
-        .setData({
-      "first name": "$firstName",
-      "last name": "$lastName",
-      "address": "$address",
-      "class": "$classNo",
-      "section": "$section",
-      "roll no": "$rollNo",
-      "dob": "$dob",
-      "email": "$email",
-      "gender": "$gender",
-      "father's name": "$fathersName",
-      "mother's name": "$mothersName",
-      "mobile": "$mobile",
-      "password": "$password"
-    }, merge: true).then((_) {
-      print("success!");
-    });
-  }, onDone: () {
-    print('File is now closed.');
-  }, onError: (e) {
-    print(e.toString());
+      print(
+          '$firstName, $lastName,$address, $classNo,$section,$rollNo,$email,$dob,$gender,$fathersName,$mothersName,$mobile,$password');
+      Firestore.instance
+          .collection("Schools")
+          .document(schoolCode)
+          .collection("Students")
+          .document(mobile)
+          .setData({
+        "first name": "$firstName",
+        "last name": "$lastName",
+        "address": "$address",
+        "class": "$classNo",
+        "section": "$section",
+        "roll no": "$rollNo",
+        "dob": "$dob",
+        "email": "$email",
+        "gender": "$gender",
+        "father's name": "$fathersName",
+        "mother's name": "$mothersName",
+        "mobile": "$mobile",
+        "password": "$password"
+      }, merge: true).then((_) {
+        print("success!");
+      }, onError: (e) {
+        print(e.toString());
+      });
+    }
+    i++;
   });
 }

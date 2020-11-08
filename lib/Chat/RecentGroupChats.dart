@@ -3,9 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class GroupChat extends StatefulWidget {
-  List<DocumentSnapshot> snapshot;
-  String docId, schoolCode;
-  bool isTeacher;
+  final List<DocumentSnapshot> snapshot;
+  final String docId, schoolCode;
+  final bool isTeacher;
 
   GroupChat(this.snapshot, this.docId, this.schoolCode, this.isTeacher);
   @override

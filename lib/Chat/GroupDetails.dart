@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 
 import 'package:Schools/Chat/ChatPersonProfile.dart';
 import 'package:Schools/Chat/CreateGroupUsersList.dart';
@@ -9,16 +8,14 @@ import 'package:Schools/plugins/url_launcher/url_launcher.dart';
 import 'package:Schools/widgets/AlertDialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 
 import 'ChatPersonProfile.dart';
 
 class GroupDetails extends StatefulWidget {
-  DocumentReference groupRef;
-  String schoolCode, id, userName;
+  final DocumentReference groupRef;
+  final String schoolCode, id, userName;
   bool isAdmin, isTeacher;
   GroupDetails(this.schoolCode, this.groupRef, this.id, this.isTeacher,
       this.isAdmin, this.userName);
@@ -398,7 +395,7 @@ class _GroupDetailsState extends State<GroupDetails> {
             elevation: 5,
             child: Container(
               width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
+              height: kIsWeb?MediaQuery.of(context).size.height:MediaQuery.of(context).size.height/2,
               child: icon != null
                   ? Image.network(
                       icon,

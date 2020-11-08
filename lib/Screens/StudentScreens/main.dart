@@ -29,13 +29,14 @@ class _MyAppStudentState extends State<MyAppStudent> {
     Widget home;
     return MaterialApp(
       theme: ThemeData(
-        primaryColor: Colors.white, 
-        accentColor: Colors.black, 
-        textSelectionTheme: TextSelectionThemeData(cursorColor: Colors.black, selectionHandleColor: Colors.black),
+        primaryColor: Colors.white,
+        accentColor: Colors.black,
+        textSelectionTheme: TextSelectionThemeData(
+            cursorColor: Colors.black, selectionHandleColor: Colors.black),
       ),
       debugShowCheckedModeBanner: false,
       title: 'Aatmanirbhar Institutions',
-      home: MyAppStudentScaffold(schoolCode,studentId),
+      home: MyAppStudentScaffold(schoolCode, studentId),
     );
   }
 }
@@ -51,7 +52,7 @@ class MyAppStudentScaffold extends StatefulWidget {
 }
 
 class _MyAppStudentScaffoldState extends State<MyAppStudentScaffold> {
-  String schoolCode, studentId;
+  String schoolCode, studentId, classNumber = '', section = '';
   _MyAppStudentScaffoldState(this.schoolCode, this.studentId);
 
   List<Widget> tabs;
@@ -68,18 +69,26 @@ class _MyAppStudentScaffoldState extends State<MyAppStudentScaffold> {
       setState(() {
         studentName = doc.data['first name'] + ' ' + doc.data['last name'];
       });
+      classNumber = doc.data['class'];
+      section = doc.data['section'];
+      tabs = [
+        Subjects(schoolCode, studentId),
+        StudentsTimeTable(schoolCode, classNumber, section),
+        Announcements(schoolCode),
+        MainChat(schoolCode, studentId, false),
+        Profile1(schoolCode, studentId),
+      ];
     });
   }
 
   int _currentIndex = 0;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     loadData();
     tabs = [
       Subjects(schoolCode, studentId),
-      StudentsTimeTable(),
+      StudentsTimeTable(schoolCode, classNumber, section),
       Announcements(schoolCode),
       MainChat(schoolCode, studentId, false),
       Profile1(schoolCode, studentId),
@@ -96,6 +105,10 @@ class _MyAppStudentScaffoldState extends State<MyAppStudentScaffold> {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             actions: <Widget>[
+              // IconButton(
+              //   icon: Icon(Icons.notifications),
+              //   onPressed: (){},
+              // ),
               FlatButton(
                   onPressed: () {
                     logoutTheUser();
@@ -104,6 +117,7 @@ class _MyAppStudentScaffoldState extends State<MyAppStudentScaffold> {
                     'Logout',
                     style: TextStyle(color: Theme.of(context).accentColor),
                   )),
+              
             ],
           ),
           body: tabs[_currentIndex],

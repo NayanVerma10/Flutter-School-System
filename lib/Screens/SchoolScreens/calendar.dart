@@ -3,6 +3,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:Schools/widgets/view_event.dart';
 import 'package:Schools/models/event.dart';
 import 'package:Schools/Screens/service.dart';
+
 class Calendar extends StatefulWidget {
   final schoolCode;
   Calendar(this.schoolCode);
@@ -17,17 +18,16 @@ class _CalendarState extends State<Calendar> {
   Map<DateTime, List<dynamic>> _events;
   List<dynamic> _selectedEvents;
   _CalendarState(schoolCode);
-  
 
   @override
-void initState() {
+  void initState() {
     super.initState();
     _controller = CalendarController();
     _events = {};
     _selectedEvents = [];
   }
-  
-   Map<DateTime, List<dynamic>> _groupEvents(List<EventModel> allEvents) {
+
+  Map<DateTime, List<dynamic>> _groupEvents(List<EventModel> allEvents) {
     Map<DateTime, List<dynamic>> data = {};
     allEvents.forEach((event) {
       DateTime date = DateTime(
@@ -37,16 +37,13 @@ void initState() {
     });
     return data;
   }
+
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-      
-      
       appBar: AppBar(
         title: Text('Calendar'),
       ),
-      
       body: StreamBuilder<List<EventModel>>(
           stream: eventDBS.streamList(),
           builder: (context, snapshot) {
@@ -84,10 +81,11 @@ void initState() {
                       formatButtonShowsNext: false,
                     ),
                     startingDayOfWeek: StartingDayOfWeek.monday,
-                    onDaySelected: (date, events) {
+                    onDaySelected: (date, events, list) {
                       setState(() {
                         _selectedEvents = events;
                       });
+                      return;
                     },
                     builders: CalendarBuilders(
                       selectedDayBuilder: (context, date, events) => Container(
@@ -133,6 +131,6 @@ void initState() {
         onPressed: () => Navigator.pushNamed(context, 'add_event'),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-     );
+    );
   }
 }
