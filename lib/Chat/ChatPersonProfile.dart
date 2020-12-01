@@ -24,11 +24,11 @@ class _ChatPersonProfileState extends State<ChatPersonProfile> {
         title: Text("Profile"),
       ),
       body: StreamBuilder(
-        stream: Firestore.instance
+        stream: FirebaseFirestore.instance
             .collection("School")
-            .document(widget.schoolCode)
+            .doc(widget.schoolCode)
             .collection(widget.isTeacher ? "Teachers" : "Student")
-            .document(widget.userId)
+            .doc(widget.userId)
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
@@ -40,56 +40,56 @@ class _ChatPersonProfileState extends State<ChatPersonProfile> {
                 Container(
                   padding: EdgeInsets.all(20),
                   alignment: Alignment.topCenter,
-                  child: snap['url'] != null && snap['url'] != ""
+                  child: snap.data()['url'] != null && snap.data()['url'] != ""
                       ? CircleAvatar(
-                          backgroundImage: NetworkImage(snap['url']),
+                          backgroundImage: NetworkImage(snap.data()['url']),
                           radius: 60,
                         )
                       : CircleAvatar(
                           radius: 60,
                           backgroundColor: Colors.grey[300],
                           foregroundColor: Colors.black54,
-                          child: Text(snap['first name'][0].toUpperCase() +
-                              snap['last name'][0].toUpperCase(), style: TextStyle(fontSize: 50),),
+                          child: Text(snap.data()['first name'][0].toUpperCase() +
+                              snap.data()['last name'][0].toUpperCase(), style: TextStyle(fontSize: 50),),
                         ),
                 ),
                 ListTile(
                   title: Title("Name"),
                   subtitle:
-                      Subtitle(snap['first name'] + " " + snap['last name']),
+                      Subtitle(snap.data()['first name'] + " " + snap.data()['last name']),
                 ),
                 seperator(),
                 ListTile(
                   title: Title("Email Id"),
-                  subtitle: Subtitle(snap['email']),
+                  subtitle: Subtitle(snap.data()['email']),
                 ),
                 seperator(),
                 ListTile(
                   title: Title("Mobile"),
-                  subtitle: Subtitle(snap['mobile']),
+                  subtitle: Subtitle(snap.data()['mobile']),
                 ),
                 seperator(),                
                 ListTile(
                   title: Title("Gender"),
-                  subtitle: Subtitle(snap['gender']),
+                  subtitle: Subtitle(snap.data()['gender']),
                 ),
                 seperator(),
                 ListTile(
                   title: Title(widget.isTeacher?"Qualification":"Father 's Name"),
-                  subtitle: Subtitle(widget.isTeacher?snap['qualification']:snap['father \'s name']),
+                  subtitle: Subtitle(widget.isTeacher?snap.data()['qualification']:snap.data()['father \'s name']),
                 ),
                 seperator(),
                 ListTile(
                   title: Title(widget.isTeacher?"Address":"Mother 's Name"),
-                  subtitle: Subtitle(widget.isTeacher?snap['address']:snap['mother \'s name']),
+                  subtitle: Subtitle(widget.isTeacher?snap.data()['address']:snap.data()['mother \'s name']),
                 ),
                 seperator(),
                 ListTile(
                   title: Title(widget.isTeacher?"Designation":"Roll Number"),
-                  subtitle: Subtitle(widget.isTeacher?snap['designation']:snap['rollno']),
+                  subtitle: Subtitle(widget.isTeacher?snap.data()['designation']:snap.data()['rollno']),
                 ),
                 seperator(),
-                widget.isTeacher?((snap['classteacher']!=null && snap['classteacher']['isclassteacher'])?
+                widget.isTeacher?((snap.data()['classteacher']!=null && snap.data()['classteacher']['isclassteacher'])?
                 Container(
                   height: 80,
                   child: Row(
@@ -97,13 +97,13 @@ class _ChatPersonProfileState extends State<ChatPersonProfile> {
                       Expanded(
                         child: ListTile(
                           title: Title("Class"),
-                          subtitle: Subtitle(snap['classteacher']['class']),
+                          subtitle: Subtitle(snap.data()['classteacher']['class']),
                         ),
                       ),
                       Expanded(
                         child: ListTile(
                           title: Title("Section"),
-                          subtitle: Subtitle(snap['classteacher']['section']),
+                          subtitle: Subtitle(snap.data()['classteacher']['section']),
                         ),
                       ),
                     ],
@@ -116,19 +116,19 @@ class _ChatPersonProfileState extends State<ChatPersonProfile> {
                       Expanded(
                         child: ListTile(
                           title: Title("Class"),
-                          subtitle: Subtitle(snap['class']),
+                          subtitle: Subtitle(snap.data()['class']),
                         ),
                       ),
                       Expanded(
                         child: ListTile(
                           title: Title("Section"),
-                          subtitle: Subtitle(snap['section']),
+                          subtitle: Subtitle(snap.data()['section']),
                         ),
                       ),
                     ],
                   ),
                 ),
-                (!widget.isTeacher||(snap['classteacher']!=null && snap['classteacher']['isclassteacher']))?
+                (!widget.isTeacher||(snap.data()['classteacher']!=null && snap.data()['classteacher']['isclassteacher']))?
                 Container(
                     child: Row(
                   children: [

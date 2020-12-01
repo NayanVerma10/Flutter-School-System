@@ -25,23 +25,29 @@ dependencies:
     sdk: flutter
 
   # Firebase Related Dependencies
-  cloud_functions: 
-  cloud_firestore: 
-  firebase_storage:
-  firebase_helpers:
+  cloud_functions: ^0.7.0+1
+  cloud_firestore: ^0.14.3
+  firebase_storage: ^4.0.0
+  firebase_helpers: ^0.2.1
   firebase_auth:  #Added by Nayan for Sign in
   google_sign_in: #Added by Nayan for Sign in
-  firebase_core:
-  firebase:
+  firebase_core: ^0.5.2
+  firebase: ^7.3.2 
   firebase_messaging: #Added By Nayan for Push Notifications
 
   # Other Dependencies
   grouped_buttons:
-  image_picker:
+  image_picker: ^0.6.7
   date_utils:         #Added by Tushar for attendance
   excel:              #Added by Tushar for xlsx file handling 
   flutter_downloader: #Added by Tushar for downloading files in android
   mime_type:          #Added by Tushar for uploading files to firebase
+  open_file: ^3.0.3
+  overlay_support: ^1.0.5
+  awesome_notifications: ^0.0.5+2
+  pl_notifications: ^0.0.3+1 
+  flutter_cache:
+  
   image_cropper:
   flutter_speed_dial:
   table_calendar:
@@ -58,7 +64,7 @@ dependencies:
   shared_preferences: #Added by Nayan for storing the data locally
   flutter_staggered_animations: #Added By Ishita for Students List
   awesome_dialog: #Added By Ishita for Student List
-  file_picker: #Added By Nayan for chat
+  file_picker: ^2.0.1 #Added By Nayan for chat
   path_provider:  #Added By Nayan for downloading files
   permission_handler: #Added By Nayan for downloading files
   url_launcher: #Added By Nayan for viewing files

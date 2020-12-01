@@ -29,19 +29,19 @@ class _AssignmentState extends State<Assignment> {
                   : ListView.builder(
                   shrinkWrap: true,
                   physics: ClampingScrollPhysics(),
-                  itemCount: snapshot.data.documents.length,
+                  itemCount: snapshot.data.docs.length,
                   itemBuilder: (context, index) {
-                    print(snapshot.data.documents[index].data);
+                    print(snapshot.data.docs[index].data());
                     Duration(seconds: 2);
                     return QuizTile(
-                      noOfQuestions: snapshot.data.documents.length,
+                      noOfQuestions: snapshot.data.docs.length,
                       imageUrl:
-                      snapshot.data.documents[index].data['quizImgUrl'],
+                      snapshot.data.docs[index].data()['quizImgUrl'],
                       title:
-                      snapshot.data.documents[index].data['quizTitle'],
+                      snapshot.data.docs[index].data()['quizTitle'],
                       description:
-                      snapshot.data.documents[index].data['quizDesc'],
-                      id: snapshot.data.documents[index].data["quizId"],
+                      snapshot.data.docs[index].data()['quizDesc'],
+                      id: snapshot.data.docs[index].data()["quizId"],
                     );
                   });
             },

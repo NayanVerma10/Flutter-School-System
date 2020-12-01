@@ -28,11 +28,11 @@ Future<List<PlatformFile>> attachment() async {
   return files;
 }
 
-Future<List<String>> uploadToFirebase(
-    String path, PlatformFile file, BuildContext context) async {
-  List<String> str = await UrlUtils.uploadFileToFirebase(file, path, context);
-  return str;
-}
+// Future<List<String>> uploadToFirebase(
+//     String path, PlatformFile file, BuildContext context) async {
+//   List<String> str = await UrlUtils.uploadFileToFirebase(file, path, context);
+//   return str;
+// }
 
 //  Future<List<String>> uploadToFirebase(String path, File file) async {
 //    //This is for WEB
@@ -87,12 +87,12 @@ Future<void> readCSVTeacher(PlatformFile file1, String schoolCode) async {
 
       print(
           '$firstName, $lastName, $mobile,$address,$designation,$dob,$email,$gender,$location,$password,$qualification');
-      Firestore.instance
+      FirebaseFirestore.instance
           .collection("School")
-          .document(schoolCode)
+          .doc(schoolCode)
           .collection("Teachers")
-          .document()
-          .setData({
+          .doc()
+          .set({
         "first name": "$firstName",
         "last name": "$lastName",
         "address": "$address",
@@ -104,7 +104,7 @@ Future<void> readCSVTeacher(PlatformFile file1, String schoolCode) async {
         "qualification": "$qualification",
         "location": "$location",
         "password": "$password"
-      }, merge: true).then((_) {
+      },SetOptions(merge: true)).then((_) {
         print("success!");
       }, onError: (e) {
         print(e.toString());
@@ -143,12 +143,12 @@ Future<void> readCSVStudents(PlatformFile file1, String schoolCode) async {
 
       print(
           '$firstName, $lastName,$address, $classNo,$section,$rollNo,$email,$dob,$gender,$fathersName,$mothersName,$mobile,$password');
-      Firestore.instance
+      FirebaseFirestore.instance
           .collection("Schools")
-          .document(schoolCode)
+          .doc(schoolCode)
           .collection("Students")
-          .document(mobile)
-          .setData({
+          .doc(mobile)
+          .set({
         "first name": "$firstName",
         "last name": "$lastName",
         "address": "$address",
@@ -162,7 +162,7 @@ Future<void> readCSVStudents(PlatformFile file1, String schoolCode) async {
         "mother's name": "$mothersName",
         "mobile": "$mobile",
         "password": "$password"
-      }, merge: true).then((_) {
+      },SetOptions(merge: true)).then((_) {
         print("success!");
       }, onError: (e) {
         print(e.toString());

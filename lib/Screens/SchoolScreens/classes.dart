@@ -54,20 +54,20 @@ class _StudnetsState extends State<Studnets> {
   _StudnetsState(this.schoolCode);
 
   void loadData()async{
-    await Firestore.instance
+    await FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection('Student')
-        .getDocuments()
-        .then((value) => value.documents.forEach((element) {
+        .get()
+        .then((value) => value.docs.forEach((element) {
               users.add(User(
-                email: element.data['email'],
-                id: element.documentID,
-                name: element.data['first name'] +
+                email: element.data()['email'],
+                id: element.id,
+                name: element.data()['first name'] +
                     ' ' +
-                    element.data['last name'],
-                studentsClass: element.data['class'],
-                studnetsSection: element.data['section'],
+                    element.data()['last name'],
+                studentsClass: element.data()['class'],
+                studnetsSection: element.data()['section'],
               ));
             }))
         .then((value) {

@@ -24,7 +24,7 @@ class _ProfileState extends State<Profile> {
   TextEditingController _schoolAboutController = TextEditingController();
 
   _ProfileState(this.schoolCode);
-  final databaseReference = Firestore.instance;
+  final databaseReference = FirebaseFirestore.instance;
 
  
 
@@ -465,16 +465,16 @@ bool isCover=false;
   }
 
   Future<bool> _getProfileData(schoolCode) async {
-    await Firestore.instance
+    await FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .get()
         .then((DocumentSnapshot result) {
-      school.schoolname = result.data['schoolname'];
-      school.schoolboard = result.data['schoolboard'];
-      school.schoolno = result.data['schoolno'];
-      school.schoolemail = result.data['schoolemail'];
-      school.about = result.data['about'];
+      school.schoolname = result.data()['schoolname'];
+      school.schoolboard = result.data()['schoolboard'];
+      school.schoolno = result.data()['schoolno'];
+      school.schoolemail = result.data()['schoolemail'];
+      school.about = result.data()['about'];
       return true;
     });
     return true;
@@ -675,10 +675,10 @@ bool isCover=false;
                               school.schoolpassword;
                           _schoolAboutController.text = school.about;
                         });
-                        Firestore.instance
+                        FirebaseFirestore.instance
                             .collection('School')
-                            .document(schoolCode)
-                            .setData(school.toJson(), merge: true);
+                            .doc(schoolCode)
+                            .set(school.toJson(),SetOptions( merge: true));
                         Navigator.of(context).pop();
                       },
                     )

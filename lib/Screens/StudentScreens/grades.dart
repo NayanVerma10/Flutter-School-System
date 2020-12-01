@@ -9,11 +9,11 @@ class Grades extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text('$classNumber $section $subject'),),
         body: StreamBuilder(
-      stream: Firestore.instance
+      stream: FirebaseFirestore.instance
           .collection('School')
-          .document(schoolCode)
+          .doc(schoolCode)
           .collection('Classes')
-          .document('${classNumber}_${section}_$subject')
+          .doc('${classNumber}_${section}_$subject')
           .collection('Grades')
           .snapshots(),
       builder: (context, snapshot) {
@@ -22,7 +22,7 @@ class Grades extends StatelessWidget {
             child: CircularProgressIndicator(),
           );
         }
-        List<DocumentSnapshot> docs = snapshot.data.documents;
+        List<DocumentSnapshot> docs = snapshot.data.docs;
         if (docs.isEmpty) {
           return Center(
             child: Text('Nothing to show here!'),
@@ -30,11 +30,11 @@ class Grades extends StatelessWidget {
         }
         List<Widget> list = List<Widget>();
         docs.forEach((element) {
-          if (element.data[rollNo] != null)
+          if (element.data()[rollNo] != null)
             list.add(Card(
                 child: ListTile(
-              title: Text(element.documentID.toUpperCase(), style: TextStyle(fontWeight: FontWeight.bold),),
-              trailing: Text(element.data[rollNo].toString(), style: TextStyle(fontWeight: FontWeight.bold),),
+              title: Text(element.id.toUpperCase(), style: TextStyle(fontWeight: FontWeight.bold),),
+              trailing: Text(element.data()[rollNo].toString(), style: TextStyle(fontWeight: FontWeight.bold),),
             )));
         });
         if (list.isNotEmpty) {

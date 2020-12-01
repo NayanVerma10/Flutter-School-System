@@ -203,9 +203,9 @@ class _GroupNameState extends State<GroupName> {
                 onPressed: name != "" && description != ""
                     ? () async {
                         showLoaderDialog(context, "Please wait....");
-                        DocumentReference docRef = await Firestore.instance
+                        DocumentReference dr = await FirebaseFirestore.instance
                             .collection("School")
-                            .document(widget.schoolCode)
+                            .doc(widget.schoolCode)
                             .collection("GroupChats")
                             .add({
                           "Description": description,
@@ -213,29 +213,45 @@ class _GroupNameState extends State<GroupName> {
                           'AdminCount': 1,
                         });
                         if (bytesData != null) {
-                          await UrlUtils.open(result,
-                              "${widget.schoolCode}/GroupChats/${docRef.documentID}/icon/", context,
-                              docRef: docRef, );
+                          await UrlUtils.uploadFileToFirebase(
+                              result.files.first,
+                              "${widget.schoolCode}/GroupChats/${dr.id}/icon/" +
+                                  result.files.first.name,
+                              context,
+                              null,
+                              null,
+                              null,
+                              null,
+                              dr2: dr,
+                              m2: {
+                                "Description": description,
+                                "Name": name,
+                                'AdminCount': 1,
+                              },
+                              nameKey2: null,
+                              urlKey2: 'Icon');
                         } else {
-                          await docRef.updateData({"Icon": null});
+                          await dr.update({"Icon": null});
                         }
-                        if (docRef != null) {
-                          CollectionReference teachersRef = Firestore.instance
+                        if (dr != null) {
+                          CollectionReference teachersRef = FirebaseFirestore
+                              .instance
                               .collection("School")
-                              .document(widget.schoolCode)
+                              .doc(widget.schoolCode)
                               .collection("Teachers");
-                          CollectionReference studentsRef = Firestore.instance
+                          CollectionReference studentsRef = FirebaseFirestore
+                              .instance
                               .collection("School")
-                              .document(widget.schoolCode)
+                              .doc(widget.schoolCode)
                               .collection("Student");
                           widget.list.forEach((element) async {
                             if (element.id == widget.userId &&
                                 element.isTeacher == widget.isTeacher) {
                               element.isAdmin = true;
-                              await docRef
+                              await dr
                                   .collection('ChatMessages')
-                                  .document(timeToString())
-                                  .setData({
+                                  .doc(timeToString())
+                                  .set({
                                 'type': 'notification',
                                 'text':
                                     '${element.name} created this group and added ${widget.list.length - 1} members'
@@ -243,31 +259,32 @@ class _GroupNameState extends State<GroupName> {
                             } else {
                               element.isAdmin = false;
                             }
-                            await docRef
+                            await dr
                                 .collection("Members")
-                                .document(element.id +
+                                .doc(element.id +
                                     "_" +
                                     (element.isTeacher ? "true" : "false"))
-                                .setData(element.toMap());
+                                .set(element.toMap());
                             if (element.isTeacher) {
                               await teachersRef
-                                  .document(element.id)
+                                  .doc(element.id)
                                   .collection("GroupsJoined")
-                                  .document(docRef.documentID)
-                                  .setData({});
+                                  .doc(dr.id)
+                                  .set({});
                             } else {
                               await studentsRef
-                                  .document(element.id)
+                                  .doc(element.id)
                                   .collection("GroupsJoined")
-                                  .document(docRef.documentID)
-                                  .setData({});
+                                  .doc(dr.id)
+                                  .set({});
                             }
                           });
                         }
 
-                        Navigator.of(context, rootNavigator: true).pop('loading');
+                        Navigator.of(context, rootNavigator: true)
+                            .pop('loading');
                         Navigator.pop(context, [
-                          docRef,
+                          dr,
                           widget.schoolCode,
                           widget.userId,
                           widget.isTeacher

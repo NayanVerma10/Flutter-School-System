@@ -37,9 +37,9 @@ class _MyAppSchoolState extends State<MyAppSchool> {
   _MyAppSchoolState(this.schoolCode);
   
   Future<void> loadData() async{
-    return Firestore.instance.collection('School').document(schoolCode).get().then((doc) {
+    return FirebaseFirestore.instance.collection('School').doc(schoolCode).get().then((doc) {
       setState(() {
-        schoolName = doc.data['schoolname'];
+        schoolName = doc.data()['schoolname'];
       });
     });
   }

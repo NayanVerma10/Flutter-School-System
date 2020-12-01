@@ -35,14 +35,14 @@ class SubjectDetails extends StatefulWidget {
       : super(key: key);
   @override
   _SubjectDetailsState createState() => _SubjectDetailsState(
-      schoolCode, studentId, classNumber, section, rollNo, subject);
+      schoolCode, studentId, classNumber, section, rollNo, subject, name);
 }
 
 class _SubjectDetailsState extends State<SubjectDetails>
     with SingleTickerProviderStateMixin {
-  final String schoolCode, studentId, classNumber, section, subject, rollNo;
+  final String schoolCode, studentId, classNumber, section, subject, rollNo, name;
   _SubjectDetailsState(this.schoolCode, this.studentId, this.classNumber,
-      this.section, this.rollNo, this.subject);
+      this.section, this.rollNo, this.subject, this.name);
 
   String teacherName = '';
   CollectionReference ref;
@@ -80,21 +80,21 @@ class _SubjectDetailsState extends State<SubjectDetails>
   }
 
   loadData() {
-    Firestore.instance
+    FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection('Teachers')
         .where('classes', arrayContains: {
           'Class': classNumber,
           'Section': section,
           "Subject": subject
         })
-        .getDocuments()
+        .get()
         .then((value) {
-          value.documents.forEach((element) {
+          value.docs.forEach((element) {
             setState(() {
               teacherName =
-                  element.data['first name'] + ' ' + element.data['last name'];
+                  element.data()['first name'] + ' ' + element.data()['last name'];
             });
           });
         });
@@ -105,11 +105,11 @@ class _SubjectDetailsState extends State<SubjectDetails>
   void initState() {
     super.initState();
     loadData();
-    ref = Firestore.instance
+    ref = FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection('Classes')
-        .document(classNumber + '_' + section + '_' + subject)
+        .doc(classNumber + '_' + section + '_' + subject)
         .collection('Attendance');
   }
 
@@ -209,11 +209,11 @@ class _SubjectDetailsState extends State<SubjectDetails>
                                 color: Colors.black,
                               ),
                               onTap: () {
-                                
+                                print("$rollNo#$name#$studentId");
                                  Navigator.push(
                                      context,
                                      MaterialPageRoute(
-                                         builder: (context) => StudentTutorial(schoolCode, classNumber, section, subject)));
+                                         builder: (context) => StudentTutorial(schoolCode, classNumber, section, subject, rollno: rollNo, id: studentId, name: name,)));
                                 
                               },
                             ),
@@ -326,7 +326,7 @@ class _SubjectDetailsState extends State<SubjectDetails>
                           child: Container(
                             // margin: const EdgeInsets.only(top: 15.0),
                             child: StreamBuilder(
-                                stream: Firestore.instance
+                                stream: FirebaseFirestore.instance
                                     .collection(ref.path)
                                     .snapshots(),
                                 builder: (context, snapshot) {
@@ -334,14 +334,14 @@ class _SubjectDetailsState extends State<SubjectDetails>
                                     return CircularProgressIndicator();
                                   }
                                   List<DocumentSnapshot> docs =
-                                      snapshot.data.documents;
+                                      snapshot.data.docs;
                                   dataMap = Map<String, double>();
                                   int present = 0, absent = 0;
                                   String id = widget.rollNo +'#' + widget.name + '#' +studentId;
                                   docs.forEach((element) {
-                                    if (element.data[id] !=
+                                    if (element.data()[id] !=
                                         null) {
-                                      if (element.data[id]) {
+                                      if (element.data()[id]) {
                                         present++;
                                       } else {
                                         absent++;

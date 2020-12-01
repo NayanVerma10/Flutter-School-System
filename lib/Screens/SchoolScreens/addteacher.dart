@@ -42,7 +42,7 @@ class _AddTeacherState extends State<AddTeacher> {
   // File _image;
   AnimationController _controller;
   // ImagePickerHandler imagePicker;
-  final databaseReference = Firestore.instance;
+  final databaseReference = FirebaseFirestore.instance;
 
   File _image;
   final picker = ImagePicker();
@@ -720,10 +720,10 @@ class _AddTeacherState extends State<AddTeacher> {
 
     await databaseReference
         .collection("School")
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection("Teachers")
-        .document(_mobile)
-        .setData({
+        .doc(_mobile)
+        .set({
       'first name': _firstname,
       'last name': _lastname,
       'qualification': _qual,

@@ -1,3 +1,4 @@
+// import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import './profile.dart';
@@ -29,6 +30,7 @@ class _MyAppStudentState extends State<MyAppStudent> {
     Widget home;
     return MaterialApp(
       theme: ThemeData(
+        
         primaryColor: Colors.white,
         accentColor: Colors.black,
         textSelectionTheme: TextSelectionThemeData(
@@ -36,6 +38,7 @@ class _MyAppStudentState extends State<MyAppStudent> {
       ),
       debugShowCheckedModeBanner: false,
       title: 'Aatmanirbhar Institutions',
+      // builder: BotToastInit(),
       home: MyAppStudentScaffold(schoolCode, studentId),
     );
   }
@@ -59,18 +62,18 @@ class _MyAppStudentScaffoldState extends State<MyAppStudentScaffold> {
   String studentName = '';
 
   Future<void> loadData() {
-    Firestore.instance
+    FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection('Student')
-        .document(studentId)
+        .doc(studentId)
         .get()
         .then((doc) {
       setState(() {
-        studentName = doc.data['first name'] + ' ' + doc.data['last name'];
+        studentName = doc.data()['first name'] + ' ' + doc.data()['last name'];
       });
-      classNumber = doc.data['class'];
-      section = doc.data['section'];
+      classNumber = doc.data()['class'];
+      section = doc.data()['section'];
       tabs = [
         Subjects(schoolCode, studentId),
         StudentsTimeTable(schoolCode, classNumber, section),
@@ -120,6 +123,7 @@ class _MyAppStudentScaffoldState extends State<MyAppStudentScaffold> {
               
             ],
           ),
+          
           body: tabs[_currentIndex],
           bottomNavigationBar: BottomNavigationBar(
             currentIndex: _currentIndex,

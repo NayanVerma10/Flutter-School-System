@@ -1,3 +1,4 @@
+import 'package:Schools/widgets/passwordTF.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -28,6 +29,14 @@ class _StudentLoginState extends State<StudentLogin> {
   String schoolCode;
   String studentId;
   bool verified = false;
+  TextEditingController controller;
+  PasswordTF passwordTF;
+  @override
+  void initState() {
+    super.initState();
+    controller = TextEditingController(text: "");
+    passwordTF = PasswordTF(controller);
+  }
 
   loginWithGoole(BuildContext context) async {
     try {
@@ -74,48 +83,48 @@ class _StudentLoginState extends State<StudentLogin> {
   }
 
   Future<bool> verifyGoogleMail() async {
-    await Firestore.instance
+    await FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection('Student')
         .where('email', isEqualTo: givenemailmobile)
-        .getDocuments()
+        .get()
         .then((value) {
-      if (value.documents.isNotEmpty) {
+      if (value.docs.isNotEmpty) {
         verified = true;
-        studentId = value.documents[0].documentID;
+        studentId = value.docs[0].id;
       }
     });
     return true;
   }
 
   Future<bool> verifyemail() async {
-    await Firestore.instance
+    await FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection('Student')
         .where('email', isEqualTo: givenemailmobile.toLowerCase())
-        .getDocuments()
+        .get()
         .then((value) => {
-              value.documents.forEach((element) {
+              value.docs.forEach((element) {
                 if (element["password"] == givenpassword) verified = true;
-                studentId = element.documentID;
+                studentId = element.id;
               })
             });
     return true;
   }
 
   Future<bool> verifyphone() async {
-    await Firestore.instance
+    await FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection('Student')
         .where('mobile', isEqualTo: givenemailmobile)
-        .getDocuments()
+        .get()
         .then((value) => {
-              value.documents.forEach((element) {
+              value.docs.forEach((element) {
                 if (element["password"] == givenpassword) verified = true;
-                studentId = element.documentID;
+                studentId = element.id;
               })
             });
     return true;
@@ -174,23 +183,7 @@ class _StudentLoginState extends State<StudentLogin> {
                       SizedBox(
                         height: 30,
                       ),
-                      TextFormField(
-                        onChanged: (string) => {givenpassword = string},
-                        decoration: InputDecoration(
-                          prefixIcon: Icon(
-                            Icons.lock,
-                            color: Colors.black,
-                          ),
-                          hintText: 'Password',
-                        ),
-                        obscureText: true,
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return 'Please enter some text';
-                          }
-                          return null;
-                        },
-                      ),
+                      passwordTF,
                       SizedBox(
                         height: 30,
                       ),
@@ -200,6 +193,9 @@ class _StudentLoginState extends State<StudentLogin> {
                           color: Colors.black,
                           textColor: Colors.white,
                           onPressed: () async {
+                            setState(() {
+                              givenpassword = controller.text;
+                            });
                             if (_formKey.currentState.validate()) {
                               await verifyemail();
                               await verifyphone();

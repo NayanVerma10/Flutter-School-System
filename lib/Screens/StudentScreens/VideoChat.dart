@@ -42,15 +42,15 @@ class _MyAppState extends State<MyApp> {
 
   loadData() async {
     String name, email;
-    Firestore.instance
+    FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection('Student')
-        .document(studentId)
+        .doc(studentId)
         .get()
         .then((value) {
-      name = value.data['first name'] + ' ' + value.data['last name'];
-      email = value.data['email'];
+      name = value.data()['first name'] + ' ' + value.data()['last name'];
+      email = value.data()['email'];
       return true;
     }).then((value) {
       setState(() {

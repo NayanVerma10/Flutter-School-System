@@ -1,4 +1,3 @@
-
 import 'package:Schools/Chat/ChatPersonProfile.dart';
 import 'package:Schools/Chat/CreateGroupUsersList.dart';
 import 'package:Schools/Chat/GroupChatBox.dart';
@@ -55,31 +54,31 @@ class _GroupDetailsState extends State<GroupDetails> {
       'avif'
     ];
     id = widget.id + "_" + ((widget.isTeacher) ? "true" : "false");
-    teachersRef = Firestore.instance
+    teachersRef = FirebaseFirestore.instance
         .collection("School")
-        .document(widget.schoolCode)
+        .doc(widget.schoolCode)
         .collection("Teachers");
-    studentsRef = Firestore.instance
+    studentsRef = FirebaseFirestore.instance
         .collection("School")
-        .document(widget.schoolCode)
+        .doc(widget.schoolCode)
         .collection("Student");
     groupRef.get().then((value) {
       setState(() {
-        icon = value.data['Icon'];
-        name = value.data["Name"];
-        adminCount = value.data['AdminCount'];
-        description = value.data["Description"];
+        icon = value.data()['Icon'];
+        name = value.data()["Name"];
+        adminCount = value.data()['AdminCount'];
+        description = value.data()["Description"];
         controller = TextEditingController(text: description);
         nameController = TextEditingController(text: name);
       });
     });
     groupRef
         .collection('Members')
-        .document(widget.id + '_' + widget.isTeacher.toString())
+        .doc(widget.id + '_' + widget.isTeacher.toString())
         .snapshots()
         .listen((event) {
       setState(() {
-        widget.isAdmin = event.exists ? event.data['isAdmin'] : false;
+        widget.isAdmin = event.exists ? event.data()['isAdmin'] : false;
       });
     });
   }
@@ -120,11 +119,11 @@ class _GroupDetailsState extends State<GroupDetails> {
           onSubmitted: (value) async {
             if (value.compareTo(name) != 0 && value.length > 0) {
               showLoaderDialog(context, "Please wait....");
-              await groupRef.updateData({'Name': value});
+              await groupRef.update({'Name': value});
               await groupRef
                   .collection('ChatMessages')
-                  .document(timeToString())
-                  .setData({
+                  .doc(timeToString())
+                  .set({
                 'type': 'notification',
                 'text': '${widget.userName} changed group name to \'$value\''
               });
@@ -163,22 +162,22 @@ class _GroupDetailsState extends State<GroupDetails> {
                             onPressed: () async {
                               groupRef
                                   .collection('Members')
-                                  .getDocuments()
+                                  .get()
                                   .then((value) {
-                                value.documents.forEach((element) async {
-                                  bool isT = element.data['isTeacher'];
-                                  String cid = element.data['id'];
+                                value.docs.forEach((element) async {
+                                  bool isT = element.data()['isTeacher'];
+                                  String cid = element.data()['id'];
                                   if (isT) {
                                     await teachersRef
-                                        .document(cid)
+                                        .doc(cid)
                                         .collection('GroupsJoined')
-                                        .document(groupRef.documentID)
+                                        .doc(groupRef.id)
                                         .delete();
                                   } else {
                                     await studentsRef
-                                        .document(cid)
+                                        .doc(cid)
                                         .collection('GroupsJoined')
-                                        .document(groupRef.documentID)
+                                        .doc(groupRef.id)
                                         .delete();
                                   }
                                   await element.reference.delete();
@@ -186,13 +185,15 @@ class _GroupDetailsState extends State<GroupDetails> {
                               });
                               groupRef
                                   .collection('ChatMessages')
-                                  .getDocuments()
+                                  .get()
                                   .then((value) {
-                                value.documents.forEach((element1) async {
-                                  if (element1.data['type'].compareTo('File') ==
+                                value.docs.forEach((element1) async {
+                                  if (element1
+                                          .data()['type']
+                                          .compareTo('File') ==
                                       0) {
                                     await UrlUtils.deleteFile(
-                                        element1.data['url']);
+                                        element1.data()['url']);
                                   }
                                   await element1.reference.delete();
                                 });
@@ -200,7 +201,7 @@ class _GroupDetailsState extends State<GroupDetails> {
                               if (icon != null) {
                                 await UrlUtils.deleteFile(icon);
                               }
-                              await groupRef.setData({});
+                              await groupRef.set({});
                               await groupRef.delete();
                               Navigator.pushAndRemoveUntil(
                                   context,
@@ -305,21 +306,33 @@ class _GroupDetailsState extends State<GroupDetails> {
                                                       await UrlUtils.deleteFile(
                                                           icon);
                                                     }
-                                                    await UrlUtils.open(
-                                                        result,
-                                                        '${widget.schoolCode}/GroupChats/${widget.groupRef.documentID}/icon/',
-                                                        context,
-                                                        docRef: groupRef);
+                                                    await UrlUtils
+                                                        .uploadFileToFirebase(
+                                                            result.files.first,
+                                                            '${widget.schoolCode}/GroupChats/${widget.groupRef.id}/icon/' +
+                                                                result.files
+                                                                    .first.name,
+                                                            context,
+                                                            null,
+                                                            null,
+                                                            null,
+                                                            null,
+                                                            dr2: groupRef,
+                                                            m2: (await groupRef
+                                                                    .get())
+                                                                .data(),
+                                                            nameKey2: "name",
+                                                            urlKey2: "Icon");
 
                                                     groupRef
                                                         .get()
                                                         .then((value) {
                                                       setState(() {
                                                         print('1\n');
-                                                        icon =
-                                                            value.data['Icon'];
-                                                        print(
-                                                            value.data['Icon']);
+                                                        icon = value
+                                                            .data()['Icon'];
+                                                        print(value
+                                                            .data()['Icon']);
                                                         print('2\n');
                                                       });
                                                     });
@@ -330,9 +343,8 @@ class _GroupDetailsState extends State<GroupDetails> {
                                                     await groupRef
                                                         .collection(
                                                             'ChatMessages')
-                                                        .document(
-                                                            timeToString())
-                                                        .setData({
+                                                        .doc(timeToString())
+                                                        .set({
                                                       'type': 'notification',
                                                       'text':
                                                           '${widget.userName} changed group icon'
@@ -357,7 +369,7 @@ class _GroupDetailsState extends State<GroupDetails> {
                                                   : () async {
                                                       await UrlUtils.deleteFile(
                                                           icon);
-                                                      groupRef.updateData({
+                                                      groupRef.update({
                                                         'Icon': null,
                                                       }).then((value) {
                                                         setState(() {
@@ -367,9 +379,8 @@ class _GroupDetailsState extends State<GroupDetails> {
                                                       await groupRef
                                                           .collection(
                                                               'ChatMessages')
-                                                          .document(
-                                                              timeToString())
-                                                          .setData({
+                                                          .doc(timeToString())
+                                                          .set({
                                                         'type': 'notification',
                                                         'text':
                                                             '${widget.userName} removed group icon'
@@ -395,7 +406,9 @@ class _GroupDetailsState extends State<GroupDetails> {
             elevation: 5,
             child: Container(
               width: MediaQuery.of(context).size.width,
-              height: kIsWeb?MediaQuery.of(context).size.height:MediaQuery.of(context).size.height/2,
+              height: kIsWeb
+                  ? MediaQuery.of(context).size.height
+                  : MediaQuery.of(context).size.height / 2,
               child: icon != null
                   ? Image.network(
                       icon,
@@ -427,11 +440,11 @@ class _GroupDetailsState extends State<GroupDetails> {
                 onSubmitted: (value) async {
                   if (value.compareTo(description) != 0 && value.length > 0) {
                     showLoaderDialog(context, "Please wait....");
-                    await groupRef.updateData({"Description": value});
+                    await groupRef.update({"Description": value});
                     await groupRef
                         .collection('ChatMessages')
-                        .document(timeToString())
-                        .setData({
+                        .doc(timeToString())
+                        .set({
                       'type': 'notification',
                       'text': '${widget.userName} changed group description'
                     });
@@ -469,9 +482,9 @@ class _GroupDetailsState extends State<GroupDetails> {
                       style: TextStyle(fontSize: 20),
                     ),
                   ));
-                  List<DocumentSnapshot> docs = snapshot.data.documents;
+                  List<DocumentSnapshot> docs = snapshot.data.docs;
                   docs.any((element) =>
-                          element.documentID.compareTo(
+                          element.id.compareTo(
                               widget.id + '_' + widget.isTeacher.toString()) ==
                           0)
                       ? null
@@ -483,10 +496,9 @@ class _GroupDetailsState extends State<GroupDetails> {
                                   : MyAppStudent(
                                       widget.schoolCode, widget.id)));
                   docs.forEach((element) {
-                    bool isAdmin = element.data['isAdmin'];
+                    bool isAdmin = element.data()['isAdmin'];
                     list.add(ListTile(
-                      onTap: element.documentID.compareTo(id) != 0 &&
-                              widget.isAdmin
+                      onTap: element.id.compareTo(id) != 0 && widget.isAdmin
                           ? () {
                               showDialog(
                                   context: context,
@@ -512,9 +524,9 @@ class _GroupDetailsState extends State<GroupDetails> {
                                                             ChatPersonProfile(
                                                                 widget
                                                                     .schoolCode,
-                                                                element
-                                                                    .data['id'],
-                                                                element.data[
+                                                                element.data()[
+                                                                    'id'],
+                                                                element.data()[
                                                                     'isTeacher'])));
                                               },
                                               child: Text(
@@ -527,11 +539,11 @@ class _GroupDetailsState extends State<GroupDetails> {
                                               )),
                                           FlatButton(
                                               onPressed: () {
-                                                groupRef.updateData({
+                                                groupRef.update({
                                                   'AdminCount': adminCount +
                                                       (isAdmin ? -1 : 1),
                                                 }).then((value) {
-                                                  element.reference.updateData({
+                                                  element.reference.update({
                                                     'isAdmin': !isAdmin
                                                   }).then((value) {
                                                     setState(() {
@@ -555,34 +567,30 @@ class _GroupDetailsState extends State<GroupDetails> {
                                               )),
                                           FlatButton(
                                               onPressed: () async {
-                                                if (element.documentID
+                                                if (element.id
                                                         .split('_')
                                                         .last ==
                                                     'true') {
                                                   await teachersRef
-                                                      .document(element
-                                                          .documentID
+                                                      .doc(element.id
                                                           .split('_')
                                                           .first)
                                                       .collection(
                                                           'GroupsJoined')
-                                                      .document(
-                                                          element.documentID)
+                                                      .doc(element.id)
                                                       .delete();
                                                 } else {
                                                   await studentsRef
-                                                      .document(element
-                                                          .documentID
+                                                      .doc(element.id
                                                           .split('_')
                                                           .first)
                                                       .collection(
                                                           'GroupsJoined')
-                                                      .document(
-                                                          element.documentID)
+                                                      .doc(element.id)
                                                       .delete();
                                                 }
                                                 if (isAdmin) {
-                                                  groupRef.updateData({
+                                                  groupRef.update({
                                                     'AdminCount': adminCount - 1
                                                   }).then((value) {
                                                     setState(() {
@@ -593,11 +601,11 @@ class _GroupDetailsState extends State<GroupDetails> {
                                                 }
                                                 await groupRef
                                                     .collection('ChatMessages')
-                                                    .document(timeToString())
-                                                    .setData({
+                                                    .doc(timeToString())
+                                                    .set({
                                                   'type': 'notification',
                                                   'text':
-                                                      '${widget.userName} removed ${element.data['name']}'
+                                                      '${widget.userName} removed ${element.data()['name']}'
                                                 });
                                                 await element.reference
                                                     .delete();
@@ -620,40 +628,42 @@ class _GroupDetailsState extends State<GroupDetails> {
                                   MaterialPageRoute(
                                       builder: (context) => ChatPersonProfile(
                                           widget.schoolCode,
-                                          element.data['id'],
-                                          element.data['isTeacher'])));
+                                          element.data()['id'],
+                                          element.data()['isTeacher'])));
                             },
-                      leading: element.data["imgURL"] != null
+                      leading: element.data()["imgURL"] != null
                           ? CircleAvatar(
                               backgroundImage: Image.network(
-                                element.data["imgURL"],
+                                element.data()["imgURL"],
                                 fit: BoxFit.cover,
                               ).image,
                             )
                           : CircleAvatar(
                               backgroundColor: Colors.grey[300],
                               foregroundColor: Colors.black54,
-                              child: Text(element.data['name']
+                              child: Text(element
+                                      .data()['name']
                                       .split('')[0][0]
                                       .toUpperCase() +
-                                  element.data['name']
+                                  element
+                                      .data()['name']
                                       .split(' ')[1][0]
                                       .toUpperCase()),
                             ),
                       title: Text(
-                          element.documentID.compareTo(id) == 0
+                          element.id.compareTo(id) == 0
                               ? "You"
-                              : element.data['name'],
+                              : element.data()['name'],
                           style: TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: Text(element.data['mobile'] +
+                      subtitle: Text(element.data()['mobile'] +
                           "\n" +
-                          element.data['classNumber'] +
+                          element.data()['classNumber'] +
                           " - " +
-                          element.data['section']),
+                          element.data()['section']),
                       isThreeLine: true,
                       trailing: Column(
                         children: [
-                          Text(element.data['isTeacher']
+                          Text(element.data()['isTeacher']
                               ? "Teacher"
                               : "Student"),
                           if (isAdmin) Text("Admin"),
@@ -680,22 +690,19 @@ class _GroupDetailsState extends State<GroupDetails> {
                           widget.isAdmin == false)
                       ? () async {
                           if (widget.isAdmin) {
-                            groupRef.updateData(
+                            groupRef.update(
                                 {'AdminCount': adminCount - 1}).then((value) {
                               setState(() {
                                 adminCount = adminCount - 1;
                               });
                             });
                           }
-                          await groupRef
-                              .collection('Members')
-                              .document(id)
-                              .delete();
+                          await groupRef.collection('Members').doc(id).delete();
                           if (widget.isTeacher) {
                             await teachersRef
-                                .document(widget.id)
+                                .doc(widget.id)
                                 .collection('GroupsJoined')
-                                .document(groupRef.documentID)
+                                .doc(groupRef.id)
                                 .delete();
                             Navigator.pushAndRemoveUntil(
                                 context,
@@ -705,9 +712,9 @@ class _GroupDetailsState extends State<GroupDetails> {
                                 (route) => false);
                           } else {
                             await studentsRef
-                                .document(widget.id)
+                                .doc(widget.id)
                                 .collection('GroupsJoined')
-                                .document(groupRef.documentID)
+                                .doc(groupRef.id)
                                 .delete();
                             Navigator.pushAndRemoveUntil(
                                 context,

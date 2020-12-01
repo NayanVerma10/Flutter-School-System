@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 //import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:universal_html/prefer_sdk/html.dart';
 //import 'package:flutter_login_ui/utilities/constants.dart';
 //void main() =>runApp(LoginScreen());
 
@@ -14,7 +15,7 @@ class _SchoolRegistrationStat extends State<SchoolRegistration> {
   bool _rememberMe = false;
   bool _isEmailUnique = false;
   bool _isMobileUnique = false;
-  bool _isSchoolCodeUnique = false;
+  bool _isSchoolCodeUnique = false, o1=false,o2=false;
   String x3, name, id, x2, x1, gpa, board;
   getStudentName(name) {
     this.name = name;
@@ -45,27 +46,27 @@ class _SchoolRegistrationStat extends State<SchoolRegistration> {
   }
 
   Future<bool> verifyemail() async {
-    await Firestore.instance
+    await FirebaseFirestore.instance
         .collection('School')
         .where('schoolemail', isEqualTo: id.toLowerCase())
-        .getDocuments()
-        .then((value) => {if (value.documents.isEmpty) _isEmailUnique = true});
+        .get()
+        .then((value) => {if (value.docs.isEmpty) _isEmailUnique = true});
     return true;
   }
 
   Future<bool> verifyphone() async {
-    await Firestore.instance
+    await FirebaseFirestore.instance
         .collection('School')
         .where('schoolno', isEqualTo: x1)
-        .getDocuments()
-        .then((value) => {if (value.documents.isEmpty) _isMobileUnique = true});
+        .get()
+        .then((value) => {if (value.docs.isEmpty) _isMobileUnique = true});
     return true;
   }
 
   Future<bool> verifyschoolcode() async {
-    await Firestore.instance
+    await FirebaseFirestore.instance
         .collection('School')
-        .document(gpa)
+        .doc(gpa)
         .get()
         .then((value) => {if (!value.exists) _isSchoolCodeUnique = true});
 
@@ -76,7 +77,7 @@ class _SchoolRegistrationStat extends State<SchoolRegistration> {
     print("created");
 
     DocumentReference documentReference =
-        Firestore.instance.collection("School").document(gpa);
+        FirebaseFirestore.instance.collection("School").doc(gpa);
     Map<String, dynamic> studentsm = {
       "schoolname": name,
       "schoolemail": id.toLowerCase(),
@@ -85,28 +86,28 @@ class _SchoolRegistrationStat extends State<SchoolRegistration> {
       "schoolno": x1,
       "schoolboard": board
     };
-    documentReference.setData(studentsm).whenComplete(() {
+    documentReference.set(studentsm).whenComplete(() {
       print("$name created");
     });
   }
 
   readData() {
     DocumentReference documentReference =
-        Firestore.instance.collection("School").document(name);
+        FirebaseFirestore.instance.collection("School").doc(name);
     documentReference.get().then((datasnapshot) {
-      print(datasnapshot.data["schoolname"]);
-      print(datasnapshot.data["schoolemail"]);
-      print(datasnapshot.data["schoolcode"]);
-      print(datasnapshot.data["password"]);
-      print(datasnapshot.data["schoolno"]);
-      print(datasnapshot.data["schoolboard"]);
+      print(datasnapshot.data()["schoolname"]);
+      print(datasnapshot.data()["schoolemail"]);
+      print(datasnapshot.data()["schoolcode"]);
+      print(datasnapshot.data()["password"]);
+      print(datasnapshot.data()["schoolno"]);
+      print(datasnapshot.data()["schoolboard"]);
     });
     print("read");
   }
 
-  updatedata() {
+  update() {
     print("update");
-/*DocumentReference documentReference =Firestore.instance.collection("Mystudents").document(name);
+/*DocumentReference documentReference =FirebaseFirestore.instance.collection("Mystudents").doc(name);
  Map< String, dynamic > students=
  {
    "studentname":name, 
@@ -114,14 +115,14 @@ class _SchoolRegistrationStat extends State<SchoolRegistration> {
    "gpa":gpa,
    "x2":x2
  };
- documentReference.setData(students).whenComplete((){
+ documentReference.set(students).whenComplete((){
 print("$name updated");
  });
 */
   }
 
   deletedata() {
-/*  DocumentReference documentReference =Firestore.instance.collection("Mystudents").document(name);
+/*  DocumentReference documentReference =FirebaseFirestore.instance.collection("Mystudents").doc(name);
   documentReference.delete().whenComplete(()
   {
     print("$name has been delelted");
@@ -339,7 +340,7 @@ print("$name updated");
             onChanged: (String x2) {
               getStudentx2(x2);
             },
-            obscureText: true,
+            obscureText: o1,
             style: TextStyle(
               color: Colors.black,
               fontFamily: 'OpenSans',
@@ -351,6 +352,15 @@ print("$name updated");
                 Icons.lock,
                 color: Colors.black,
               ),
+              suffixIcon: IconButton(
+          icon:
+              Icon(o1 ? Icons.visibility_off : Icons.visibility, color: Colors.black,),
+          onPressed: () {
+            setState(() {
+              o1 = (!o1);
+            });
+          },
+        ),
               hintText: 'Password',
               hintStyle: kHintTextStyle,
             ),
@@ -373,7 +383,7 @@ print("$name updated");
             onChanged: (String x3) {
               getStudentx3(x3);
             },
-            obscureText: true,
+            obscureText: o2,
             style: TextStyle(
               color: Colors.black,
               fontFamily: 'OpenSans',
@@ -385,6 +395,15 @@ print("$name updated");
                 Icons.lock,
                 color: Colors.black,
               ),
+              suffixIcon: IconButton(
+          icon:
+              Icon(o2 ? Icons.visibility_off : Icons.visibility, color: Colors.black,),
+          onPressed: () {
+            setState(() {
+              o2 = (!o2);
+            });
+          },
+        ),
               hintText: 'Confirm Password',
               hintStyle: kHintTextStyle,
             ),

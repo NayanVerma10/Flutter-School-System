@@ -1,3 +1,4 @@
+import 'package:Schools/widgets/passwordTF.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -17,67 +18,78 @@ class _TeachersRegistrationState extends State<TeachersRegistration> {
   bool passwordDoesNotExists = false;
   bool verified = false;
   bool verifiedSchoolcode = false;
+  TextEditingController controller1, controller2;
+  PasswordTF ptf1, ptf2;
+
+  @override
+  void initState() {
+    super.initState();
+    controller1 = TextEditingController(text: "");
+    controller2 = TextEditingController(text: "");
+    ptf1 = PasswordTF(controller1);
+    ptf2 = PasswordTF(controller2, hintText: "Confirm Password");
+  }
 
   Future<bool> setData() async {
-    await Firestore.instance
+    await FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection('Teachers')
-        .document(teachersId)
-        .setData({'password': givenpassword}, merge: true);
+        .doc(teachersId)
+        .set({'password': givenpassword},SetOptions(merge: true));
     return true;
   }
 
   Future<bool> verifySchoolCode() async {
-    await Firestore.instance
+    await FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .get()
         .then((value) => {if (value.exists) verifiedSchoolcode = true});
     return true;
   }
 
   Future<bool> verifyPasswordExists() async {
-    await Firestore.instance
+    await FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection('Teachers')
-        .document(teachersId)
+        .doc(teachersId)
         .get()
         .then((value) => {
-              if (!(value.data.containsKey('password')))
+              if (!(value.data().containsKey('password')))
                 passwordDoesNotExists = true
             });
     return true;
   }
 
   Future<bool> verifyemail() async {
-    await Firestore.instance
+    await FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection('Teachers')
         .where('email', isEqualTo: givenemailmobile)
-        .getDocuments()
+        .get()
         .then((value) => {
-              value.documents.forEach((element) {
+              value.docs.forEach((element) {
                 verified = true;
-                teachersId = element.documentID;
+                teachersId = element.id;
               })
             });
     return true;
   }
 
   Future<bool> verifyphone() async {
-    await Firestore.instance
+    await FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection('Teachers')
         .where('mobile', isEqualTo: givenemailmobile)
-        .getDocuments()
+        .get()
         .then((value) => {
-              value.documents.forEach((element) {
+              value.docs.forEach((element) {
                 verified = true;
-                teachersId = element.documentID;
+                teachersId = element.id;
               })
             });
     return true;
@@ -136,43 +148,11 @@ class _TeachersRegistrationState extends State<TeachersRegistration> {
                       SizedBox(
                         height: 30,
                       ),
-                      TextFormField(
-                        onChanged: (string) => {givenpassword = string},
-                        decoration: InputDecoration(
-                          prefixIcon: Icon(
-                            Icons.lock,
-                            color: Colors.black,
-                          ),
-                          hintText: 'Password',
-                        ),
-                        obscureText: true,
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return 'Please enter some text';
-                          }
-                          return null;
-                        },
-                      ),
+                      ptf1,
                       SizedBox(
                         height: 30,
                       ),
-                      TextFormField(
-                        onChanged: (string) => {givenConfirmPassword = string},
-                        decoration: InputDecoration(
-                          prefixIcon: Icon(
-                            Icons.lock,
-                            color: Colors.black,
-                          ),
-                          hintText: 'Confirm Password',
-                        ),
-                        obscureText: true,
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return 'Please enter some text';
-                          }
-                          return null;
-                        },
-                      ),
+                      ptf2,
                       SizedBox(
                         height: 30,
                       ),
@@ -183,6 +163,10 @@ class _TeachersRegistrationState extends State<TeachersRegistration> {
                           textColor: Colors.white,
                           onPressed: () async {
                             if (_formKey.currentState.validate()) {
+                              setState(() {
+                                givenpassword = controller1.text;
+                                givenConfirmPassword = controller2.text;
+                              });
                               await verifySchoolCode();
                               await verifyemail();
                               await verifyphone();

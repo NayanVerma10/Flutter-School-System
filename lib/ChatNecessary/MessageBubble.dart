@@ -46,12 +46,12 @@ class Message extends StatelessWidget {
           Bubble(
             color:
                 Colors.white, //me ? Colors.green[100] : Colors.deepPurple[100],
-            nip: me ? BubbleNip.rightTop : BubbleNip.leftTop,
+            nip:type == 'File'?BubbleNip.no: me ? BubbleNip.rightTop : BubbleNip.leftTop,
             nipWidth: 12,
             elevation: 2,
             child: Container(
               constraints: BoxConstraints(
-                maxWidth: (MediaQuery.of(context).size.width - (2 * pad)) * 0.7,
+                maxWidth: type == 'File'?(MediaQuery.of(context).size.width - (2 * pad)) * 0.55:(MediaQuery.of(context).size.width - (2 * pad)) * 0.7,
               ),
               padding: EdgeInsets.symmetric(vertical: 1.0, horizontal: 5.0),
               child: Column(
@@ -97,31 +97,16 @@ class Message extends StatelessWidget {
     return Column(
       children: [
         imageExtensions.contains(fileExtention)
-            ? Column(
-                children: [
+            ?
                   Image.network(
                     fileURL,
+                    width: (MediaQuery.of(context).size.width - (2 * pad))*0.7,
+                    height: (MediaQuery.of(context).size.width - (2 * pad))*0.4,
                     key: UniqueKey(),
-                    scale: 0.2,
-                  ),
+                    fit: BoxFit.cover,
+                    alignment: me?Alignment.centerRight:Alignment.centerLeft,
+                  ):SizedBox(),
                   ListTile(
-                    onTap: () {
-                      URLLauncher(fileURL);
-                    },
-                    title: Text(
-                      text,
-                      style: TextStyle(fontSize: 12),
-                    ),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.file_download),
-                      onPressed: () async {
-                        await downloadFile(fileURL, text, context);
-                      },
-                    ),
-                  )
-                ],
-              )
-            : ListTile(
                 onTap: () {
                   URLLauncher(fileURL);
                 },

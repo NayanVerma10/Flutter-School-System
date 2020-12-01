@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:Schools/plugins/url_launcher/url_launcher.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,7 +10,6 @@ import 'package:flutter/rendering.dart';
 
 import '../../ChatNecessary/UploadFile.dart';
 import '../../ChatNecessary/MessageBubble.dart';
-
 
 class User {
   String className, schoolCode, userId, classNumber, section, subject, userName;
@@ -48,20 +49,17 @@ class _DiscussionsState extends State<Discussions> {
   _DiscussionsState(this.className, this.schoolCode, this.teachersId,
       this.classNumber, this.section, this.subject);
 
-  final Firestore _firestore = Firestore.instance;
+  CollectionReference cr;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   TextEditingController messageController = TextEditingController();
   ScrollController scrollController = ScrollController();
 
-  Future<void> callback(String type, String text, {String fileURL = ''}) async {
+  Future<void> callback(String type, String text,
+      {String fileURL = ''}) async {
     limitOfMessages++;
     messageController.clear();
-    await _firestore
-        .collection('School')
-        .document(schoolCode)
-        .collection('Classes')
-        .document(classNumber + '_' + section + '_' + subject)
-        .collection('Discussions')
+    await cr
         .add({
       'text': text,
       'from': user.userName,
@@ -76,21 +74,27 @@ class _DiscussionsState extends State<Discussions> {
       curve: Curves.easeOut,
       duration: const Duration(milliseconds: 200),
     );
+    return ;
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    cr = _firestore
+        .collection('School')
+        .doc(schoolCode)
+        .collection('Classes')
+        .doc(classNumber + '_' + section + '_' + subject)
+        .collection('Discussions');
     setState(() {
-      Firestore.instance
+      FirebaseFirestore.instance
           .collection('School')
-          .document(schoolCode)
+          .doc(schoolCode)
           .collection('Teachers')
-          .document(teachersId)
+          .doc(teachersId)
           .get()
           .then((value) => teachersName =
-              value.data['first name'] + ' ' + value.data['last name'])
+              value.data()['first name'] + ' ' + value.data()['last name'])
           .then((value) {
         user = User(teachersName, className, schoolCode, teachersId,
             classNumber, section, subject, true);
@@ -102,13 +106,12 @@ class _DiscussionsState extends State<Discussions> {
   Widget build(BuildContext context) {
     setState(() {
       pad = kIsWeb &&
-            MediaQuery.of(context).size.width >
-                MediaQuery.of(context).size.height
-        ? MediaQuery.of(context).size.width / 2 - 300
-        : 0;
-    
+              MediaQuery.of(context).size.width >
+                  MediaQuery.of(context).size.height
+          ? MediaQuery.of(context).size.width / 2 - 300
+          : 0;
     });
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text(className + ' Discussions'),
@@ -129,12 +132,7 @@ class _DiscussionsState extends State<Discussions> {
             children: <Widget>[
               Expanded(
                 child: StreamBuilder<QuerySnapshot>(
-                  stream: _firestore
-                      .collection('School')
-                      .document(schoolCode)
-                      .collection('Classes')
-                      .document(classNumber + '_' + section + '_' + subject)
-                      .collection('Discussions')
+                  stream: cr
                       .orderBy('date', descending: true)
                       .limit(limitOfMessages)
                       .snapshots(),
@@ -143,19 +141,19 @@ class _DiscussionsState extends State<Discussions> {
                       return Center(
                         child: CircularProgressIndicator(),
                       );
-                    List<DocumentSnapshot> docs = snapshot.data.documents;
+                    List<DocumentSnapshot> docs = snapshot.data.docs;
                     print(limitOfMessages);
 
                     List<Widget> messages = docs
                         .map((doc) => Message(
-                              from: doc.data['from'],
-                              text: doc.data['text'],
-                              fromId: doc.data['fromId'],
-                              isTeacher: doc.data['isTeacher'],
-                              type: doc.data['type'],
-                              date: doc.data['date'],
-                              fileURL: doc.data['fileURL'],
-                              me: teachersId == doc.data['fromId'],
+                              from: doc.data()['from'],
+                              text: doc.data()['text'],
+                              fromId: doc.data()['fromId'],
+                              isTeacher: doc.data()['isTeacher'],
+                              type: doc.data()['type'],
+                              date: doc.data()['date'],
+                              fileURL: doc.data()['fileURL'],
+                              me: teachersId == doc.data()['fromId'],
                               pad: pad,
                             ))
                         .toList();
@@ -206,14 +204,28 @@ class _DiscussionsState extends State<Discussions> {
                       child: Icon(Icons.attach_file),
                       heroTag: null,
                       onPressed: () async {
-                        await attachment()
-                            .then((files) => files.forEach((file) async {
-                                  List<String> fileData = await uploadToFirebase(
-                                      '$schoolCode/$classNumber/$section/$subject/',
-                                      file, context);
-                                  await callback('File', fileData[1],
-                                      fileURL: fileData[0]);
-                                }));
+                        final result = await FilePicker.platform
+                            .pickFiles(allowMultiple: true, withData: true);
+                        if (result != null) {
+                          
+                          result.files.forEach((file) async {
+                            await UrlUtils.uploadFileToFirebase(
+                                file,
+                                '$schoolCode/$classNumber/$section/$subject/',
+                                context, cr, 
+                                {
+                                  'from': user.userName,
+                                  'fromId': user.userId,
+                                  'type': 'File',
+                                  'isTeacher': user.isTeacher,
+                                  'date': DateTime.now().toIso8601String().toString(),
+                                },
+                                'fileURL', 
+                                'text'
+                            );
+                            
+                          });
+                        }
                       },
                     ),
                     SizedBox(

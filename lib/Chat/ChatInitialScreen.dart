@@ -35,14 +35,14 @@ class _MainChatState extends State<MainChat> {
       print('Token : ' + token);
       return token;
     }).then((token) {
-      Firestore.instance
+      FirebaseFirestore.instance
           .collection('School')
-          .document(schoolCode)
+          .doc(schoolCode)
           .collection(isTeacher ? 'Teachers' : 'Student')
-          .document(docId)
-          .setData({
+          .doc(docId)
+          .set({
         'deviceToken': token,
-      }, merge: true);
+      }, SetOptions(merge: true));
     });
   }
 
@@ -65,19 +65,19 @@ class _MainChatState extends State<MainChat> {
     super.initState();
     _getToken();
     _configureFirebaseListeners();
-    stream1 = Firestore.instance
+    stream1 = FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection(isTeacher ? 'Teachers' : 'Student')
-        .document(docId)
+        .doc(docId)
         .collection('recentChats')
         .orderBy('date', descending: true)
         .snapshots();
-    stream2 = Firestore.instance
+    stream2 = FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection(isTeacher ? 'Teachers' : 'Student')
-        .document(docId)
+        .doc(docId)
         .collection("GroupsJoined")
         .snapshots();
   }
@@ -95,11 +95,11 @@ class _MainChatState extends State<MainChat> {
                 return Center(
                   child: CircularProgressIndicator(),
                 );
-              List<DocumentSnapshot> docs = snapshot.data.documents;
+              List<DocumentSnapshot> docs = snapshot.data.docs;
               List<Widget> recentChats = docs.map((doc) {
                 String dateOfMessage =
-                    doc.data['date'].toString().split('T')[0];
-                String timeOfMessage = doc.data['date']
+                    doc.data()['date'].toString().split('T')[0];
+                String timeOfMessage = doc.data()['date']
                     .toString()
                     .split('T')[1]
                     .split('.')[0]
@@ -121,25 +121,25 @@ class _MainChatState extends State<MainChat> {
                 return Column(
                   children: [
                     ListTile(
-                      leading: doc.data['url'] != null
+                      leading: doc.data()['url'] != null
                           ? CircleAvatar(
                               backgroundColor: Colors.grey[300],
                               radius: 28,
-                              backgroundImage: NetworkImage(doc.data['url']),
+                              backgroundImage: NetworkImage(doc.data()['url']),
                             )
                           : CircleAvatar(
                               backgroundColor: Colors.grey[300],
                               foregroundColor: Colors.black54,
                               radius: 28,
-                              child: Text(doc.data['name']
+                              child: Text(doc.data()['name']
                                       .split('')[0][0]
                                       .toUpperCase() +
-                                  doc.data['name']
+                                  doc.data()['name']
                                       .split(' ')[1][0]
                                       .toUpperCase()),
                             ),
                       title: Text(
-                        doc.data['name'].toString().toUpperCase(),
+                        doc.data()['name'].toString().toUpperCase(),
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       subtitle: RichText(
@@ -149,7 +149,7 @@ class _MainChatState extends State<MainChat> {
                               style: DefaultTextStyle.of(context).style,
                               children: <InlineSpan>[
                                 TextSpan(
-                                    text: doc.data['fromId'] == docId
+                                    text: doc.data()['fromId'] == docId
                                         ? 'You : '
                                         : ' ',
                                     style: TextStyle(
@@ -157,33 +157,29 @@ class _MainChatState extends State<MainChat> {
                                             900])), //This is for if the message is form us
                                 kIsWeb
                                     ? TextSpan(
-                                        text: doc.data['type'] == 'File'
+                                        text: doc.data()['type'] == 'File'
                                             ? 'File : '
                                             : '',
                                       )
                                     : WidgetSpan(
                                         style: TextStyle(fontSize: 16),
-                                        child: doc.data['type'] == 'File'
+                                        child: doc.data()['type'] == 'File'
                                             ? Icon(Icons.attach_file, size: 16)
                                             : Text(''),
                                       ), //This is if the message is a file
                                 TextSpan(
-                                    text: doc.data['text']), //This is the text
+                                    text: doc.data()['text']), //This is the text
                               ])),
-                      trailing: Column(
-                        children: <Widget>[
-                          Text(
-                            string,
-                            textScaleFactor: 0.8,
-                          ),
-                        ],
+                      trailing: Text(
+                        string,
+                        textScaleFactor: 0.8,
                       ),
                       onTap: () {
                         Navigator.push(
                             context,
                             SlideLeftRoute(
                                 page: ChatBox(schoolCode, docId, isTeacher,
-                                    doc.documentID, doc.data['isTeacher'])));
+                                    doc.id, doc.data()['isTeacher'])));
                       },
                     ),
                     Divider(
@@ -253,7 +249,7 @@ class _MainChatState extends State<MainChat> {
                       child: CircularProgressIndicator(),
                     );
                   }
-                  return GroupChat(snapshot.data.documents, docId, schoolCode, isTeacher);
+                  return GroupChat(snapshot.data.docs, docId, schoolCode, isTeacher);
                 }),
           ),
         ),

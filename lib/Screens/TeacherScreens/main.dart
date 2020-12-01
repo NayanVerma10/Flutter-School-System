@@ -1,5 +1,7 @@
+import 'package:Schools/Screens/TeacherScreens/classDetails.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:overlay_support/overlay_support.dart';
 import './announcements.dart';
 import './classes.dart';
 import './profile.dart';
@@ -27,14 +29,14 @@ class _MyAppTeacherState extends State<MyAppTeacher> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        theme: ThemeData(
-          primaryColor: Colors.white, 
-          accentColor: Colors.black,
-          textSelectionTheme: TextSelectionThemeData(cursorColor: Colors.black, selectionHandleColor: Colors.black),
-        ),
-        debugShowCheckedModeBanner: false,
-        title: 'Aatmanirbhar Institutions',
-        home: MyAppTeacherScaffold(schoolCode,teachersId));
+    theme: ThemeData(
+      primaryColor: Colors.white, 
+      accentColor: Colors.black,
+      textSelectionTheme: TextSelectionThemeData(cursorColor: Colors.black, selectionHandleColor: Colors.black),
+    ),
+    debugShowCheckedModeBanner: false,
+    title: 'Aatmanirbhar Institutions',
+    home: MyAppTeacherScaffold(schoolCode,teachersId));
   }
 }
 
@@ -52,9 +54,9 @@ class _MyAppTeacherScaffoldState extends State<MyAppTeacherScaffold> {
   List<Widget> tabs;
 
   Future<void> loadData(){
-    Firestore.instance.collection('School').document(schoolCode).collection('Teachers').document(teachersId).get().then((doc) {
+    FirebaseFirestore.instance.collection('School').doc(schoolCode).collection('Teachers').doc(teachersId).get().then((doc) {
       setState(() {
-        teachersName = doc['first name']+' '+doc.data['last name'];
+        teachersName = doc['first name']+' '+doc.data()['last name'];
       });
     });
   }

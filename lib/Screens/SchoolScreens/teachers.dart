@@ -40,13 +40,13 @@ class _ListPageState extends State<ListPage> {
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorkey =
       new GlobalKey<RefreshIndicatorState>();
   Future getPosts() async {
-    var firestore = Firestore.instance;
+    var firestore = FirebaseFirestore.instance;
     QuerySnapshot qn = await firestore
         .collection("School")
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection("Teachers")
-        .getDocuments();
-    return qn.documents;
+        .get();
+    return qn.docs;
   }
 
   Future<Null> _refreshLocalGallery() async {
@@ -91,17 +91,17 @@ class _ListPageState extends State<ListPage> {
                           //hoverColor: Colors.blue,
                           //isThreeLine: true
                           title: Text(
-                            (snapshot.data[index].data["first name"]),
+                            (snapshot.data[index].data()["first name"]),
                             style: TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          leading: (snapshot.data[index].data["url"] != null)
+                          leading: (snapshot.data[index].data()["url"] != null)
                               ? CircleAvatar(
                                   backgroundColor: Colors.black,
                                   backgroundImage: NetworkImage(
-                                    snapshot.data[index].data["url"],
+                                    snapshot.data[index].data()["url"],
                                   ),
                                 )
                               : CircleAvatar(
@@ -118,7 +118,7 @@ class _ListPageState extends State<ListPage> {
                             funcButton(snapshot.data[index]);
                           },
                           subtitle: Text(
-                            snapshot.data[index].data["designation"],
+                            snapshot.data[index].data()["designation"],
                             style: TextStyle(
                               color: Colors.black,
                             ),
@@ -172,28 +172,28 @@ class MapScreenState extends State<ProfilePage>
   void initState() {
     // TODO: implement initState
     super.initState();
-    namecontroller1.text = widget.post.data["first name"];
-    controller1 = TextEditingController(text: (widget.post.data["first name"]));
-    namecontroller.text = widget.post.data["email"];
-    controller2 = TextEditingController(text: widget.post.data["email"]);
-    namecontroller2.text = widget.post.data["mobile"];
-    controller3 = TextEditingController(text: widget.post.data["mobile"]);
-    namecontrollerq.text = widget.post.data["qualification"];
+    namecontroller1.text = widget.post.data()["first name"];
+    controller1 = TextEditingController(text: (widget.post.data()["first name"]));
+    namecontroller.text = widget.post.data()["email"];
+    controller2 = TextEditingController(text: widget.post.data()["email"]);
+    namecontroller2.text = widget.post.data()["mobile"];
+    controller3 = TextEditingController(text: widget.post.data()["mobile"]);
+    namecontrollerq.text = widget.post.data()["qualification"];
     controllerq =
-        TextEditingController(text: widget.post.data["qualification"]);
-    namecontrollera.text = widget.post.data["address"];
-    controllera = TextEditingController(text: widget.post.data["address"]);
-    namecontrollerg.text = widget.post.data["gender"];
-    controllerg = TextEditingController(text: widget.post.data["gender"]);
-    namecontrollerd.text = widget.post.data["designation"];
-    controllerd = TextEditingController(text: widget.post.data["designation"]);
+        TextEditingController(text: widget.post.data()["qualification"]);
+    namecontrollera.text = widget.post.data()["address"];
+    controllera = TextEditingController(text: widget.post.data()["address"]);
+    namecontrollerg.text = widget.post.data()["gender"];
+    controllerg = TextEditingController(text: widget.post.data()["gender"]);
+    namecontrollerd.text = widget.post.data()["designation"];
+    controllerd = TextEditingController(text: widget.post.data()["designation"]);
   }
 
   @override
   Widget build(BuildContext context) {
-    String rt = widget.post.data["first name"];
-    String rt1 = widget.post.data["email"];
-    String rt2 = widget.post.data["mobile"];
+    String rt = widget.post.data()["first name"];
+    String rt1 = widget.post.data()["email"];
+    String rt2 = widget.post.data()["mobile"];
 
     return new Scaffold(
         appBar: AppBar(
@@ -335,7 +335,7 @@ class MapScreenState extends State<ProfilePage>
                                                 //hintText: "rfe",
 
                                                 //  hintText:rt,
-                                                //labelText:  widget.post.data["schoolname"]
+                                                //labelText:  widget.post.data()["schoolname"]
                                                 ),
                                             enabled: !_status,
                                             //   autofocus: !_status,
@@ -831,17 +831,17 @@ class MapScreenState extends State<ProfilePage>
                           setState(() {
                             name = namecontroller.text;
                             print('$name is');
-                            widget.post.data["first name"] =
+                            widget.post.data()["first name"] =
                                 namecontroller1.text;
-                            widget.post.data["email"] = namecontroller.text;
-                            widget.post.data["mobile"] = namecontroller2.text;
-                            widget.post.data["qualification"] =
+                            widget.post.data()["email"] = namecontroller.text;
+                            widget.post.data()["mobile"] = namecontroller2.text;
+                            widget.post.data()["qualification"] =
                                 namecontrollerq.text;
-                            widget.post.data["address"] = namecontrollera.text;
-                            widget.post.data["gender"] = namecontrollerg.text;
-                            widget.post.data["designation"] =
+                            widget.post.data()["address"] = namecontrollera.text;
+                            widget.post.data()["gender"] = namecontrollerg.text;
+                            widget.post.data()["designation"] =
                                 namecontrollerd.text;
-                            updateuserdata(widget.post.data["mobile"]);
+                            updateuserdata(widget.post.data()["mobile"]);
                           });
 //sprint(name);
                         },
@@ -860,11 +860,11 @@ class MapScreenState extends State<ProfilePage>
   }
 
   Future updateuserdata(String rt2) async {
-    final CollectionReference brew = Firestore.instance
+    final CollectionReference brew = FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection('Teachers');
-    return await brew.document(rt2).setData({
+    return await brew.doc(rt2).set({
       'email': namecontroller.text,
       'mobile': namecontroller2.text,
       'first name': namecontroller1.text,
@@ -872,15 +872,15 @@ class MapScreenState extends State<ProfilePage>
       'gender': namecontrollerg.text,
       'designation': namecontrollerd.text,
       'qualification': namecontrollerq.text,
-    }, merge: true);
+    },SetOptions(merge: true));
   }
 
-  void updateData(String rt2) {
-    final CollectionReference brew = Firestore.instance
+  void update(String rt2) {
+    final CollectionReference brew = FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection('Teachers');
-    brew.document(rt2).setData({
+    brew.doc(rt2).set({
       'email': controller4.text,
     });
   }
@@ -889,7 +889,7 @@ class MapScreenState extends State<ProfilePage>
     return new GestureDetector(
       child: new RaisedButton(
         onPressed: () {
-//updateData(rt2);
+//update(rt2);
           tripEdit(context, rt2);
           setState(() {
             _status = false;

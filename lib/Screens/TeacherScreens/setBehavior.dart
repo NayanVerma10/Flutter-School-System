@@ -134,12 +134,12 @@ class _SetBehaviorState extends State<SetBehavior> {
                     context: context,
                     pageBuilder: (context, animation1, animation2) {});
               else {
-                Firestore.instance
+                FirebaseFirestore.instance
                     .collection('School')
-                    .document(schoolCode)
+                    .doc(schoolCode)
                     .collection('Student')
-                    .document(studentId)
-                    .setData(
+                    .doc(studentId)
+                    .set(
                   {
                     "Behavior in class " + className: {
                       "Behavior": behavior,
@@ -147,7 +147,7 @@ class _SetBehaviorState extends State<SetBehavior> {
                       "Time": DateTime.now()
                     },
                   },
-                  merge: true,
+                  SetOptions(merge: true,)
                 );
                 Navigator.pop(context);
               }

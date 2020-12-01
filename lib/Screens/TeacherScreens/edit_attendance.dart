@@ -29,7 +29,7 @@ class _EditAttendanceState extends State<EditAttendance> {
     super.initState();
     map = Map<String, bool>();
     keys = List();
-    snapshot.data.forEach((key, value) {
+    snapshot.data().forEach((key, value) {
       map[key] = value;
       if (value) count++;
     });
@@ -141,7 +141,7 @@ class _EditAttendanceState extends State<EditAttendance> {
     ));
     return Scaffold(
       appBar: AppBar(
-        title: Text(at.stringToTime(snapshot.documentID)[0]),
+        title: Text(at.stringToTime(snapshot.id)[0]),
         
       ),
       body: ListView(
@@ -156,7 +156,7 @@ class _EditAttendanceState extends State<EditAttendance> {
           if (editMode) {
             showLoaderDialog(context, 'Updating data....');
             await snapshot.reference
-                .setData(map)
+                .set(map)
                 .catchError((error) =>
                     Toast.show('Error while updating data....', context))
                 .whenComplete(

@@ -21,14 +21,14 @@ class _ClassesState extends State<Classes> {
   bool hasClass = true;
 
   void loadData() async {
-    await Firestore.instance
+    await FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection('Teachers')
-        .document(teachersId)
+        .doc(teachersId)
         .get()
         .then((value) async {
-      List<dynamic> classes = value.data['classes'];
+      List<dynamic> classes = value.data()['classes'];
       await Future.forEach(classes ,(element) async {
         int numberOfStudents = await loadNumberOfStudents(
             element['Class'], element['Section'], element['Subject']);
@@ -51,16 +51,16 @@ class _ClassesState extends State<Classes> {
   Future<int> loadNumberOfStudents(
       String classno, String section, String subject) async {
     int no;
-    await Firestore.instance
+    await FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection('Student')
         .where('class', isEqualTo: classno)
         .where('section', isEqualTo: section)
         .where('subjects', arrayContains: subject)
-        .getDocuments()
+        .get()
         .then((docs) {
-      if (docs.documents.isNotEmpty) no = docs.documents.length;
+      if (docs.docs.isNotEmpty) no = docs.docs.length;
       print(no);
     });
     return no;
@@ -73,7 +73,7 @@ class _ClassesState extends State<Classes> {
     loadData();
   }
 
-  //final databaseReference = Firestore.instance;
+  //final databaseReference = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {

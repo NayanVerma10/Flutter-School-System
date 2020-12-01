@@ -1,8 +1,6 @@
+import 'package:Schools/Screens/SchoolScreens/setTimeTable.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
-/*-------------------------------Sorting by time is still remaining although half way done. Stopped due to lack of data.---------------------------------------*/ 
-
 
 class TeachersTimeTable extends StatefulWidget {
   final Color color;
@@ -29,7 +27,6 @@ class _TeachersTimeTableState extends State<TeachersTimeTable> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     index = 'Monday';
     list = Map<String, List<Widget>>();
@@ -53,44 +50,46 @@ class _TeachersTimeTableState extends State<TeachersTimeTable> {
       loading = true;
     });
     Map<String, List<Widget>> tempList = Map<String, List<Widget>>();
-    final CollectionReference cr = Firestore.instance
+    Map<String, List<String>> tempy1 = Map<String, List<String>>();
+    final CollectionReference cr = FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection('Time Table');
-    await Firestore.instance
+    await FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection('Teachers')
-        .document(teachersId)
+        .doc(teachersId)
         .get()
         .then((teacherDoc) {
       if (teacherDoc != null) {
-        if (teacherDoc.data['classes'] != null) {
-          List<dynamic> classes = teacherDoc.data['classes'];
+        if (teacherDoc.data()['classes'] != null) {
+          List<dynamic> classes = teacherDoc.data()['classes'];
           // print(classes.toString());
-          cr.getDocuments().then((schedule) {
+          cr.get().then((schedule) {
             if (schedule != null) {
               tempList = Map<String, List<Widget>>();
+              tempy1 = Map<String, List<String>>();
               finalList = List<DateTime>();
               finalListToClass = Map<String, Map<String, String>>();
 
               days.forEach((element) {
                 list[element] = List<Widget>();
                 tempList[element] = List<Widget>();
+                tempy1[element] = List<String>();
               });
 
-              List<DocumentSnapshot> schedules = schedule.documents;
+              List<DocumentSnapshot> schedules = schedule.docs;
               classes.cast<Map<String, dynamic>>().forEach((classs) {
-
                 var classSchedule = schedules.firstWhere((element) =>
-                    element.documentID.compareTo(classs['Class'].toString() +
+                    element.id.compareTo(classs['Class'].toString() +
                         '-' +
                         classs['Section'].toString()) ==
                     0);
 
-                classSchedule.data.forEach((day, tt) {
+                classSchedule.data().forEach((day, tt) {
                   List<dynamic> schoolTT = tt;
-                  
+
                   schoolTT
                       .cast<Map<String, dynamic>>()
                       .where(
@@ -128,10 +127,25 @@ class _TeachersTimeTableState extends State<TeachersTimeTable> {
                           tempList[day].length,
                           classs['Class'],
                           classs['Section']));
+                      tempy1[day].add(classSubjectSchedule['start time']);
                     }
                   });
                 });
-                // mergeSort<DateTime>(finalList);
+                tempy1.forEach((key, value) {
+                  for (int i = 0; i < value.length; i++) {
+                    for (int j = 0; j < value.length; j++) {
+                      if (compare(value[i], value[j]) == 0) {
+                        String te = value[i];
+                        value[i] = value[j];
+                        value[j] = te;
+                        Card tem = tempList[key][i];
+                        tempList[key][i] = tempList[key][j];
+                        tempList[key][j] = tem;
+                      }
+                    }
+                  }
+                });
+
                 setState(() {
                   list = tempList;
                   loading = false;
@@ -142,9 +156,9 @@ class _TeachersTimeTableState extends State<TeachersTimeTable> {
         }
       }
       setState(() {
-                  list = tempList;
-                  loading = false;
-                });
+        list = tempList;
+        loading = false;
+      });
     });
   }
 

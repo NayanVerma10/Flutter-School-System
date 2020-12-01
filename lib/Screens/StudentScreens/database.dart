@@ -5,27 +5,27 @@ class DatabaseService {
   String schoolCode,classNumber, section, subject;
 
   Future<void> addQuizData(Map quizData, String quizId) async {
-    await Firestore.instance
+    await FirebaseFirestore.instance
         .collection("School")
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection("Classes")
-        .document(classNumber + '_' + section + '_' + subject)
+        .doc(classNumber + '_' + section + '_' + subject)
         .collection("Quiz")
-        .document(quizId)
-        .setData(quizData)
+        .doc(quizId)
+        .set(quizData)
         .catchError((e) {
       print(e);
     });
   }
 
   Future<void> addQuestionData(quizData, String quizId) async {
-    await Firestore.instance
+    await FirebaseFirestore.instance
         .collection("School")
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection("Classes")
-        .document(classNumber + '_' + section + '_' + subject)
+        .doc(classNumber + '_' + section + '_' + subject)
         .collection("Quiz")
-        .document(quizId)
+        .doc(quizId)
         .collection("QandA")
         .add(quizData)
         .catchError((e) {
@@ -34,19 +34,19 @@ class DatabaseService {
   }
 
   getQuizData() async {
-    return Firestore.instance.collection("School/" + schoolCode + "/Classes/"+classNumber + '_' + section + '_' + subject+"/Quiz").snapshots();
+    return FirebaseFirestore.instance.collection("School/" + schoolCode + "/Classes/"+classNumber + '_' + section + '_' + subject+"/Quiz").snapshots();
   }
 
   getQuestionData(String quizId) async{
-    return await Firestore.instance
+    return await FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection('Classes')
-        .document(classNumber + '_' + section + '_' + subject)
+        .doc(classNumber + '_' + section + '_' + subject)
         .collection('Quiz')
-        .document(quizId)
+        .doc(quizId)
         .collection('QandA')
-        .getDocuments();
+        .get();
   }
 }
 DatabaseService db=new DatabaseService();

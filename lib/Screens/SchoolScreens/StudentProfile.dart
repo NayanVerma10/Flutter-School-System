@@ -86,12 +86,12 @@ class _StudentProfileState extends State<StudentProfile> {
             new FlatButton(
                 child: const Text('Save'),
                 onPressed: () async {
-                  Firestore.instance
+                  FirebaseFirestore.instance
                       .collection('School')
-                      .document(schoolCode)
+                      .doc(schoolCode)
                       .collection('Student')
-                      .document(studentId)
-                      .setData({key: newValue}, merge: true);
+                      .doc(studentId)
+                      .set({key: newValue},SetOptions(merge: true));
                   Navigator.pop(context);
                 })
           ],
@@ -107,11 +107,11 @@ class _StudentProfileState extends State<StudentProfile> {
           title: Text('Student'),
         ),
         body: StreamBuilder(
-          stream: Firestore.instance
+          stream: FirebaseFirestore.instance
               .collection('School')
-              .document(schoolCode)
+              .doc(schoolCode)
               .collection('Student')
-              .document(studentId)
+              .doc(studentId)
               .snapshots(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
@@ -119,7 +119,7 @@ class _StudentProfileState extends State<StudentProfile> {
             }
 
             DocumentSnapshot document = snapshot.data;
-            Map<String, dynamic> studentData = document.data;
+            Map<String, dynamic> studentData = document.data();
             var keys = studentData.keys.toList();
             css = List<String>();
             studentData['subjects'].forEach((subject) {
@@ -162,11 +162,11 @@ class _StudentProfileState extends State<StudentProfile> {
                               context, keys[index], studentData[keys[index]]);
                         else {
                           return StreamBuilder(
-                            stream: Firestore.instance
+                            stream: FirebaseFirestore.instance
                                 .collection("School")
-                                .document(schoolCode)
+                                .doc(schoolCode)
                                 .collection('Classes')
-                                .document(css[index - keys.length])
+                                .doc(css[index - keys.length])
                                 .collection('Attendance')
                                 .snapshots(),
                             builder: (context, snapshot) {
@@ -180,10 +180,10 @@ class _StudentProfileState extends State<StudentProfile> {
                                 );
                               }
                               List<DocumentSnapshot> docs =
-                                  snapshot.data.documents;
+                                  snapshot.data.docs;
                               List<String> temp = List<String>();
                                   docs
-                                      .where((element) => (element.data[
+                                      .where((element) => (element.data()[
                                         studentData['rollno'] +
                                             '#' +
                                             studentData[
@@ -196,7 +196,7 @@ class _StudentProfileState extends State<StudentProfile> {
                                           ? true
                                           : false)
                                       .forEach((element) {
-                                    temp.add(stringToTime(element.documentID).join(", "));
+                                    temp.add(stringToTime(element.id).join(", "));
                                   });
                                   return ListTile(
                                     title: Text(

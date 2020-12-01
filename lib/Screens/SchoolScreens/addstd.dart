@@ -51,7 +51,7 @@ class _AddStdState extends State<AddStd> {
   AnimationController _controller;
   // ImagePickerHandler imagePicker;
 
-  final databaseReference = Firestore.instance;
+  final databaseReference = FirebaseFirestore.instance;
 
   File _image;
   final picker = ImagePicker();
@@ -254,23 +254,23 @@ class _AddStdState extends State<AddStd> {
   Future<void> saveListOfClasses() async {
     List<dynamic> listToSave = classes.getRange(1, classes.length).toList();
     print(listToSave[0].runtimeType);
-    await Firestore.instance
+    await FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
-        .setData({'arrayClasses': listToSave}, merge: true);
+        .doc(schoolCode)
+        .set({'arrayClasses': listToSave},SetOptions(merge: true));
   }
 
   Future<void> loadClasses() {
-    Firestore.instance
+    FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .get()
         .then((doc) {
-      if (doc.data['arrayClasses'] != null) {
-        print(doc.data['arrayClasses']);
+      if (doc.data()['arrayClasses'] != null) {
+        print(doc.data()['arrayClasses']);
 
         setState(() {
-          classes = doc.data['arrayClasses'];
+          classes = doc.data()['arrayClasses'];
           classes.insert(0, 'Add/Delete Class');
         });
       }
@@ -1049,10 +1049,10 @@ class _AddStdState extends State<AddStd> {
     print(schoolCode);
     await databaseReference
         .collection("School")
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection("Student")
-        .document(_mobile)
-        .setData({
+        .doc(_mobile)
+        .set({
       'first name': _firstname,
       'last name': _lastname,
       'rollno': _rollno,

@@ -5,6 +5,7 @@ import 'package:Schools/plugins/url_launcher/url_launcher.dart';
 import 'package:bubble/bubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'CreateGroupUsersList.dart';
 import 'ChatBox.dart';
@@ -28,35 +29,41 @@ class _GroupChatBoxState extends State<GroupChatBox> {
   String groupName, icon, name;
   List<dynamic> members;
   bool isAdmin = false, inProcess1 = true, inProcess2 = true;
-  final _firestore = Firestore.instance;
+  final _firestore = FirebaseFirestore.instance;
   int limitOfMessages = 40;
   TextEditingController messageController = TextEditingController();
   ScrollController scrollController = ScrollController();
+  CollectionReference cr;
   StreamSubscription<DocumentSnapshot> sub;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    Firestore.instance
+    cr = _firestore
+        .collection('School')
+        .doc(widget.schoolCode)
+        .collection('GroupChats')
+        .doc(widget.GroupRef.id)
+        .collection('ChatMessages');
+    FirebaseFirestore.instance
         .collection("School")
-        .document(widget.schoolCode)
+        .doc(widget.schoolCode)
         .collection("GroupChats")
-        .document(widget.GroupRef.documentID)
+        .doc(widget.GroupRef.id)
         .collection("Members")
-        .document(widget.userId + "_" + (widget.isTeacher ? "true" : "false"))
+        .doc(widget.userId + "_" + (widget.isTeacher ? "true" : "false"))
         .snapshots()
         .listen((event) {
-      if (event != null && event.data != null) {
+      if (event != null && event.data() != null) {
         setState(() {
-          name = event.data['name'];
-          isAdmin = event.data['isAdmin'];
+          name = event.data()['name'];
+          isAdmin = event.data()['isAdmin'];
         });
       }
     });
     sub = widget.GroupRef.snapshots().listen((event) {
-        if (event.data['Icon'] != null && event.data['Icon'] != "")
-          icon = event.data['Icon'];
-        groupName = event.data['Name'];
+      if (event.data()['Icon'] != null && event.data()['Icon'] != "")
+        icon = event.data()['Icon'];
+      groupName = event.data()['Name'];
     });
   }
 
@@ -64,14 +71,7 @@ class _GroupChatBoxState extends State<GroupChatBox> {
     limitOfMessages++;
     messageController.clear();
     String date = DateTime.now().toIso8601String().toString();
-    await _firestore
-        .collection('School')
-        .document(widget.schoolCode)
-        .collection('GroupChats')
-        .document(widget.GroupRef.documentID)
-        .collection('ChatMessages')
-        .document(timeToString())
-        .setData({
+    await cr.doc(timeToString()).set({
       'text': text,
       'name': name,
       'fromId': widget.userId,
@@ -146,20 +146,20 @@ class _GroupChatBoxState extends State<GroupChatBox> {
               onPressed: isAdmin
                   ? () async {
                       members = List<dynamic>();
-                      await Firestore.instance
+                      await FirebaseFirestore.instance
                           .collection("School")
-                          .document(widget.schoolCode)
+                          .doc(widget.schoolCode)
                           .collection("GroupChats")
-                          .document(widget.GroupRef.documentID)
+                          .doc(widget.GroupRef.id)
                           .collection("Members")
-                          .getDocuments()
+                          .get()
                           .then((value) {
                         setState(() {
-                          value.documents.forEach((element) {
-                            if (element.data['isTeacher']) {
-                              members.add(Teacher.fromMap(element.data));
+                          value.docs.forEach((element) {
+                            if (element.data()['isTeacher']) {
+                              members.add(Teacher.fromMap(element.data()));
                             } else {
-                              members.add(Student.fromMap(element.data));
+                              members.add(Student.fromMap(element.data()));
                             }
                           });
                         });
@@ -173,36 +173,38 @@ class _GroupChatBoxState extends State<GroupChatBox> {
                                     alreadyAdded: members,
                                   )));
                       if (newUsers != null) {
-                        CollectionReference teachersRef = Firestore.instance
+                        CollectionReference teachersRef = FirebaseFirestore
+                            .instance
                             .collection("School")
-                            .document(widget.schoolCode)
+                            .doc(widget.schoolCode)
                             .collection("Teachers");
-                        CollectionReference studentsRef = Firestore.instance
+                        CollectionReference studentsRef = FirebaseFirestore
+                            .instance
                             .collection("School")
-                            .document(widget.schoolCode)
+                            .doc(widget.schoolCode)
                             .collection("Student");
                         newUsers.forEach((element) async {
                           await widget.GroupRef.collection("Members")
-                              .document(element.id +
+                              .doc(element.id +
                                   "_" +
                                   (element.isTeacher ? "true" : "false"))
-                              .setData(element.toMap());
+                              .set(element.toMap());
                           if (element.isTeacher) {
                             await teachersRef
-                                .document(element.id)
+                                .doc(element.id)
                                 .collection("GroupsJoined")
-                                .document(widget.GroupRef.documentID)
-                                .setData({});
+                                .doc(widget.GroupRef.id)
+                                .set({});
                           } else {
                             await studentsRef
-                                .document(element.id)
+                                .doc(element.id)
                                 .collection("GroupsJoined")
-                                .document(widget.GroupRef.documentID)
-                                .setData({});
+                                .doc(widget.GroupRef.id)
+                                .set({});
                           }
                           await widget.GroupRef.collection('ChatMessages')
-                              .document(timeToString())
-                              .setData({
+                              .doc(timeToString())
+                              .set({
                             'type': 'notification',
                             'text': '$name added ${element.name}'
                           });
@@ -221,7 +223,7 @@ class _GroupChatBoxState extends State<GroupChatBox> {
               child: CircularProgressIndicator(),
             )
           : Container(
-              padding: EdgeInsets.symmetric(horizontal: pad),
+              // padding: EdgeInsets.symmetric(horizontal: kIsWeb?MediaQuery.of(context).size.width/6:0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -235,35 +237,35 @@ class _GroupChatBoxState extends State<GroupChatBox> {
                           return Center(
                             child: CircularProgressIndicator(),
                           );
-                        List<DocumentSnapshot> docs = snapshot.data.documents;
+                        List<DocumentSnapshot> docs = snapshot.data.docs;
                         List<Widget> messages = docs.map((doc) {
-                          if (doc.data['type']
-                                  .toString()
-                                  .compareTo('notification') ==
-                              0) {
-                            return Bubble(
-                              margin: BubbleEdges.all(4),
-                              color: Colors.black,
-                              alignment: Alignment.center,
-                              child: Text(
-                                doc.data['text'],
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            );
+                          switch (doc.data()['type']) {
+                            case "notification":
+                              return Bubble(
+                                margin: BubbleEdges.all(4),
+                                color: Colors.black,
+                                alignment: Alignment.center,
+                                child: Text(
+                                  doc.data()['text'],
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              );
+                            default:
+                              return Message(
+                                key: UniqueKey(),
+                                from: doc.data()['name'],
+                                text: doc.data()['text'],
+                                fromId: doc.data()['fromId'],
+                                isTeacher: doc.data()['isTeacher'],
+                                type: doc.data()['type'],
+                                date: doc.data()['date'],
+                                fileURL: doc.data()['url'],
+                                me: (widget.userId == doc.data()['fromId']) &
+                                    (widget.isTeacher ==
+                                        doc.data()['isTeacher']),
+                                pad: pad,
+                              );
                           }
-                          return Message(
-                            key: UniqueKey(),
-                            from: doc.data['name'],
-                            text: doc.data['text'],
-                            fromId: doc.data['fromId'],
-                            isTeacher: doc.data['isTeacher'],
-                            type: doc.data['type'],
-                            date: doc.data['date'],
-                            fileURL: doc.data['url'],
-                            me: (widget.userId == doc.data['fromId']) &
-                                (widget.isTeacher == doc.data['isTeacher']),
-                            pad: pad,
-                          );
                         }).toList();
                         return ListView.builder(
                           reverse: true,
@@ -305,18 +307,26 @@ class _GroupChatBoxState extends State<GroupChatBox> {
                           heroTag: null,
                           onPressed: () async {
                             final result = await FilePicker.platform
-                                .pickFiles(allowMultiple: true);
+                                .pickFiles(allowMultiple: true, withData: true);
                             if (result != null) {
-                              if (result != null) {
-                                await UrlUtils.uploadFiles(
-                                  result,
-                                  widget.GroupRef.collection('ChatMessages'),
-                                  "${widget.schoolCode}/GroupChats/${widget.GroupRef.documentID}/", context,
-                                  name: name,
-                                  isTeacher: widget.isTeacher,
-                                  fromId: widget.userId,
-                                );
-                              }
+                              result.files.forEach((file) async {
+                                await UrlUtils.uploadFileToFirebase(
+                                  file,
+                                  "${widget.schoolCode}/GroupChats/${widget.GroupRef.id}/",
+                                  context,
+                                  cr,
+                                  {
+                                    'name': name,
+                                    'fromId': widget.userId,
+                                    'type': "File",
+                                    'isTeacher': widget.isTeacher,
+                                    'date': DateTime.now()
+                                        .toIso8601String()
+                                        .toString(),
+                                  },
+                                  "url",
+                                  "text");
+                              });
                             }
                           },
                         ),

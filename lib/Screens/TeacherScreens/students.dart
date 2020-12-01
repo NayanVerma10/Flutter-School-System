@@ -29,23 +29,23 @@ class _StudentsListState extends State<StudentsList> {
       this.classNumber, this.section, this.subject);
   int count = 0;
   void loadData() {
-    Firestore.instance
+    FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection('Student')
         .where('class', isEqualTo: classNumber)
         .where('section', isEqualTo: section)
         .where('subjects', arrayContains: subject)
-        .getDocuments()
+        .get()
         .then((value) {
       List<String> temp = [];
       List<String> roll = [];
 
-      if (value.documents.isNotEmpty) {
-        value.documents.forEach((element) {
+      if (value.docs.isNotEmpty) {
+        value.docs.forEach((element) {
           String std =
-              element.data['first name'] + ' ' + element.data['last name'];
-          String rollno = element.data['rollno'];
+              element.data()['first name'] + ' ' + element.data()['last name'];
+          String rollno = element.data()['rollno'];
           temp.add(std);
           roll.add(rollno);
         });

@@ -202,26 +202,26 @@ class _CreateGroupState extends State<CreateGroup> {
     section = Map();
     subject = Map();
     gender = Map();
-    await Firestore.instance
+    await FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection('Student')
-        .getDocuments()
-        .then((value) => value.documents.forEach((element) {
-              totalUsers[element.documentID + "_false"] = false;
+        .get()
+        .then((value) => value.docs.forEach((element) {
+              totalUsers[element.id + "_false"] = false;
               Student currentUser = Student(
-                mobile: (element.data['mobile'] ?? ''),
-                id: element.documentID,
-                rollno: element.data['rollno'] ?? "",
-                name: (element.data['first name'] ?? '') +
+                mobile: (element.data()['mobile'] ?? ''),
+                id: element.id,
+                rollno: element.data()['rollno'] ?? "",
+                name: (element.data()['first name'] ?? '') +
                     ' ' +
-                    (element.data['last name'] ?? ''),
-                classNumber: element.data['class'] ?? '',
-                section: element.data['section'] ?? '',
-                imgURL: element.data['url'],
+                    (element.data()['last name'] ?? ''),
+                classNumber: element.data()['class'] ?? '',
+                section: element.data()['section'] ?? '',
+                imgURL: element.data()['url'],
                 isAdmin: false,
-                gender: element.data['gender'],
-                subjects: element.data['subjects'] ?? [],
+                gender: element.data()['gender'],
+                subjects: element.data()['subjects'] ?? [],
               );
               if (currentUser.id.compareTo(widget.userId) == 0 &&
                   widget.isTeacher == false) {
@@ -246,29 +246,29 @@ class _CreateGroupState extends State<CreateGroup> {
               }
             }));
 
-    await Firestore.instance
+    await FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection('Teachers')
-        .getDocuments()
-        .then((value) => value.documents.forEach((element) {
-              totalUsers[element.documentID + "_true"] = false;
+        .get()
+        .then((value) => value.docs.forEach((element) {
+              totalUsers[element.id + "_true"] = false;
               Teacher currentUser = Teacher(
-                mobile: element.data['mobile'] ?? '',
-                id: element.documentID,
-                name: (element.data['first name'] ?? '') +
+                mobile: element.data()['mobile'] ?? '',
+                id: element.id,
+                name: (element.data()['first name'] ?? '') +
                     ' ' +
-                    (element.data['last name'] ?? ''),
-                classNumber: element.data['classteacher'] != null
-                    ? element.data['classteacher']['class']
+                    (element.data()['last name'] ?? ''),
+                classNumber: element.data()['classteacher'] != null
+                    ? element.data()['classteacher']['class']
                     : '',
-                section: element.data['classteacher'] != null
-                    ? element.data['classteacher']['section']
+                section: element.data()['classteacher'] != null
+                    ? element.data()['classteacher']['section']
                     : '',
-                imgURL: element.data['url'],
-                gender: element.data['gender'],
+                imgURL: element.data()['url'],
+                gender: element.data()['gender'],
                 isAdmin: false,
-                classes: element.data['classes'] ?? [],
+                classes: element.data()['classes'] ?? [],
               );
               if (currentUser.id.compareTo(widget.userId) == 0 &&
                   widget.isTeacher == true) {

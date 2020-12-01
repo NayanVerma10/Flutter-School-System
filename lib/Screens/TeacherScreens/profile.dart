@@ -67,10 +67,10 @@ class MapScreenState extends State<Profile1>with SingleTickerProviderStateMixin
 String link="#";
 void check()
 {
-var val=Firestore.instance.collection('School').document(schoolCode).
-      collection("Teachers").document(teacherId).get().then((value){
-    //if(value.data['url'])
-    link=value.data['url'];
+var val=FirebaseFirestore.instance.collection('School').doc(schoolCode).
+      collection("Teachers").doc(teacherId).get().then((value){
+    //if(value.data()['url'])
+    link=value.data()['url'];
     if(link==null)
     link='#';
       });
@@ -84,34 +84,33 @@ var val=Firestore.instance.collection('School').document(schoolCode).
        return await storageref.getDownloadURL();
  }
   void initState() {
-    // TODO: implement initState
     super.initState();
    check();
       String stored=getD().toString();
-    DocumentReference dc=Firestore.instance.collection('School').document(schoolCode).
-    collection("Teachers").document(teacherId);
+    DocumentReference dc=FirebaseFirestore.instance.collection('School').doc(schoolCode).
+    collection("Teachers").doc(teacherId);
  
     dc.get().then((datas)  
     {
-    List<dynamic> classes = datas.data['classes']; 
+    List<dynamic> classes = datas.data()['classes']; 
     setState(() {
-    print(datas.data['first name']);
-    namecontroller1.text = datas.data['first name'];
-    //namecontroller1.text = widget.post.data["first name"];
-    controller1 = TextEditingController(text: (datas.data['first name']));
-    namecontroller.text =datas.data['email'];
-    controller2 = TextEditingController(text:datas.data['email']);
-    namecontroller2.text = datas.data['mobile'];
-    controller3 = TextEditingController(text: datas.data['mobile']);
-    namecontrollerq.text = datas.data['qualification'];
-    controllerq = TextEditingController(text: datas.data['qualification']);
-    namecontrollera.text = datas.data['address'];
-    controllera = TextEditingController(text: datas.data['address']);
-    namecontrollerg.text = datas.data['gender'];
-    controllerg = TextEditingController(text: datas.data['gender']);
+    print(datas.data()['first name']);
+    namecontroller1.text = datas.data()['first name'];
+    //namecontroller1.text = widget.post.data()["first name"];
+    controller1 = TextEditingController(text: (datas.data()['first name']));
+    namecontroller.text =datas.data()['email'];
+    controller2 = TextEditingController(text:datas.data()['email']);
+    namecontroller2.text = datas.data()['mobile'];
+    controller3 = TextEditingController(text: datas.data()['mobile']);
+    namecontrollerq.text = datas.data()['qualification'];
+    controllerq = TextEditingController(text: datas.data()['qualification']);
+    namecontrollera.text = datas.data()['address'];
+    controllera = TextEditingController(text: datas.data()['address']);
+    namecontrollerg.text = datas.data()['gender'];
+    controllerg = TextEditingController(text: datas.data()['gender']);
     classList=classes;
-    namecontrollerd.text=datas.data['designation'];
-    controllerd = TextEditingController(text: datas.data['designation']);
+    namecontrollerd.text=datas.data()['designation'];
+    controllerd = TextEditingController(text: datas.data()['designation']);
     
 /*    for(int i=0;i<classList.length;i++){ 
     namecontrollerd.text = classList[i]['Class'] + ' ' + classList[i]['Section'] + ' ' + classList[i]['Subject'];
@@ -121,11 +120,11 @@ var val=Firestore.instance.collection('School').document(schoolCode).
     */});
     });
 //  return datas;
-//    Firestore.instance.collection('69').document(teacherId).snapshots();
+//    FirebaseFirestore.instance.collection('69').doc(teacherId).snapshots();
 //  AsyncSnapshot<DocumentSnapshot> snapshot;
-    //Map<String, dynamic>documentFields = snapshot.data.data;
+    //Map<String, dynamic>documentFields = snapshot.data.data();
    // namecontroller1.text = documentFields['first name'];
-    //namecontroller1.text = widget.post.data["first name"];
+    //namecontroller1.text = widget.post.data()["first name"];
     //controller1 = TextEditingController(text: (documentFields['first name']));
  //   namecontroller.text =documentFields['first name'];
   //  controller2 = TextEditingController(text:documentFields['email']);
@@ -153,8 +152,8 @@ var val=Firestore.instance.collection('School').document(schoolCode).
       var imageString = await ref.getDownloadURL();
 
       // Add location and url to database
-      await Firestore.instance.collection('School').document(schoolCode).
-      collection("Teachers").document(teacherId).setData({'url':imageString , 'location':text},merge: true);
+      await FirebaseFirestore.instance.collection('School').doc(schoolCode).
+      collection("Teachers").doc(teacherId).set({'url':imageString , 'location':text},SetOptions(merge: true));
     }catch(e){
       print(e.message);
       showDialog(
@@ -215,12 +214,12 @@ var fromPicker = await ImagePickerWeb.getImage(  outputType: ImageType.file);
       print('Image path $_image');                                    
     });
 }*/
-    DocumentReference dc=Firestore.instance.collection('School').document(schoolCode).
-    collection("Teachers").document(teacherId);
+    DocumentReference dc=FirebaseFirestore.instance.collection('School').doc(schoolCode).
+    collection("Teachers").doc(teacherId);
     dc.get().then((datas){
-    rt = datas.data['first name'];
-    rt1=datas.data['email'];
-    rt2=datas.data['mobile'];
+    rt = datas.data()['first name'];
+    rt1=datas.data()['email'];
+    rt2=datas.data()['mobile'];
     });
        return new Scaffold(
         appBar: AppBar(
@@ -401,7 +400,7 @@ var fromPicker = await ImagePickerWeb.getImage(  outputType: ImageType.file);
                                                 //hintText: "rfe",
 
                                                 //  hintText:rt,
-                                                //labelText:  widget.post.data["schoolname"]
+                                                //labelText:  widget.post.data()["schoolname"]
                                                 ),
                                             enabled: !_status,
                                             //   autofocus: !_status,
@@ -910,20 +909,20 @@ var fromPicker = await ImagePickerWeb.getImage(  outputType: ImageType.file);
                           setState(() {
                             name = namecontroller.text;
                             print('$name is');
-  DocumentReference dc=Firestore.instance.collection('School').document(schoolCode).
-    collection('Teachers').document(teacherId);
+  DocumentReference dc=FirebaseFirestore.instance.collection('School').doc(schoolCode).
+    collection('Teachers').doc(teacherId);
     dc.get().then((datas){
-    datas.data['first name']=       namecontroller1.text;
+    datas.data()['first name']=       namecontroller1.text;
                          
-    datas.data['email']=       namecontroller.text;
-    datas.data['mobile']=namecontroller2.text;
-                         datas.data["qualification"] =
+    datas.data()['email']=       namecontroller.text;
+    datas.data()['mobile']=namecontroller2.text;
+                         datas.data()["qualification"] =
                                 namecontrollerq.text;
-                            datas.data["address"] = namecontrollera.text;
-                            datas.data["gender"] = namecontrollerg.text;
-                            datas.data["designation"] =
+                            datas.data()["address"] = namecontrollera.text;
+                            datas.data()["gender"] = namecontrollerg.text;
+                            datas.data()["designation"] =
                                 namecontrollerd.text;
-                           updateuserdata(datas.data['mobile']);
+                           updateuserdata(datas.data()['mobile']);
     });                      });
 //sprint(name);
                         },
@@ -942,11 +941,11 @@ var fromPicker = await ImagePickerWeb.getImage(  outputType: ImageType.file);
   }
 
   Future updateuserdata(String rt2) async {
-    final CollectionReference brew = Firestore.instance
+    final CollectionReference brew = FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection('Teachers');
-    return await brew.document(rt2).setData({
+    return await brew.doc(rt2).set({
       'email': namecontroller.text,
       'mobile': namecontroller2.text,
       'first name': namecontroller1.text,
@@ -954,24 +953,24 @@ var fromPicker = await ImagePickerWeb.getImage(  outputType: ImageType.file);
       'gender': namecontrollerg.text,
       'designation': namecontrollerd.text,
       'qualification': namecontrollerq.text,
-    }, merge: true);
+    },SetOptions(merge: true));
   }
 
-  void updateData(String rt2) {
-    final CollectionReference brew = Firestore.instance
+  void update(String rt2) {
+    final CollectionReference brew = FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection('Teachers');
-    brew.document(rt2).setData({
+    brew.doc(rt2).set({
       'email': controller4.text,
-    }, merge: true);
+    },SetOptions(merge: true));
   }
 
   Widget _getEditIcon(BuildContext context, String rt2) {
     return new GestureDetector(
       child: new RaisedButton(
         onPressed: () {
-//updateData(rt2);
+//update(rt2);
           tripEdit(context, rt2);
           setState(() {
             _status = false;

@@ -39,38 +39,38 @@ class _AttendanceState extends State<Attendance> {
     Map<String, bool> tempMap = Map<String, bool>();
     Map<String, int> tempMap1 = Map<String, int>();
     keys = List<String>();
-    Firestore.instance
+    FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection('Student')
         .where('class', isEqualTo: classNumber)
         .where('section', isEqualTo: section)
         .where('subjects', arrayContains: subject)
-        .getDocuments()
+        .get()
         .then((value) {
-      value.documents.forEach((element) {
+      value.docs.forEach((element) {
         String item = element['rollno'] +
             '#' +
             element['first name'] +
             ' ' +
             element['last name'] +
             '#' +
-            element.documentID;
+            element.id;
         keys.add(item);
         tempMap[item] = false;
         tempMap1[item] = 0;
       });
       keys..sort();
-      Firestore.instance
+      FirebaseFirestore.instance
           .collection('School')
-          .document(schoolCode)
+          .doc(schoolCode)
           .collection('Classes')
-          .document(classNumber + '_' + section + '_' + subject)
+          .doc(classNumber + '_' + section + '_' + subject)
           .collection('Attendance')
-          .getDocuments()
+          .get()
           .then((value) {
-        value.documents.forEach((element) {
-          element.data.forEach((key, value) {
+        value.docs.forEach((element) {
+          element.data().forEach((key, value) {
             if (tempMap.containsKey(key)) {
               tempMap1[key] += (value ? 1 : 0);
             }
@@ -127,15 +127,15 @@ class _AttendanceState extends State<Attendance> {
                             showLoaderDialog(context, 'Please Wait....');
                             String str = timeToString();
                             //str = str.replaceRange(4, 6, '02');
-                            await Firestore.instance
+                            await FirebaseFirestore.instance
                                 .collection('School')
-                                .document(schoolCode)
+                                .doc(schoolCode)
                                 .collection('Classes')
-                                .document(
+                                .doc(
                                     classNumber + '_' + section + '_' + subject)
                                 .collection('Attendance')
-                                .document(str)
-                                .setData(map)
+                                .doc(str)
+                                .set(map)
                                 .catchError((error) {
                               Toast.show('error', context);
                             }).whenComplete(() {

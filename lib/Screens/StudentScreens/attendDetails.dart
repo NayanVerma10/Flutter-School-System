@@ -26,14 +26,14 @@ class _AttendDetailsState extends State<AttendDetails> {
           title: Text(mode?'Attendance Details':name),
         ),
         body: StreamBuilder(
-            stream: Firestore.instance.collection(path).snapshots(),
+            stream: FirebaseFirestore.instance.collection(path).snapshots(),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
                 return Center(
                   child: CircularProgressIndicator(),
                 );
               }
-              List<DocumentSnapshot> docs = snapshot.data.documents;
+              List<DocumentSnapshot> docs = snapshot.data.docs;
               return ListView.builder(
                 itemCount: docs.length + 1,
                 itemBuilder: (context, i) {
@@ -48,19 +48,19 @@ class _AttendDetailsState extends State<AttendDetails> {
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     );
-                  } else if (docs[i - 1].data[rollNo + '#' + name + '#' + id] !=
+                  } else if (docs[i - 1].data()[rollNo + '#' + name + '#' + id] !=
                       null)
                     return Card(
                       child: ListTile(
-                        title: Text(stringToTime(docs[i - 1].documentID)[0]),
-                        subtitle: Text(stringToTime(docs[i - 1].documentID)[1]),
+                        title: Text(stringToTime(docs[i - 1].id)[0]),
+                        subtitle: Text(stringToTime(docs[i - 1].id)[1]),
                         trailing: Text(
-                          docs[i - 1].data[rollNo + '#' + name + '#' + id]
+                          docs[i - 1].data()[rollNo + '#' + name + '#' + id]
                               ? 'Present'
                               : 'Absent',
                           style: TextStyle(
                               color: docs[i - 1]
-                                      .data[rollNo + '#' + name + '#' + id]
+                                      .data()[rollNo + '#' + name + '#' + id]
                                   ? Colors.green[500]
                                   : Colors.red[500],
                               fontWeight: FontWeight.bold),

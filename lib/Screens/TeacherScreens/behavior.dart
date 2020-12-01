@@ -28,23 +28,23 @@ class _BehaviorState extends State<Behavior> {
   List<Student> studentList = [];
 
   void loadData() {
-    Firestore.instance
+    FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection('Student')
         .where('class', isEqualTo: classNumber)
         .where('section', isEqualTo: section)
         .where('subjects', arrayContains: subject)
-        .getDocuments()
+        .get()
         .then((value) {
       List<Student> temp = [];
-      if (value.documents.isNotEmpty) {
-        value.documents.forEach((element) {
+      if (value.docs.isNotEmpty) {
+        value.docs.forEach((element) {
           Student std = Student(
               name:
-                  element.data['first name'] + ' ' + element.data['last name'],
-              documentId: element.documentID,
-              rollNo: element.data['rollno']);
+                  element.data()['first name'] + ' ' + element.data()['last name'],
+              documentId: element.id,
+              rollNo: element.data()['rollno']);
           temp.add(std);
         });
         setState(() {

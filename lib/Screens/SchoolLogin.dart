@@ -1,3 +1,4 @@
+import 'package:Schools/widgets/passwordTF.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -16,6 +17,7 @@ class SchoolLogin extends StatefulWidget {
 }
 
 class _SchoolLoginState extends State<SchoolLogin> {
+  
   final _formKey = GlobalKey<FormState>();
   GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: [
@@ -27,7 +29,13 @@ class _SchoolLoginState extends State<SchoolLogin> {
   String givenpassword;
   String schoolCode;
   bool verified = false;
-
+  TextEditingController controller = TextEditingController(text: "");
+  PasswordTF passwordTF;
+  @override
+  void initState() { 
+    super.initState();
+    passwordTF = PasswordTF(controller);
+  }
   loginWithGoole(BuildContext context) async {
     try {
       await _googleSignIn.signOut();
@@ -70,29 +78,29 @@ class _SchoolLoginState extends State<SchoolLogin> {
   }
 
   Future<bool> verifyGoogleMail() async {
-    await Firestore.instance
+    await FirebaseFirestore.instance
         .collection('School')
         .where('schoolemail', isEqualTo: givenemailmobile)
-        .getDocuments()
+        .get()
         .then((value) {
-      if (value.documents.isNotEmpty) {
+      if (value.docs.isNotEmpty) {
         verified = true;
-        schoolCode = value.documents[0].documentID;
+        schoolCode = value.docs[0].id;
       }
     });
     return true;
   }
 
   Future<bool> verifyemail() async {
-    await Firestore.instance
+    await FirebaseFirestore.instance
         .collection('School')
         .where('schoolemail', isEqualTo: givenemailmobile.toLowerCase())
-        .getDocuments()
+        .get()
         .then((value) => {
-              value.documents.forEach((element) {
+              value.docs.forEach((element) {
                 if (element["password"] == givenpassword) {
                   verified = true;
-                  schoolCode = element.documentID;
+                  schoolCode = element.id;
                 }
               })
             });
@@ -100,15 +108,15 @@ class _SchoolLoginState extends State<SchoolLogin> {
   }
 
   Future<bool> verifyphone() async {
-    await Firestore.instance
+    await FirebaseFirestore.instance
         .collection('School')
         .where('schoolno', isEqualTo: givenemailmobile)
-        .getDocuments()
+        .get()
         .then((value) => {
-              value.documents.forEach((element) {
+              value.docs.forEach((element) {
                 if (element["password"] == givenpassword) {
                   verified = true;
-                  schoolCode = element.documentID;
+                  schoolCode = element.id;
                 }
               })
             });
@@ -150,23 +158,7 @@ class _SchoolLoginState extends State<SchoolLogin> {
                       SizedBox(
                         height: 30,
                       ),
-                      TextFormField(
-                        onChanged: (string) => {givenpassword = string},
-                        decoration: InputDecoration(
-                          prefixIcon: Icon(
-                            Icons.lock,
-                            color: Colors.black,
-                          ),
-                          hintText: 'Password',
-                        ),
-                        obscureText: true,
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return 'Please enter some text';
-                          }
-                          return null;
-                        },
-                      ),
+                      passwordTF,
                       SizedBox(
                         height: 30,
                       ),
@@ -177,6 +169,9 @@ class _SchoolLoginState extends State<SchoolLogin> {
                           textColor: Colors.white,
                           onPressed: () async {
                             if (_formKey.currentState.validate()) {
+                              setState(() {
+                                givenpassword = controller.text;
+                              });
                               await verifyemail();
                               await verifyphone();
                               print(verified);

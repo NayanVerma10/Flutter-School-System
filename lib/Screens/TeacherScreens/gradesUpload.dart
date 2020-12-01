@@ -80,29 +80,27 @@ class _UploadGradesState extends State<UploadGrades> {
                   child: Text('Download excel sheet for uploading Grades'),
                   onPressed: () async {
                     if (controller.text.isEmpty) {
-                      print(controller.text.isEmpty);
-                      print(controller.text);
                       Toast.show('Please enter test name', context);
                       return;
                     }
                     Map<String, String> mainMap = Map<String, String>();
-                    await Firestore.instance
+                    await FirebaseFirestore.instance
                         .collection('School')
-                        .document(schoolCode)
+                        .doc(schoolCode)
                         .collection('Student')
                         .where('class', isEqualTo: classNumber)
                         .where('section', isEqualTo: section)
                         .where('subjects', arrayContains: subject)
-                        .getDocuments()
+                        .get()
                         .then((value) {
                       Map<String, String> map = Map<String, String>();
 
-                      if (value.documents.isNotEmpty) {
-                        value.documents.forEach((element) {
-                          String std = element.data['first name'] +
+                      if (value.docs.isNotEmpty) {
+                        value.docs.forEach((element) {
+                          String std = element.data()['first name'] +
                               ' ' +
-                              element.data['last name'];
-                          String rollno = element.data['rollno'];
+                              element.data()['last name'];
+                          String rollno = element.data()['rollno'];
                           map[rollno] = std;
                         });
                         setState(() {
@@ -167,27 +165,21 @@ class _UploadGradesState extends State<UploadGrades> {
                           'Please upload grades in ".xlsx" file only', context);
                       return;
                     }
-                    print('yes');
-                    print(result.files[0].bytes.toString());
                     Excel excel = Excel.decodeBytes(result.files[0].bytes);
-                    print('yes');
                     Sheet sheet = excel[await excel.getDefaultSheet()];
-                    print('yes');
                     Map<String, String> mainMap = Map<String, String>();
-                    print('yes');
                     sheet.rows.sublist(1).forEach((element) {
                       mainMap[element[0].toString()] = element[2].toString();
                     });
-                    print(controller.text);
                     showLoaderDialog(context, 'Uploading data....');
-                    await Firestore.instance
+                    await FirebaseFirestore.instance
                         .collection('School')
-                        .document(schoolCode)
+                        .doc(schoolCode)
                         .collection('Classes')
-                        .document('${classNumber}_${section}_$subject')
+                        .doc('${classNumber}_${section}_$subject')
                         .collection('Grades')
-                        .document(controller.text)
-                        .setData(mainMap)
+                        .doc(controller.text)
+                        .set(mainMap)
                         .whenComplete(() {
                       Toast.show('Uploaded successfully', context, duration: 3);
                     }).catchError((e) {
@@ -195,7 +187,6 @@ class _UploadGradesState extends State<UploadGrades> {
                     });
                     Navigator.pop(context);
                   } catch (e) {
-                    print(e.toString());
                     Toast.show(
                         'Some error occured. Please try again.', context);
                   }

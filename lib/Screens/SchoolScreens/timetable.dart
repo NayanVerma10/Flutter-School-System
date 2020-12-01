@@ -1,3 +1,4 @@
+import 'package:Schools/Screens/SchoolScreens/setTimeTable.dart';
 import 'package:Schools/plugins/url_launcher/url_launcher.dart';
 import 'package:Schools/widgets/AlertDialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -24,7 +25,8 @@ class _TimeTableState extends State<TimeTable> {
   Map<String, Set<String>> css = Map<String, Set<String>>();
   TextEditingController stc, etc;
   _TimeTableState(this.schoolname, this.schoolCode);
-  List<String> startTime, endTime, Timings, days;
+  List<List<String>> startTime;
+  List<String> days;
   List<TimeOfDay> temp1, temp2;
   @override
   void initState() {
@@ -39,26 +41,7 @@ class _TimeTableState extends State<TimeTable> {
     css = Map<String, Set<String>>();
     stc = TextEditingController(text: 'Select');
     etc = TextEditingController(text: 'Select');
-    startTime = List<String>();
-    endTime = List<String>();
-    Timings = List<String>();
-    temp1 = List<TimeOfDay>();
-    temp2 = List<TimeOfDay>();
-    breakTimings = 'Set break timings';
-    for (int i = 0; i < 5; i++) {
-      Timings.add('Set Lecture ${i + 1} timings');
-      startTime.add('');
-      endTime.add('');
-      temp1.add(TimeOfDay.now());
-      temp2.add(TimeOfDay.now());
-    }
-    for (int i = 4; i < 9; i++) {
-      Timings.add('Set Lecture ${i + 1} timings');
-      startTime.add('');
-      endTime.add('');
-      temp1.add(TimeOfDay.now());
-      temp2.add(TimeOfDay.now());
-    }
+    startTime = List<List<String>>();
     days = [
       'Monday',
       'Tuesday',
@@ -71,28 +54,28 @@ class _TimeTableState extends State<TimeTable> {
   }
 
   void loadData() {
-    Firestore.instance
+    FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection('Student')
-        .getDocuments()
+        .get()
         .then((value) {
       if (value != null) {
-        List<DocumentSnapshot> docs = value.documents;
+        List<DocumentSnapshot> docs = value.docs;
         Map<String, Set<String>> cs1 = Map<String, Set<String>>();
         Map<String, Set<String>> css1 = Map<String, Set<String>>();
         docs.forEach((element) {
-          if (cs1[element.data['class']] == null) {
-            cs1[element.data['class']] = Set<String>();
+          if (cs1[element.data()['class']] == null) {
+            cs1[element.data()['class']] = Set<String>();
           }
-          cs1[element.data['class']].add(element.data['section']);
-          if (css1[element.data['class'] + '_' + element.data['section']] ==
+          cs1[element.data()['class']].add(element.data()['section']);
+          if (css1[element.data()['class'] + '_' + element.data()['section']] ==
               null) {
-            css1[element.data['class'] + '_' + element.data['section']] =
+            css1[element.data()['class'] + '_' + element.data()['section']] =
                 Set<String>();
           }
-          element.data['subjects'].forEach((subject) {
-            css1[element.data['class'] + '_' + element.data['section']]
+          element.data()['subjects'].forEach((subject) {
+            css1[element.data()['class'] + '_' + element.data()['section']]
                 .add(subject);
           });
         });
@@ -214,166 +197,177 @@ class _TimeTableState extends State<TimeTable> {
                             }
                           },
                   )),
-                  TimingsWidget(1),
-                  TimingsWidget(2),
-                  TimingsWidget(3),
-                  TimingsWidget(4),
-                  BreakTimings(),
-                  TimingsWidget(6),
-                  TimingsWidget(7),
-                  TimingsWidget(8),
-                  TimingsWidget(9),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  RaisedButton(
-                    child:
-                        Text('Download excel sheet for uploading Time Table'),
-                    onPressed: () async {
-                      // startTime = List<String>();
-                      // endTime = List<String>();
-                      // int beforeBreak = DateTime.utc(
-                      //         1, 1, 1, temp[2].hour, temp[2].minute)
-                      //     .difference(
-                      //         DateTime.utc(1, 1, 1, temp[0].hour, temp[0].minute))
-                      //     .inMinutes;
-                      // int afterBreak = DateTime.utc(
-                      //         1, 1, 1, temp[1].hour, temp[1].minute)
-                      //     .difference(
-                      //         DateTime.utc(1, 1, 1, temp[3].hour, temp[3].minute))
-                      //     .inMinutes;
-                      // startTime.add(temp[0].format(context));
-                      // for (int i = (beforeBreak / 4).floor();
-                      //     i <= beforeBreak;
-                      //     i += (beforeBreak / 4).floor()) {
-                      //   DateTime last =
-                      //       DateTime.utc(1, 1, 1, temp[0].hour, temp[0].minute)
-                      //           .add(Duration(minutes: i));
-                      //   endTime.add(
-                      //       TimeOfDay(hour: last.hour, minute: last.minute)
-                      //           .format(context));
-                      //   startTime.add(
-                      //       TimeOfDay(hour: last.hour, minute: last.minute)
-                      //           .format(context));
-                      // }
-                      // endTime.last = temp[2].format(context);
-                      // startTime.last = temp[2].format(context);
-                      // endTime.add(temp[3].format(context));
-                      // startTime.add(temp[3].format(context));
-                      // for (int i = (afterBreak / 4).floor();
-                      //     i <= afterBreak;
-                      //     i += (afterBreak / 4).floor()) {
-                      //   DateTime last =
-                      //       DateTime.utc(1, 1, 1, temp[3].hour, temp[3].minute)
-                      //           .add(Duration(minutes: i));
-                      //   endTime.add(
-                      //       TimeOfDay(hour: last.hour, minute: last.minute)
-                      //           .format(context));
-                      //   startTime.add(
-                      //       TimeOfDay(hour: last.hour, minute: last.minute)
-                      //           .format(context));
-                      // }
-                      // endTime.last = temp[1].format(context);
-                      Excel excel = Excel.createExcel();
-                      Sheet sheet = excel.sheets['Sheet1'];
-                      for (int i = 0; i < 9; i++) {
-                        sheet
-                            .cell(CellIndex.indexByColumnRow(
-                                columnIndex: i + 1, rowIndex: 0))
-                            .value = startTime[i] + ' - ' + endTime[i];
-                      }
-                      for (int i = 0; i < days.length; i++) {
-                        sheet
-                            .cell(CellIndex.indexByColumnRow(
-                                columnIndex: 0, rowIndex: i + 1))
-                            .value = days[i];
-                      }
-                      excel.encode().then((value) async {
-                        await UrlUtils.downloadGradesExcel(
-                            value, '$selectedClass-$selectedSection', context);
-                      });
-                    },
+                  Card(
+                    child: ListTile(
+                      title: Text("Set Lecture Timings"),
+                      trailing: Icon(Icons.arrow_forward_ios),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => SetLectureTimings(
+                                    FirebaseFirestore.instance
+                                        .collection('School')
+                                        .doc(schoolCode)
+                                        .collection('Time Table')
+                                        .doc('URL'))));
+                      },
+                    ),
                   ),
                   SizedBox(
-                    height: 10,
+                    height: 20,
                   ),
-                  RaisedButton(
-                    child: Text('Upload Time Table'),
-                    onPressed: (isClassSelected && isSectionSelected)
-                        ? () async {
-                              showLoaderDialog(context, 'Please wait....');
-                            try {
-                              FilePickerResult result =
-                                  await FilePicker.platform.pickFiles(
-                                      type: FileType.custom,
-                                      allowMultiple: false,
-                                      allowedExtensions: ['xlsx']);
-                              if (result.files[0].extension
-                                      .toLowerCase()
-                                      .compareTo('xlsx') !=
-                                  0) {
-                                Toast.show(
-                                    'Please upload time table in .xlsx file only',
-                                    context);
-                                return;
-                              }
-                              Excel excel =
-                                  Excel.decodeBytes(result.files[0].bytes);
-                              Sheet sheet =
-                                  excel[await excel.getDefaultSheet()];
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      RaisedButton(
+                        padding: EdgeInsets.only(
+                            top: 20, bottom: 20, left: 20, right: 20),
+                        child: Text(
+                            'Download excel sheet for uploading Time Table'),
+                        onPressed: () async {
+                          Excel excel = Excel.createExcel();
+                          Sheet sheet = excel.sheets['Sheet1'];
+                          DocumentSnapshot doc = await FirebaseFirestore
+                              .instance
+                              .collection('School')
+                              .doc(schoolCode)
+                              .collection('Time Table')
+                              .doc('URL')
+                              .get();
+                          print(doc.data().toString());
+                          if (doc.data() != null && doc.data().length>0){
+                            List<dynamic> lst =
+                                doc.data()['schedule'];
+                            List<String> breaks = List<String>();
+                            lst.forEach((element) {
+                              Map<dynamic, dynamic> map =
+                                  Map<dynamic, dynamic>.of(element);
+                              startTime
+                                  .add([map['start time'], map['end time']]);
+                              breaks.add(map['break']);
+                            });
 
-                              startTime = List<String>();
-                              endTime = List<String>();
-                              print(await excel.getDefaultSheet());
-                              for (String s in sheet.rows[0]) {
-                                print(s);
-                                if (s != null && s.isNotEmpty) {
-                                  startTime.add(s.split(' - ')[0]);
-                                  endTime.add(s.split(' - ')[1]);
-                                }
-                              }
-                              Map<String, List<Map<String, String>>> mainMap =
-                                  Map<String, List<Map<String, String>>>();
-                              int j = 0;
-                              for (List<dynamic> s in sheet.rows.sublist(1)) {
-                                int i = 0;
-                                mainMap[days[j]] = List<Map<String, String>>();
-                                for (String sub in s.sublist(1)) {
-                                  mainMap[days[j]].add({
-                                    'start time': startTime[i],
-                                    'end time': endTime[i],
-                                    'subject': sub
-                                  });
-                                  i++;
-                                }
-                                j++;
-                              }
-                              print(mainMap.toString());
-                              await Firestore.instance
-                                  .collection('School')
-                                  .document(schoolCode)
-                                  .collection('Time Table')
-                                  .document('$selectedClass-$selectedSection')
-                                  .setData(mainMap)
-                                  .whenComplete(() {
-                                Toast.show('Uploaded successfully', context);
-                              }).catchError(
-                                      (e) => Toast.show(e.toString(), context));
-                            } catch (e) {
-                              Toast.show(
-                                  'Some error occured. Please try again.',
-                                  context);
+                            for (int i = 0; i < startTime.length; i++) {
+                              sheet
+                                      .cell(CellIndex.indexByColumnRow(
+                                          columnIndex: i + 1, rowIndex: 0))
+                                      .value =
+                                  startTime[i][0] + ' - ' + startTime[i][1];
                             }
-                              Navigator.pop(context);
+                            for (int i = 0; i < days.length; i++) {
+                              sheet
+                                  .cell(CellIndex.indexByColumnRow(
+                                      columnIndex: 0, rowIndex: i + 1))
+                                  .value = days[i];
+                              for (int j = 0; j < breaks.length; j++) {
+                                if (breaks[j].length > 0) {
+                                  sheet
+                                      .cell(CellIndex.indexByColumnRow(
+                                          columnIndex: j + 1, rowIndex: i + 1))
+                                      .value = "BREAK";
+                                }
+                              }
+                            }
+                            excel.encode().then((value) async {
+                              await UrlUtils.downloadGradesExcel(
+                                  value, 'TimeTable', context);
+                            });
+                          } else {
+                            UrlUtils.download(
+                                "https://firebasestorage.googleapis.com/v0/b/aatmanirbhar-51cd2.appspot.com/o/TimeTable.xlsx?alt=media&token=6f3de4ad-a7c7-400d-b956-b8d39a92e772",
+                                "TimeTable.xlsx",
+                                context);
                           }
-                        : () {
-                            if (isClassSelected)
-                              Toast.show('Please select section', context);
-                            else {
-                              Toast.show(
-                                  'Please select class and section', context);
-                            }
-                          },
+                        },
+                      ),
+                      RaisedButton(
+                        padding: EdgeInsets.only(
+                            top: 20, bottom: 20, left: 20, right: 20),
+                        child: Text('Upload Time Table'),
+                        onPressed: (isClassSelected && isSectionSelected)
+                            ? () async {
+                                showLoaderDialog(context, 'Please wait....');
+                                try {
+                                  FilePickerResult result =
+                                      await FilePicker.platform.pickFiles(
+                                          type: FileType.custom,
+                                          allowMultiple: false,
+                                          allowedExtensions: ['xlsx'],
+                                          withData: true);
+                                  if (result.files[0].extension
+                                          .toLowerCase()
+                                          .compareTo('xlsx') !=
+                                      0) {
+                                    Toast.show(
+                                        'Please upload time table in .xlsx file only',
+                                        context);
+                                    return;
+                                  }
+                                  Excel excel =
+                                      Excel.decodeBytes(result.files[0].bytes);
+                                  Sheet sheet =
+                                      excel[await excel.getDefaultSheet()];
+
+                                  List<String> StartTime = List<String>();
+                                  List<String> endTime = List<String>();
+                                  print(await excel.getDefaultSheet());
+                                  for (String s in sheet.rows[0]) {
+                                    print(s);
+                                    if (s != null && s.isNotEmpty) {
+                                      StartTime.add(s.split(' - ')[0]);
+                                      endTime.add(s.split(' - ')[1]);
+                                    }
+                                  }
+                                  Map<String, List<Map<String, String>>>
+                                      mainMap =
+                                      Map<String, List<Map<String, String>>>();
+                                  int j = 0;
+                                  for (List<dynamic> s
+                                      in sheet.rows.sublist(1)) {
+                                    int i = 0;
+                                    mainMap[days[j]] =
+                                        List<Map<String, String>>();
+                                    for (String sub in s.sublist(1)) {
+                                      if (sub != null && sub.length != 0)
+                                        mainMap[days[j]].add({
+                                          'start time': StartTime[i],
+                                          'end time': endTime[i],
+                                          'subject': sub
+                                        });
+                                      i++;
+                                    }
+                                    j++;
+                                  }
+                                  print(mainMap.toString());
+                                  await FirebaseFirestore.instance
+                                      .collection('School')
+                                      .doc(schoolCode)
+                                      .collection('Time Table')
+                                      .doc('$selectedClass-$selectedSection')
+                                      .set(mainMap)
+                                      .whenComplete(() {
+                                    Toast.show(
+                                        'Uploaded successfully', context);
+                                  }).catchError((e) =>
+                                          Toast.show(e.toString(), context));
+                                } catch (e) {
+                                  Toast.show(
+                                      'Some error occured. Please try again.',
+                                      context);
+                                }
+                                Navigator.pop(context);
+                              }
+                            : () {
+                                if (isClassSelected)
+                                  Toast.show('Please select section', context);
+                                else {
+                                  Toast.show('Please select class and section',
+                                      context);
+                                }
+                              },
+                      ),
+                    ],
                   ),
                   SizedBox(
                     height: 10,
@@ -382,165 +376,6 @@ class _TimeTableState extends State<TimeTable> {
               ),
             ),
     );
-  }
-
-  Widget TimingsWidget(int i) {
-    return Card(
-      child: ListTile(
-        title: Text(Timings[i - 1]),
-        trailing: Icon(Icons.arrow_forward_ios),
-        onTap: () async {
-          List<TimeOfDay> temp =
-              await setTime(context, temp1[i - 1], temp2[i - 1]);
-          print(temp[0].toString());
-          print(temp[1].toString());
-          if (temp != null && temp.length == 2) {
-            setState(() {
-              startTime[i - 1] = temp[0].format(context);
-              endTime[i - 1] = temp[1].format(context);
-              Timings[i - 1] =
-                  'Lecture ${i > 4 ? i - 1 : i} Timings : ${temp[0].format(context)} - ${temp[1].format(context)}';
-            });
-          }
-        },
-      ),
-    );
-  }
-
-  Widget BreakTimings() {
-    return Card(
-      child: ListTile(
-        title: Text(breakTimings),
-        trailing: Icon(Icons.arrow_forward_ios),
-        onTap: () async {
-          List<TimeOfDay> temp = await setTime(context, temp1[4], temp2[4]);
-          // print(temp1.toString());
-          if (temp != null && temp.length == 2) {
-            setState(() {
-              startTime[4] = temp[0].format(context);
-              endTime[4] = temp[1].format(context);
-              breakTimings =
-                  'Break Time : ${temp[0].format(context)} - ${temp[1].format(context)}';
-            });
-          }
-        },
-      ),
-    );
-  }
-
-  Future<List<TimeOfDay>> setTime(
-      BuildContext context, TimeOfDay init1, TimeOfDay init2) async {
-    String st = "Select", et = "Select";
-    stc.text = "Select";
-    etc.text = "Select";
-    return await showDialog<List<TimeOfDay>>(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            titlePadding: EdgeInsets.zero,
-            title: AppBar(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20))),
-              leading: IconButton(
-                tooltip: 'Back',
-                icon: Icon(
-                  Icons.arrow_back,
-                  color: Colors.white,
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-              actions: [
-                IconButton(
-                  tooltip: 'Done',
-                  icon: Icon(Icons.done, color: Colors.white),
-                  onPressed: () async {
-                    if (st != null &&
-                        st.compareTo('Select') != 0 &&
-                        et != null &&
-                        et.compareTo('Select') != 0) {
-                      Navigator.pop(context, [init1, init2]);
-                    } else {
-                      Toast.show('Please select required data', context);
-                    }
-                  },
-                )
-              ],
-              title: Text(
-                'Set Timings',
-                style: TextStyle(color: Colors.white),
-              ),
-              backgroundColor: Colors.black,
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Start Time',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(
-                        width: 100,
-                        child: TextField(
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                          textAlign: TextAlign.center,
-                          controller: stc,
-                          readOnly: true,
-                          onTap: () async {
-                            TimeOfDay temp = (await showTimePicker(
-                                initialTime: init1, context: context));
-                            print(temp.format(context));
-                            setState(() {
-                              st = temp.format(context);
-                              stc.text = temp.format(context);
-                              if (temp != null) {
-                                init1 = temp;
-                              }
-                            });
-                          },
-                        ),
-                      ),
-                    ]),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('End Time',
-                        style: TextStyle(fontWeight: FontWeight.bold)),
-                    SizedBox(
-                      width: 100,
-                      child: TextField(
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.center,
-                        controller: etc,
-                        readOnly: true,
-                        onTap: () async {
-                          TimeOfDay temp = (await showTimePicker(
-                              initialTime: init2, context: context));
-                          print(temp.format(context));
-                          setState(() {
-                            et = temp.format(context);
-                            etc.text = temp.format(context);
-                            if (temp != null) {
-                              init2 = temp;
-                            }
-                          });
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          );
-        });
   }
 }
 
@@ -555,9 +390,9 @@ class _TimeTableState extends State<TimeTable> {
 //           title: Text('Select Class'),
 //         ),
 //         body: StreamBuilder(
-//           stream: Firestore.instance
+//           stream: FirebaseFirestore.instance
 //               .collection('School')
-//               .document(schoolCode)
+//               .doc(schoolCode)
 //               .collection('Student')
 //               .snapshots(),
 //           builder: (context, snapshot) {
@@ -566,21 +401,21 @@ class _TimeTableState extends State<TimeTable> {
 //                 child: CircularProgressIndicator(),
 //               );
 //             }
-//             List<DocumentSnapshot> docs = snapshot.data.documents;
+//             List<DocumentSnapshot> docs = snapshot.data.docs;
 //             Map<String, Set<String>> cs = Map<String, Set<String>>();
 //             Map<String, Set<String>> css = Map<String, Set<String>>();
 //             docs.forEach((element) {
-//               if (cs[element.data['class']] == null) {
-//                 cs[element.data['class']] = Set<String>();
+//               if (cs[element.data()['class']] == null) {
+//                 cs[element.data()['class']] = Set<String>();
 //               }
-//               cs[element.data['class']].add(element.data['section']);
-//               if (css[element.data['class'] + '_' + element.data['section']] ==
+//               cs[element.data()['class']].add(element.data()['section']);
+//               if (css[element.data()['class'] + '_' + element.data()['section']] ==
 //                   null) {
-//                 css[element.data['class'] + '_' + element.data['section']] =
+//                 css[element.data()['class'] + '_' + element.data()['section']] =
 //                     Set<String>();
 //               }
-//               element.data['subjects'].forEach((subject) {
-//                 css[element.data['class'] + '_' + element.data['section']]
+//               element.data()['subjects'].forEach((subject) {
+//                 css[element.data()['class'] + '_' + element.data()['section']]
 //                     .add(subject);
 //               });
 //             });
@@ -730,7 +565,7 @@ class _TimeTableState extends State<TimeTable> {
 //             ),
 //             onPressed: () async {
 //               showLoaderDialog(context, 'Please wait....');
-//               await doc.reference.updateData({
+//               await doc.reference.update({
 //                 day: FieldValue.arrayRemove([lecture])
 //               }).whenComplete(() {
 //                 Toast.show('Deleted successfully', context);
@@ -764,11 +599,11 @@ class _TimeTableState extends State<TimeTable> {
 //         title: Text('$cn-$sn $day'),
 //       ),
 //       body: StreamBuilder<Object>(
-//           stream: Firestore.instance
+//           stream: FirebaseFirestore.instance
 //               .collection('School')
-//               .document(scode)
+//               .doc(scode)
 //               .collection('Time Table')
-//               .document('$cn-$sn')
+//               .doc('$cn-$sn')
 //               .snapshots(),
 //           builder: (context, snapshot) {
 //             if (!snapshot.hasData) {
@@ -778,11 +613,11 @@ class _TimeTableState extends State<TimeTable> {
 //             }
 //             DocumentSnapshot snap = snapshot.data;
 //             if (snap.exists &&
-//                 snap.data.length > 0 &&
-//                 snap.data[day] != null &&
-//                 snap.data[day].length > 0) {
+//                 snap.data().length > 0 &&
+//                 snap.data()[day] != null &&
+//                 snap.data()[day].length > 0) {
 //               List<Widget> list = List<Widget>();
-//               snap.data[day].forEach((lecture) {
+//               snap.data()[day].forEach((lecture) {
 //                 list.add(Card(
 //                   child: ListTile(
 //                     title: Text(
@@ -845,12 +680,12 @@ class _TimeTableState extends State<TimeTable> {
 //                               ssn.text != null &&
 //                               ssn.text.compareTo('Select') != 0) {
 //                             showLoaderDialog(context, 'Please wait....');
-//                             await Firestore.instance
+//                             await FirebaseFirestore.instance
 //                                 .collection('School')
-//                                 .document(scode)
+//                                 .doc(scode)
 //                                 .collection('Time Table')
-//                                 .document('$cn-$sn')
-//                                 .updateData({
+//                                 .doc('$cn-$sn')
+//                                 .update({
 //                               day: FieldValue.arrayUnion(
 //                                 [
 //                                   {

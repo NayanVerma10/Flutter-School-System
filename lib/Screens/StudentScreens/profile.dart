@@ -68,15 +68,15 @@ class MapScreenState extends State<Profile1>
   File _image;
   String link = "#";
   void check() {
-    var val = Firestore.instance
+    var val = FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection("Student")
-        .document(studentId)
+        .doc(studentId)
         .get()
         .then((value) {
-      //if(value.data['url'])
-      link = value.data['url'];
+      //if(value.data()['url'])
+      link = value.data()['url'];
       if (link == null) link = '#';
     });
   }
@@ -92,38 +92,38 @@ class MapScreenState extends State<Profile1>
     super.initState();
     check();
     String stored = getD().toString();
-    DocumentReference dc = Firestore.instance
+    DocumentReference dc = FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection("Student")
-        .document(studentId);
+        .doc(studentId);
 
     dc.get().then((datas) {
-      List<dynamic> classes = datas.data['classes'];
+      List<dynamic> classes = datas.data()['classes'];
       setState(() {
-        print(datas.data['first name']);
-        namecontroller1.text = datas.data['first name'];
-        //namecontroller1.text = widget.post.data["first name"];
-        controller1 = TextEditingController(text: (datas.data['first name']));
-        namecontroller.text = datas.data['email'];
-        controller2 = TextEditingController(text: datas.data['email']);
-        namecontroller2.text = datas.data['mobile'];
-        controller3 = TextEditingController(text: datas.data['mobile']);
-        namecontrollerq.text = datas.data['father \'s name'];
+        print(datas.data()['first name']);
+        namecontroller1.text = datas.data()['first name'];
+        //namecontroller1.text = widget.post.data()["first name"];
+        controller1 = TextEditingController(text: (datas.data()['first name']));
+        namecontroller.text = datas.data()['email'];
+        controller2 = TextEditingController(text: datas.data()['email']);
+        namecontroller2.text = datas.data()['mobile'];
+        controller3 = TextEditingController(text: datas.data()['mobile']);
+        namecontrollerq.text = datas.data()['father \'s name'];
         controllerq =
-            TextEditingController(text: datas.data['father \'s name']);
-        namecontrollera.text = datas.data['mother \'s name'];
+            TextEditingController(text: datas.data()['father \'s name']);
+        namecontrollera.text = datas.data()['mother \'s name'];
         controllera =
-            TextEditingController(text: datas.data['mother \'s name']);
-        namecontrollerg.text = datas.data['gender'];
-        controllerg = TextEditingController(text: datas.data['gender']);
+            TextEditingController(text: datas.data()['mother \'s name']);
+        namecontrollerg.text = datas.data()['gender'];
+        controllerg = TextEditingController(text: datas.data()['gender']);
         classList = classes;
-        namecontrollerd.text = datas.data['roll no'];
-        controllerd = TextEditingController(text: datas.data['roll no']);
-        namecontrollerc.text = datas.data['class'];
-        controllerc = TextEditingController(text: datas.data['class']);
-        namecontrollers.text = datas.data['section'];
-        controllers = TextEditingController(text: datas.data['section']);
+        namecontrollerd.text = datas.data()['roll no'];
+        controllerd = TextEditingController(text: datas.data()['roll no']);
+        namecontrollerc.text = datas.data()['class'];
+        controllerc = TextEditingController(text: datas.data()['class']);
+        namecontrollers.text = datas.data()['section'];
+        controllers = TextEditingController(text: datas.data()['section']);
 
 /*    for(int i=0;i<classList.length;i++){ 
     namecontrollerd.text = classList[i]['Class'] + ' ' + classList[i]['Section'] + ' ' + classList[i]['Subject'];
@@ -134,11 +134,11 @@ class MapScreenState extends State<Profile1>
       });
     });
 //  return datas;
-//    Firestore.instance.collection('69').document(studentId).snapshots();
+//    FirebaseFirestore.instance.collection('69').doc(studentId).snapshots();
 //  AsyncSnapshot<DocumentSnapshot> snapshot;
-    //Map<String, dynamic>documentFields = snapshot.data.data;
+    //Map<String, dynamic>documentFields = snapshot.data.data();
     // namecontroller1.text = documentFields['first name'];
-    //namecontroller1.text = widget.post.data["first name"];
+    //namecontroller1.text = widget.post.data()["first name"];
     //controller1 = TextEditingController(text: (documentFields['first name']));
     //   namecontroller.text =documentFields['first name'];
     //  controller2 = TextEditingController(text:documentFields['email']);
@@ -167,12 +167,12 @@ class MapScreenState extends State<Profile1>
         var imageString = await ref.getDownloadURL();
 
         // Add location and url to database
-        await Firestore.instance
+        await FirebaseFirestore.instance
             .collection('School')
-            .document(schoolCode)
+            .doc(schoolCode)
             .collection("Student")
-            .document(studentId)
-            .setData({'url': imageString, 'location': text}, merge: true);
+            .doc(studentId)
+            .set({'url': imageString, 'location': text},SetOptions(merge: true));
       } catch (e) {
         print(e.message);
         showDialog(
@@ -231,15 +231,15 @@ var fromPicker = await ImagePickerWeb.getImage(  outputType: ImageType.file);
       print('Image path $_image');                                    
     });
 }*/
-    DocumentReference dc = Firestore.instance
+    DocumentReference dc = FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection("Student")
-        .document(studentId);
+        .doc(studentId);
     dc.get().then((datas) {
-      rt = datas.data['first name'];
-      rt1 = datas.data['email'];
-      rt2 = datas.data['mobile'];
+      rt = datas.data()['first name'];
+      rt1 = datas.data()['email'];
+      rt2 = datas.data()['mobile'];
     });
     return new Scaffold(
         body: new Container(
@@ -410,7 +410,7 @@ var fromPicker = await ImagePickerWeb.getImage(  outputType: ImageType.file);
                                             //hintText: "rfe",
 
                                             //  hintText:rt,
-                                            //labelText:  widget.post.data["schoolname"]
+                                            //labelText:  widget.post.data()["schoolname"]
                                             ),
                                         enabled: !_status,
                                         //   autofocus: !_status,
@@ -963,26 +963,26 @@ var fromPicker = await ImagePickerWeb.getImage(  outputType: ImageType.file);
                           setState(() {
                             name = namecontroller.text;
                             print('$name is');
-                            DocumentReference dc = Firestore.instance
+                            DocumentReference dc = FirebaseFirestore.instance
                                 .collection('School')
-                                .document(schoolCode)
+                                .doc(schoolCode)
                                 .collection("Student")
-                                .document(studentId);
+                                .doc(studentId);
                             dc.get().then((datas) {
-                              datas.data['first name'] = namecontroller1.text;
+                              datas.data()['first name'] = namecontroller1.text;
 
-                              datas.data['email'] = namecontroller.text;
-                              datas.data['mobile'] = namecontroller2.text;
-                              datas.data["gender"] = namecontrollerg.text;
-                              datas.data["class"] = namecontrollerc.text;
-                              datas.data["section"] = namecontrollers.text;
-                              datas.data["father \'s name"] =
+                              datas.data()['email'] = namecontroller.text;
+                              datas.data()['mobile'] = namecontroller2.text;
+                              datas.data()["gender"] = namecontrollerg.text;
+                              datas.data()["class"] = namecontrollerc.text;
+                              datas.data()["section"] = namecontrollers.text;
+                              datas.data()["father \'s name"] =
                                   namecontrollerq.text;
-                              datas.data["mother \'s name"] =
+                              datas.data()["mother \'s name"] =
                                   namecontrollera.text;
 
-                              datas.data["rollno"] = namecontrollerd.text;
-                              updateuserdata(datas.data['mobile']);
+                              datas.data()["rollno"] = namecontrollerd.text;
+                              updateuserdata(datas.data()['mobile']);
                             });
                           });
 //sprint(name);
@@ -1002,11 +1002,11 @@ var fromPicker = await ImagePickerWeb.getImage(  outputType: ImageType.file);
   }
 
   Future updateuserdata(String rt2) async {
-    final CollectionReference brew = Firestore.instance
+    final CollectionReference brew = FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection("Student");
-    return await brew.document(rt2).setData({
+    return await brew.doc(rt2).set({
       'email': namecontroller.text,
       'mobile': namecontroller2.text,
       'first name': namecontroller1.text,
@@ -1016,24 +1016,24 @@ var fromPicker = await ImagePickerWeb.getImage(  outputType: ImageType.file);
       'class': namecontrollerc.text,
       'section': namecontrollers.text,
       'father \'s name': namecontrollerq.text,
-    }, merge: true);
+    },SetOptions(merge: true));
   }
 
-  void updateData(String rt2) {
-    final CollectionReference brew = Firestore.instance
+  void update(String rt2) {
+    final CollectionReference brew = FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection("Student");
-    brew.document(rt2).setData({
+    brew.doc(rt2).set({
       'email': controller4.text,
-    }, merge: true);
+    },SetOptions(merge: true));
   }
 
   Widget _getEditIcon(BuildContext context, String rt2) {
     return new GestureDetector(
       child: new RaisedButton(
         onPressed: () {
-//updateData(rt2);
+//update(rt2);
           tripEdit(context, rt2);
           setState(() {
             _status = false;

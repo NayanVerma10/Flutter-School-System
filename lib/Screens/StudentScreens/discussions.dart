@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:Schools/plugins/url_launcher/url_launcher.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/rendering.dart';
@@ -46,8 +48,9 @@ class _DiscussionsState extends State<Discussions> {
   int limitOfMessages = 200;
   _DiscussionsState(this.className, this.schoolCode, this.studentId,
       this.classNumber, this.section, this.subject);
+  CollectionReference cr;
 
-  final Firestore _firestore = Firestore.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   TextEditingController messageController = TextEditingController();
   ScrollController scrollController = ScrollController();
@@ -55,12 +58,7 @@ class _DiscussionsState extends State<Discussions> {
   Future<void> callback(String type, String text, {String fileURL = ''}) async {
     limitOfMessages++;
     messageController.clear();
-    await _firestore
-        .collection('School')
-        .document(schoolCode)
-        .collection('Classes')
-        .document(classNumber + '_' + section + '_' + subject)
-        .collection('Discussions')
+    await cr
         .add({
       'text': text,
       'from': user.userName,
@@ -79,17 +77,22 @@ class _DiscussionsState extends State<Discussions> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    cr = _firestore
+        .collection('School')
+        .doc(schoolCode)
+        .collection('Classes')
+        .doc(classNumber + '_' + section + '_' + subject)
+        .collection('Discussions');
     setState(() {
-      Firestore.instance
+      FirebaseFirestore.instance
           .collection('School')
-          .document(schoolCode)
+          .doc(schoolCode)
           .collection('Student')
-          .document(studentId)
+          .doc(studentId)
           .get()
           .then((value) => studentName =
-              value.data['first name'] + ' ' + value.data['last name'])
+              value.data()['first name'] + ' ' + value.data()['last name'])
           .then((value) {
         user = User(studentName, className, schoolCode, studentId, classNumber,
             section, subject, false);
@@ -101,11 +104,10 @@ class _DiscussionsState extends State<Discussions> {
   Widget build(BuildContext context) {
     setState(() {
       pad = kIsWeb &&
-            MediaQuery.of(context).size.width >
-                MediaQuery.of(context).size.height
-        ? MediaQuery.of(context).size.width / 2 - 300
-        : 0;
-    
+              MediaQuery.of(context).size.width >
+                  MediaQuery.of(context).size.height
+          ? MediaQuery.of(context).size.width / 2 - 300
+          : 0;
     });
     return Scaffold(
       appBar: AppBar(
@@ -127,12 +129,7 @@ class _DiscussionsState extends State<Discussions> {
             children: <Widget>[
               Expanded(
                 child: StreamBuilder<QuerySnapshot>(
-                  stream: _firestore
-                      .collection('School')
-                      .document(schoolCode)
-                      .collection('Classes')
-                      .document(classNumber + '_' + section + '_' + subject)
-                      .collection('Discussions')
+                  stream: cr
                       .orderBy('date', descending: true)
                       .limit(limitOfMessages)
                       .snapshots(),
@@ -141,20 +138,20 @@ class _DiscussionsState extends State<Discussions> {
                       return Center(
                         child: CircularProgressIndicator(),
                       );
-                    List<DocumentSnapshot> docs = snapshot.data.documents;
+                    List<DocumentSnapshot> docs = snapshot.data.docs;
                     print(limitOfMessages);
 
                     List<Widget> messages = docs
                         .map((doc) => Message(
                               key: UniqueKey(),
-                              from: doc.data['from'],
-                              text: doc.data['text'],
-                              fromId: doc.data['fromId'],
-                              isTeacher: doc.data['isTeacher'],
-                              type: doc.data['type'],
-                              date: doc.data['date'],
-                              fileURL: doc.data['fileURL'],
-                              me: studentId == doc.data['fromId'],
+                              from: doc.data()['from'],
+                              text: doc.data()['text'],
+                              fromId: doc.data()['fromId'],
+                              isTeacher: doc.data()['isTeacher'],
+                              type: doc.data()['type'],
+                              date: doc.data()['date'],
+                              fileURL: doc.data()['fileURL'],
+                              me: studentId == doc.data()['fromId'],
                               pad: pad,
                             ))
                         .toList();
@@ -205,16 +202,27 @@ class _DiscussionsState extends State<Discussions> {
                       child: Icon(Icons.attach_file),
                       heroTag: null,
                       onPressed: () async {
-                        await attachment()
-                            .then((files) => files.forEach((file) async {
-                                  List<String> fileData = await uploadToFirebase(
-                                      '$schoolCode/$classNumber/$section/$subject/',
-                                      file, context);
-                                  await callback('File', fileData[1],
-                                      fileURL: fileData[0]);
-                                }));
-                      },
-                    ),
+                        final result = await FilePicker.platform
+                            .pickFiles(allowMultiple: true, withData: true);
+                        if (result != null) {
+                          
+                          result.files.forEach((file) async {
+                                      await UrlUtils.uploadFileToFirebase(
+                                    file,
+                                    '$schoolCode/$classNumber/$section/$subject/',
+                                    context, cr, {
+                                    'from': user.userName,
+                                    'fromId': user.userId,
+                                    'type': "File",
+                                    'isTeacher': user.isTeacher,
+                                    'date': DateTime.now().toIso8601String().toString()},
+                                    'fileURL', 
+                                    'text'
+                                  );
+                                });
+                      }
+                      }),
+                    
                     SizedBox(
                       width: 1,
                     ),

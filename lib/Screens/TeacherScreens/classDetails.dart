@@ -1,4 +1,5 @@
 import 'package:Schools/Screens/TeacherScreens/gradesUpload.dart';
+import 'package:Schools/widgets/ClassTutorial.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import './studentsGrid.dart';
@@ -74,7 +75,7 @@ class _ClassDetailsState extends State<ClassDetails> {
           : StudentsGrid(
               className, schoolCode, teachersId, classNumber, section, subject),
       UploadGrades(schoolCode, classNumber, section, subject),
-      TutorialUpload(schoolCode, classNumber, section, subject),
+      TutorialUpload(schoolCode, classNumber, section, subject, true),
       if (!kIsWeb)
       Assignment()
       else AssignmentWeb(),

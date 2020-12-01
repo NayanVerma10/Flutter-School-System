@@ -81,45 +81,45 @@ class _ChatListState extends State<ChatList> {
   bool loading = true;
 
   void loadData() async {
-    await Firestore.instance
+    await FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection('Student')
-        .getDocuments()
-        .then((value) => value.documents.forEach((element) {
+        .get()
+        .then((value) => value.docs.forEach((element) {
               users.add(User(
-                mobile: (element.data['mobile'] ?? ''),
-                id: element.documentID,
-                name: (element.data['first name'] ?? '') +
+                mobile: (element.data()['mobile'] ?? ''),
+                id: element.id,
+                name: (element.data()['first name'] ?? '') +
                     ' ' +
-                    (element.data['last name'] ?? ''),
-                classNumber: element.data['class'] ?? '',
-                section: element.data['section'] ?? '',
+                    (element.data()['last name'] ?? ''),
+                classNumber: element.data()['class'] ?? '',
+                section: element.data()['section'] ?? '',
                 isTeacher: false,
-                imgURL: element.data['url'],
+                imgURL: element.data()['url'],
               ));
             }));
 
-    await Firestore.instance
+    await FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection('Teachers')
-        .getDocuments()
-        .then((value) => value.documents.forEach((element) {
+        .get()
+        .then((value) => value.docs.forEach((element) {
               users.add(User(
-                mobile: element.data['mobile'] ?? '',
-                id: element.documentID,
-                name: (element.data['first name'] ?? '') +
+                mobile: element.data()['mobile'] ?? '',
+                id: element.id,
+                name: (element.data()['first name'] ?? '') +
                     ' ' +
-                    (element.data['last name'] ?? ''),
-                classNumber: element.data['classteacher'] != null
-                    ? element.data['classteacher']['class']
+                    (element.data()['last name'] ?? ''),
+                classNumber: element.data()['classteacher'] != null
+                    ? element.data()['classteacher']['class']
                     : '',
-                section: element.data['classteacher'] != null
-                    ? element.data['classteacher']['section']
+                section: element.data()['classteacher'] != null
+                    ? element.data()['classteacher']['section']
                     : '',
                 isTeacher: true,
-                imgURL: element.data['url'],
+                imgURL: element.data()['url'],
               ));
             }));
     setState(() {

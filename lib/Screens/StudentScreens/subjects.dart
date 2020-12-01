@@ -1,3 +1,4 @@
+// import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import '../Icons/iconssss_icons.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -19,19 +20,20 @@ class _SubjectsState extends State<Subjects> {
   List subjects = [];
 
   loadData() {
-    Firestore.instance
+    FirebaseFirestore.instance
         .collection('School')
-        .document(schoolCode)
+        .doc(schoolCode)
         .collection('Student')
-        .document(studentId)
+        .doc(studentId)
         .get()
         .then((value) {
       setState(() {
-        classNumber = value.data['class'];
-        section = value.data['section'];
-        if (value.data['subjects'] != null) subjects = value.data['subjects'];
-        rollNo = value.data['rollno'];
-        name = value.data['first name'] + ' ' + value.data['last name'];
+        classNumber = value.data()['class'];
+        section = value.data()['section'];
+        if (value.data()['subjects'] != null)
+          subjects = value.data()['subjects'];
+        rollNo = value.data()['rollno'];
+        name = value.data()['first name'] + ' ' + value.data()['last name'];
         gotData = true;
       });
     });
@@ -90,20 +92,23 @@ class _SubjectsState extends State<Subjects> {
                       color: Colors.black,
                     ),
                     onTap: () {
+                      // BotToast.showSimpleNotification(title: 'Simple', duration: Duration(seconds:5));
+                      // BotToast.showNotification( duration: Duration(seconds:5));
+                    
                       //                                  <-- onTap
                       setState(() {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => SubjectDetails(
-                                    schoolCode: schoolCode,
-                                    studentId: studentId,
-                                    classNumber: classNumber,
-                                    section: section,
-                                    subject: subjects[index],
-                                    rollNo: rollNo,
-                                    name: name,
-                                )));
+                                      schoolCode: schoolCode,
+                                      studentId: studentId,
+                                      classNumber: classNumber,
+                                      section: section,
+                                      subject: subjects[index],
+                                      rollNo: rollNo,
+                                      name: name,
+                                    )));
                       });
                     },
                   )),

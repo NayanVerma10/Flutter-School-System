@@ -1,5 +1,6 @@
 import 'package:Schools/Chat/GroupChatBox.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class GroupChat extends StatefulWidget {
@@ -26,19 +27,18 @@ class _GroupChatState extends State<GroupChat> {
 
   @override
   Widget build(BuildContext context) {
-    print(snapshot);
     list = List<Widget>();
     List<DocumentSnapshot> groupIds = snapshot;
     groupIds.forEach((element) {
       list.add(StreamBuilder(
-          stream: Firestore.instance
+          stream: FirebaseFirestore.instance
               .collection('School')
-              .document(schoolCode)
+              .doc(schoolCode)
               .collection("GroupChats")
-              .document(element.documentID)
+              .doc(element.id)
               .snapshots(),
           builder: (context, snap) {
-            if (!snap.hasData || (snap.hasData && snap.data.data == null)) {
+            if (!snap.hasData) {
               return ListTile(
                   title: Text(
                 "Please wait fetching group details....",
@@ -49,29 +49,29 @@ class _GroupChatState extends State<GroupChat> {
               DocumentSnapshot snapshotData = snap.data;
 
               return ListTile(
-                  onTap: element.documentID != null
+                  onTap: element.id != null
                       ? () {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   settings: RouteSettings(name: 'GroupChatBox'),
                                   builder: (context) => GroupChatBox(
-                                        Firestore.instance
+                                        FirebaseFirestore.instance
                                             .collection('School')
-                                            .document(schoolCode)
+                                            .doc(schoolCode)
                                             .collection("GroupChats")
-                                            .document(element.documentID),
+                                            .doc(element.id),
                                         schoolCode,
                                         docId,
                                         isTeacher,
                                       )));
                         }
                       : null,
-                  leading: snapshotData.data["Icon"] != null
+                  leading: snapshotData.data()["Icon"] != null
                       ? CircleAvatar(
                           radius: 28,
                           backgroundImage: NetworkImage(
-                            snapshotData.data['Icon'],
+                            snapshotData.data()['Icon'],
                             //"https://firebasestorage.googleapis.com/v0/b/aatmanirbhar-51cd2.appspot.com/o/6789%2FGroupChats%2F9DOoEgj2wpV7RkvspoHT%2Ficon%2Fimages.jpeg?alt=media&token=773d9609-d57c-41c5-b119-648581211590"
                           ))
                       : CircleAvatar(
@@ -83,15 +83,15 @@ class _GroupChatState extends State<GroupChat> {
                           backgroundColor: Colors.white,
                         ),
                   title: Text(
-                    snapshotData.data['Name'],
+                    snapshotData.data()['Name'],
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   trailing: StreamBuilder(
-                      stream: Firestore.instance
+                      stream: FirebaseFirestore.instance
                           .collection("School")
-                          .document(schoolCode)
+                          .doc(schoolCode)
                           .collection("GroupChats")
-                          .document(element.documentID)
+                          .doc(element.id)
                           .collection("ChatMessages")
                           .snapshots(),
                       builder: (context, snap) {
@@ -103,11 +103,12 @@ class _GroupChatState extends State<GroupChat> {
                             ),
                           );
                         }
-                        List<DocumentSnapshot> docs = snap.data.documents ?? [];
-                        if (docs.last.data['type'] != 'notification') {
+                        List<DocumentSnapshot> docs = snap.data.docs ?? [];
+                        if (docs.last.data()['type'] != 'notification') {
                           String dateOfMessage =
-                              docs.last.data['date'].toString().split('T')[0];
-                          String timeOfMessage = docs.last.data['date']
+                              docs.last.data()['date'].toString().split('T')[0];
+                          String timeOfMessage = docs.last
+                              .data()['date']
                               .toString()
                               .split('T')[1]
                               .split('.')[0]
@@ -143,11 +144,11 @@ class _GroupChatState extends State<GroupChat> {
                         }
                       }),
                   subtitle: StreamBuilder(
-                      stream: Firestore.instance
+                      stream: FirebaseFirestore.instance
                           .collection("School")
-                          .document(schoolCode)
+                          .doc(schoolCode)
                           .collection("GroupChats")
-                          .document(element.documentID)
+                          .doc(element.id)
                           .collection("ChatMessages")
                           .snapshots(),
                       builder: (context, snap) {
@@ -159,39 +160,48 @@ class _GroupChatState extends State<GroupChat> {
                                 fontStyle: FontStyle.italic),
                           );
                         }
-                        List<DocumentSnapshot> docs = snap.data.documents ?? [];
-                        if (docs.last.data['type'] != 'notification')
-                          return Row(children: [
-                            Text(
-                              ((docs.last.data['fromId'].compareTo(docId) ==
-                                              0 &&
-                                          docs.last.data['isTeacher'] ==
-                                              isTeacher)
-                                      ? 'You'
-                                      : docs.last.data['name']) +
-                                  " : ",
-                              style: TextStyle(color: Colors.blue[900]),
-                            ),
-                            Text(
-                              docs.last.data['text'].toString().length>25?docs.last.data['text'].toString().substring(0,25)+"...":docs.last.data['text'].toString(),
-                              style: TextStyle(color: Colors.black),
-                            )
-                          ]);
+                        List<DocumentSnapshot> docs = snap.data.docs ?? [];
+                        if (docs.last.data()['type'].toString().compareTo('notification')!=0)
+                          return RichText(
+                          softWrap: false,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          text: TextSpan(
+                              style: DefaultTextStyle.of(context).style,
+                              children: <InlineSpan>[
+                                TextSpan(
+                                    text: docs.last.data()['fromId'] == docId
+                                        ? 'You : '
+                                        : docs.last.data()['name']+" : ",
+                                    style: TextStyle(
+                                        color: Colors.blue[
+                                            900])), //This is for if the message is form us
+                                kIsWeb
+                                    ? TextSpan(
+                                        text: docs.last.data()['type'] == 'File'
+                                            ? 'File : '
+                                            : ' ',
+                                      )
+                                    : WidgetSpan(
+                                        style: TextStyle(fontSize: 16),
+                                        child: docs.last.data()['type'] == 'File'
+                                            ? Icon(Icons.attach_file, size: 16)
+                                            : Text(' '),
+                                      ), //This is if the message is a file
+                                TextSpan(
+                                    text: docs.last.data()['text'].toString()), //This is the text
+                              ]));
                         else
-                          return Expanded(
-                                                      child: Text(
-                              docs.last.data['text'],
-                              style: TextStyle(color: Colors.black),
-                              overflow: TextOverflow.ellipsis,
-                              softWrap: false,
-                            ),
+                          return Text(
+                            docs.last.data()['text'],
+                            style: TextStyle(color: Colors.black),
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: false,
                           );
                       }));
             }
           }));
     });
-    print(list.length);
-    print(snapshot.length);
     if (list.length > 0) {
       return ListView.separated(
         itemCount: list.length,

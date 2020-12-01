@@ -32,11 +32,11 @@ class _QuizPlayState extends State<QuizPlay> {
     databaseService.getQuestionData(widget.quizId).then((value)
     {
       questionSnapshot = value;
-      _notAttempted = questionSnapshot.documents.length;
+      _notAttempted = questionSnapshot.docs.length;
       _correct = 0;
       _incorrect = 0;
       isLoading = false;
-      total = questionSnapshot.documents.length;
+      total = questionSnapshot.docs.length;
 
       setState(() {
         print("$total this is total ${widget.quizId} ");
@@ -59,14 +59,14 @@ class _QuizPlayState extends State<QuizPlay> {
       DocumentSnapshot questionSnapshot) {
     QuestionModel questionModel = new QuestionModel();
 
-    questionModel.question = questionSnapshot.data["question"];
+    questionModel.question = questionSnapshot.data()["question"];
 
     /// shuffling the options
     List<String> options = [
-      questionSnapshot.data["option1"],
-      questionSnapshot.data["option2"],
-      questionSnapshot.data["option3"],
-      questionSnapshot.data["option4"]
+      questionSnapshot.data()["option1"],
+      questionSnapshot.data()["option2"],
+      questionSnapshot.data()["option3"],
+      questionSnapshot.data()["option4"]
     ];
     options.shuffle();
 
@@ -74,7 +74,7 @@ class _QuizPlayState extends State<QuizPlay> {
     questionModel.option2 = options[1];
     questionModel.option3 = options[2];
     questionModel.option4 = options[3];
-    questionModel.correctOption = questionSnapshot.data["option1"];
+    questionModel.correctOption = questionSnapshot.data()["option1"];
     questionModel.answered = false;
 
     print(questionModel.correctOption.toLowerCase());
@@ -107,23 +107,23 @@ class _QuizPlayState extends State<QuizPlay> {
                 child: Column(
                   children: [
                     InfoHeader(
-                      length: questionSnapshot.documents.length,
+                      length: questionSnapshot.docs.length,
                     ),
                     SizedBox(
                       height: 10,
                     ),
-                    questionSnapshot.documents == null
+                    questionSnapshot.docs == null
                         ? Container(
                       child: Center(child: Text("No Data"),),
                     )
                         : ListView.builder(
-                            itemCount: questionSnapshot.documents.length,
+                            itemCount: questionSnapshot.docs.length,
                             shrinkWrap: true,
                             physics: ClampingScrollPhysics(),
                             itemBuilder: (context, index) {
                               return QuizPlayTile(
                                 questionModel: getQuestionModelFromDatasnapshot(
-                                    questionSnapshot.documents[index]),
+                                    questionSnapshot.docs[index]),
                                 index: index,
                               );
                             })
