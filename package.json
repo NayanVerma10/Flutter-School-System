@@ -1,0 +1,7 @@
+{
+  "name": "Flutter-School-System-bottomnavigationbar - Copy (2)",
+  "dependencies": {
+    "firebase-admin": "^9.4.1",
+    "firebase-functions": "^3.12.0"
+  }
+}
