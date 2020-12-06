@@ -67,13 +67,21 @@ class _GroupChatBoxState extends State<GroupChatBox> {
     });
   }
 
-  Future<void> callback(String type, String text, {String fileURL = ''}) async {
+  Future<void> callback(String sc, String did, String sn, String sid, bool sit,
+      String text, String type,
+      {String fileURL = ''}) async {
+    cr = _firestore
+        .collection('School')
+        .doc(widget.schoolCode)
+        .collection('GroupChats')
+        .doc(widget.GroupRef.id)
+        .collection('ChatMessages');
     limitOfMessages++;
     messageController.clear();
     String date = DateTime.now().toIso8601String().toString();
     await cr.doc(timeToString()).set({
       'text': text,
-      'name': name,
+      'name': sn,
       'fromId': widget.userId,
       'type': type,
       'isTeacher': widget.isTeacher,
@@ -230,7 +238,6 @@ class _GroupChatBoxState extends State<GroupChatBox> {
                   Expanded(
                     child: StreamBuilder<QuerySnapshot>(
                       stream: widget.GroupRef.collection("ChatMessages")
-                          .limit(limitOfMessages)
                           .snapshots(),
                       builder: (context, snapshot) {
                         if (!snapshot.hasData)
@@ -238,6 +245,7 @@ class _GroupChatBoxState extends State<GroupChatBox> {
                             child: CircularProgressIndicator(),
                           );
                         List<DocumentSnapshot> docs = snapshot.data.docs;
+                        print(docs.last.data().toString());
                         List<Widget> messages = docs.map((doc) {
                           switch (doc.data()['type']) {
                             case "notification":
@@ -286,7 +294,15 @@ class _GroupChatBoxState extends State<GroupChatBox> {
                           child: TextField(
                             onSubmitted: (value) =>
                                 messageController.text.trim().length > 0
-                                    ? callback('text', messageController.text)
+                                    ? callback(
+                                        widget.schoolCode,
+                                        widget.GroupRef.id,
+                                        name,
+                                        widget.userId,
+                                        widget.isTeacher,
+                                        messageController.text,
+                                        'text',
+                                      )
                                     : null,
                             decoration: InputDecoration(
                               hintText: "Enter a Message...",
@@ -311,21 +327,21 @@ class _GroupChatBoxState extends State<GroupChatBox> {
                             if (result != null) {
                               result.files.forEach((file) async {
                                 await UrlUtils.uploadFileToFirebase(
-                                  file,
-                                  "${widget.schoolCode}/GroupChats/${widget.GroupRef.id}/",
-                                  context,
-                                  cr,
-                                  {
-                                    'name': name,
-                                    'fromId': widget.userId,
-                                    'type': "File",
-                                    'isTeacher': widget.isTeacher,
-                                    'date': DateTime.now()
-                                        .toIso8601String()
-                                        .toString(),
-                                  },
-                                  "url",
-                                  "text");
+                                    file,
+                                    "${widget.schoolCode}/GroupChats/${widget.GroupRef.id}/",
+                                    context,
+                                    cr,
+                                    {
+                                      'name': name,
+                                      'fromId': widget.userId,
+                                      'type': "File",
+                                      'isTeacher': widget.isTeacher,
+                                      'date': DateTime.now()
+                                          .toIso8601String()
+                                          .toString(),
+                                    },
+                                    "url",
+                                    "text");
                               });
                             }
                           },
@@ -337,7 +353,15 @@ class _GroupChatBoxState extends State<GroupChatBox> {
                           text: "Send",
                           callback: () {
                             messageController.text.trim().length > 0
-                                ? callback('Text', messageController.text)
+                                ? callback(
+                                    widget.schoolCode,
+                                    widget.GroupRef.id,
+                                    name,
+                                    widget.userId,
+                                    widget.isTeacher,
+                                    messageController.text,
+                                    'text',
+                                  )
                                 : null;
                           },
                         )

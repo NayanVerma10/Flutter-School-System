@@ -19,6 +19,11 @@ class ChatBox extends StatefulWidget {
   @override
   _ChatBoxState createState() => _ChatBoxState(schoolCode, sender_docId,
       sender_isTeacher, reciever_docId, reciever_isTeacher);
+  Future<void> callback(String text, String sc, String sid, bool sit,
+      String rid, bool rit, String sn, String rn, String surl, String rurl) {
+    return _ChatBoxState(schoolCode, sid, sit, rid, rit)
+        .callback("text", text, sc, sid, rid, sit, rit, sn, rn, surl, rurl);
+  }
 }
 
 double pad = 0;
@@ -28,35 +33,48 @@ class _ChatBoxState extends State<ChatBox> {
   bool sender_isTeacher, reciever_isTeacher;
   _ChatBoxState(this.schoolCode, this.sender_docId, this.sender_isTeacher,
       this.reciever_docId, this.reciever_isTeacher);
-  static Map<String, dynamic> reciever = {'first name': ' ', 'last name': ' '};
-  static Map<String, dynamic> sender = {'first name': ' ', 'last name': ' '};
+  Map<String, dynamic> reciever = {'first name': ' ', 'last name': ' '};
+  Map<String, dynamic> sender = {'first name': ' ', 'last name': ' '};
   bool loading = true;
   final _firestore = FirebaseFirestore.instance;
-  int limitOfMessages = 40;
-  TextEditingController messageController = TextEditingController();
+  static int limitOfMessages = 40;
+  static TextEditingController messageController = TextEditingController();
   ScrollController scrollController = ScrollController();
   CollectionReference cr, cr1;
   DocumentReference dr2, dr3;
 
-  Future<void> callback(String type, String text, {String fileURL = ''}) async {
+  Future<void> callback(
+      String type,
+      String text,
+      String scode,
+      String sid,
+      String rid,
+      bool sit,
+      bool rit,
+      String sn,
+      String rn,
+      String surl,
+      String rurl,
+      {String fileURL = ''}) async {
+    setCollectionsAndDocuments(scode, rid, sid, rit, sit);
     limitOfMessages++;
     messageController.clear();
     String date = DateTime.now().toIso8601String().toString();
     await cr.add({
       'text': text,
-      'from': (sender['first name'] ?? '') + ' ' + (sender['last name']),
-      'fromId': sender_docId,
+      'from': sn,
+      'fromId': sid,
       'type': type,
-      'isTeacher': sender_isTeacher,
+      'isTeacher': sit,
       'fileURL': fileURL,
       'date': date,
     });
     await cr1.add({
       'text': text,
-      'from': (sender['first name'] ?? '') + ' ' + (sender['last name']),
-      'fromId': sender_docId,
+      'from': sn,
+      'fromId': sid,
       'type': type,
-      'isTeacher': sender_isTeacher,
+      'isTeacher': sit,
       'fileURL': fileURL,
       'date': date,
     });
@@ -64,22 +82,22 @@ class _ChatBoxState extends State<ChatBox> {
       {
         'type': type,
         'text': text,
-        'name': (sender['first name'] ?? '') + ' ' + (sender['last name']),
-        'fromId': sender_docId,
+        'name': sn,
+        'fromId': sid,
         'date': date,
-        'isTeacher': sender_isTeacher,
-        'url': sender['url'],
+        'isTeacher': sit,
+        'url': surl ?? "",
       },
     );
     await dr3.set(
       {
         'type': type,
         'text': text,
-        'name': (reciever['first name'] ?? '') + ' ' + (reciever['last name']),
-        'fromId': sender_docId,
+        'name': rn,
+        'fromId': sid,
         'date': date,
-        'isTeacher': reciever_isTeacher,
-        'url': reciever['url'],
+        'isTeacher': rit,
+        'url': rurl ?? "",
       },
     );
   }
@@ -94,6 +112,7 @@ class _ChatBoxState extends State<ChatBox> {
         .then((value) {
       setState(() {
         reciever = value.data();
+        print(reciever);
       });
     });
     await FirebaseFirestore.instance
@@ -105,6 +124,7 @@ class _ChatBoxState extends State<ChatBox> {
         .then((value) {
       setState(() {
         sender = value.data();
+        print(sender);
       });
     });
     setState(() {
@@ -112,36 +132,42 @@ class _ChatBoxState extends State<ChatBox> {
     });
   }
 
+  void setCollectionsAndDocuments(
+      String sc, String rid, String sid, bool rit, bool sit) {
+    cr = _firestore
+        .collection('School')
+        .doc(sc)
+        .collection('Chats')
+        .doc(rid + '_' + sid)
+        .collection('Chat');
+    cr1 = _firestore
+        .collection('School')
+        .doc(sc)
+        .collection('Chats')
+        .doc(sid + '_' + rid)
+        .collection('Chat');
+    dr2 = _firestore
+        .collection('School')
+        .doc(sc)
+        .collection(rit ? 'Teachers' : 'Student')
+        .doc(reciever_docId)
+        .collection('recentChats')
+        .doc(sid);
+    dr3 = _firestore
+        .collection('School')
+        .doc(sc)
+        .collection(sit ? 'Teachers' : 'Student')
+        .doc(sid)
+        .collection('recentChats')
+        .doc(rid);
+  }
+
   @override
   void initState() {
     super.initState();
 
-    cr = _firestore
-        .collection('School')
-        .doc(schoolCode)
-        .collection('Chats')
-        .doc(reciever_docId + '_' + sender_docId)
-        .collection('Chat');
-    cr1 = _firestore
-        .collection('School')
-        .doc(schoolCode)
-        .collection('Chats')
-        .doc(sender_docId + '_' + reciever_docId)
-        .collection('Chat');
-    dr2 = _firestore
-        .collection('School')
-        .doc(schoolCode)
-        .collection(reciever_isTeacher ? 'Teachers' : 'Student')
-        .doc(reciever_docId)
-        .collection('recentChats')
-        .doc(sender_docId);
-    dr3 = _firestore
-        .collection('School')
-        .doc(schoolCode)
-        .collection(sender_isTeacher ? 'Teachers' : 'Student')
-        .doc(sender_docId)
-        .collection('recentChats')
-        .doc(reciever_docId);
+    setCollectionsAndDocuments(schoolCode, reciever_docId, sender_docId,
+        reciever_isTeacher, sender_isTeacher);
     scrollController.addListener(() {
       if (scrollController.offset >=
           scrollController.position.maxScrollExtent) {
@@ -164,10 +190,10 @@ class _ChatBoxState extends State<ChatBox> {
           : 0;
     });
 
-    // if (loading)
-    //   return Center(
-    //     child: CircularProgressIndicator(),
-    //   );
+    if (loading)
+      return Center(
+        child: CircularProgressIndicator(),
+      );
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -272,7 +298,22 @@ class _ChatBoxState extends State<ChatBox> {
                     child: TextField(
                       onSubmitted: (value) =>
                           messageController.text.trim().length > 0
-                              ? callback('text', messageController.text)
+                              ? callback(
+                                  'text',
+                                  messageController.text,
+                                  schoolCode,
+                                  sender_docId,
+                                  reciever_docId,
+                                  sender_isTeacher,
+                                  reciever_isTeacher,
+                                  sender['first name'] +
+                                      ' ' +
+                                      sender['last name'],
+                                  reciever['first name'] +
+                                      ' ' +
+                                      reciever['last name'],
+                                  sender['url'],
+                                  reciever['url'])
                               : null,
                       decoration: InputDecoration(
                         hintText: "Enter a Message...",
@@ -296,44 +337,62 @@ class _ChatBoxState extends State<ChatBox> {
                             .pickFiles(allowMultiple: true, withData: true);
                         if (result != null) {
                           result.files.forEach((file) async {
-                            String date = DateTime.now().toIso8601String().toString();
+                            String date =
+                                DateTime.now().toIso8601String().toString();
                             await UrlUtils.uploadFileToFirebase(
                               file,
                               '$schoolCode Chats/$sender_docId/',
                               context,
-                              cr, {
-                                'from': (sender['first name'] ?? '') + ' ' + (sender['last name']),
-                                'fromId': sender_docId,
-                                'type': 'File',
-                                'isTeacher': sender_isTeacher,
-                                'date': date,
-                              }, 'fileURL', 'text',
-                              cr1: cr1,
-                              m1: {
-                                'from': (sender['first name'] ?? '') + ' ' + (sender['last name']),
+                              cr,
+                              {
+                                'from': (sender['first name'] ?? '') +
+                                    ' ' +
+                                    (sender['last name']),
                                 'fromId': sender_docId,
                                 'type': 'File',
                                 'isTeacher': sender_isTeacher,
                                 'date': date,
                               },
-                              nameKey1: 'text', urlKey1: 'fileURL',
-                              dr2: dr2, m2: {
+                              'fileURL',
+                              'text',
+                              cr1: cr1,
+                              m1: {
+                                'from': (sender['first name'] ?? '') +
+                                    ' ' +
+                                    (sender['last name']),
+                                'fromId': sender_docId,
                                 'type': 'File',
-                                'name': (sender['first name'] ?? '') + ' ' + (sender['last name']),
+                                'isTeacher': sender_isTeacher,
+                                'date': date,
+                              },
+                              nameKey1: 'text',
+                              urlKey1: 'fileURL',
+                              dr2: dr2,
+                              m2: {
+                                'type': 'File',
+                                'name': (sender['first name'] ?? '') +
+                                    ' ' +
+                                    (sender['last name']),
                                 'fromId': sender_docId,
                                 'date': date,
                                 'isTeacher': sender_isTeacher,
                                 'url': sender['url'],
-                              }, nameKey2: 'text', urlKey2: 'fileURL',
+                              },
+                              nameKey2: 'text',
+                              urlKey2: 'fileURL',
                               dr3: dr3,
                               m3: {
                                 'type': 'File',
-                                'name': (reciever['first name'] ?? '') + ' ' + (reciever['last name']),
+                                'name': (reciever['first name'] ?? '') +
+                                    ' ' +
+                                    (reciever['last name']),
                                 'fromId': sender_docId,
                                 'date': date,
                                 'isTeacher': reciever_isTeacher,
                                 'url': reciever['url'],
-                              }, nameKey3: 'text', urlKey3: 'fileURL',
+                              },
+                              nameKey3: 'text',
+                              urlKey3: 'fileURL',
                             );
                           });
                         }
@@ -345,7 +404,20 @@ class _ChatBoxState extends State<ChatBox> {
                     text: "Send",
                     callback: () {
                       messageController.text.trim().length > 0
-                          ? callback('Text', messageController.text)
+                          ? callback(
+                              'text',
+                              messageController.text,
+                              schoolCode,
+                              sender_docId,
+                              reciever_docId,
+                              sender_isTeacher,
+                              reciever_isTeacher,
+                              sender['first name'] + ' ' + sender['last name'],
+                              reciever['first name'] +
+                                  ' ' +
+                                  reciever['last name'],
+                              sender['url'],
+                              reciever['url'])
                           : null;
                     },
                   )

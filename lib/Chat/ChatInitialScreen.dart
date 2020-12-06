@@ -1,11 +1,13 @@
 import 'package:Schools/Chat/GroupChatBox.dart';
 import 'package:Schools/Screens/StudentScreens/main.dart';
 import 'package:Schools/Screens/TeacherScreens/main.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import './ChatList.dart';
 import './ChatBox.dart';
@@ -49,13 +51,13 @@ class _MainChatState extends State<MainChat> {
   _configureFirebaseListeners() {
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
-        print(message);
+        print("message " + message.toString());
       },
       onLaunch: (Map<String, dynamic> message) async {
-        print(message);
+        print("message " + message.toString());
       },
       onResume: (Map<String, dynamic> message) async {
-        print(message);
+        print("message " + message.toString());
       },
     );
   }
@@ -63,6 +65,8 @@ class _MainChatState extends State<MainChat> {
   @override
   void initState() {
     super.initState();
+    
+
     _getToken();
     _configureFirebaseListeners();
     stream1 = FirebaseFirestore.instance
@@ -80,6 +84,71 @@ class _MainChatState extends State<MainChat> {
         .doc(docId)
         .collection("GroupsJoined")
         .snapshots();
+    try {
+      AwesomeNotifications().createdStream.listen((event) async {
+        if (event.payload['senderId'].toString().compareTo(docId) == 0 &&
+            event.payload['isTeacher'] == isTeacher) {
+          await AwesomeNotifications().cancel(event.id);
+          AndroidFlutterLocalNotificationsPlugin().cancel(event.id).then((value) => print("done"));
+        }
+      });
+    } catch (e) {
+      print(e);
+    }
+
+    try {
+      AwesomeNotifications().actionStream.listen((event) async {
+        print(event.toMap());
+        if (event.payload['type'].toString().compareTo('GroupChatMessage') ==
+                0 &&
+            event.buttonKeyPressed != null &&
+            event.buttonKeyPressed.compareTo("REPLY") == 0) {
+          print(event.toString());
+          DocumentSnapshot snap = await FirebaseFirestore.instance
+              .collection('School')
+              .doc(schoolCode)
+              .collection(isTeacher ? "Teachers" : "Student")
+              .doc(docId)
+              .get();
+          await FirebaseFirestore.instance
+              .collection(event.payload['collectionId'].toString())
+              .doc(timeToString())
+              .set({
+            'text': event.buttonKeyInput,
+            'name': snap.data()['first name'] + snap.data()['last name'],
+            'fromId': docId,
+            'type': "text",
+            'isTeacher': isTeacher,
+            'url': '',
+            'date': DateTime.now().toIso8601String().toString(),
+          });
+        } else if (event.payload['type']
+                    .toString()
+                    .compareTo('PersonalChatMessage') ==
+                0 &&
+            event.buttonKeyPressed.compareTo("REPLY") == 0) {
+          await ChatBox(
+                  schoolCode,
+                  docId,
+                  isTeacher,
+                  event.payload['receiverId'],
+                  event.payload['receiverIsTeacher'])
+              .callback(
+                  event.buttonKeyInput,
+                  schoolCode,
+                  event.payload['senderId'],
+                  isTeacher,
+                  event.payload['receiverId'],
+                  event.payload['isTeacher'],
+                  event.payload['senderName'],
+                  event.payload['receiverName'],
+                  event.payload['senderUrl'],
+                  event.payload['receiverUrl']);
+        }
+      });
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -97,9 +166,11 @@ class _MainChatState extends State<MainChat> {
                 );
               List<DocumentSnapshot> docs = snapshot.data.docs;
               List<Widget> recentChats = docs.map((doc) {
+                print(doc.data());
                 String dateOfMessage =
                     doc.data()['date'].toString().split('T')[0];
-                String timeOfMessage = doc.data()['date']
+                String timeOfMessage = doc
+                    .data()['date']
                     .toString()
                     .split('T')[1]
                     .split('.')[0]
@@ -131,10 +202,12 @@ class _MainChatState extends State<MainChat> {
                               backgroundColor: Colors.grey[300],
                               foregroundColor: Colors.black54,
                               radius: 28,
-                              child: Text(doc.data()['name']
+                              child: Text(doc
+                                      .data()['name']
                                       .split('')[0][0]
                                       .toUpperCase() +
-                                  doc.data()['name']
+                                  doc
+                                      .data()['name']
                                       .split(' ')[1][0]
                                       .toUpperCase()),
                             ),
@@ -168,7 +241,8 @@ class _MainChatState extends State<MainChat> {
                                             : Text(''),
                                       ), //This is if the message is a file
                                 TextSpan(
-                                    text: doc.data()['text']), //This is the text
+                                    text:
+                                        doc.data()['text']), //This is the text
                               ])),
                       trailing: Text(
                         string,
@@ -218,9 +292,21 @@ class _MainChatState extends State<MainChat> {
         bottomNavigationBar: BottomNavigationBar(
           items: [
             BottomNavigationBarItem(
-                icon: Icon(state==0?Icons.person:Icons.person_outline), title: Text("Personal", style: TextStyle(fontWeight: state==0?FontWeight.bold:FontWeight.normal),)),
+                icon: Icon(state == 0 ? Icons.person : Icons.person_outline),
+                title: Text(
+                  "Personal",
+                  style: TextStyle(
+                      fontWeight:
+                          state == 0 ? FontWeight.bold : FontWeight.normal),
+                )),
             BottomNavigationBarItem(
-                icon: Icon(state == 1?Icons.people:Icons.people_outline), title: Text("Groups", style: TextStyle(fontWeight: state==1?FontWeight.bold:FontWeight.normal),))
+                icon: Icon(state == 1 ? Icons.people : Icons.people_outline),
+                title: Text(
+                  "Groups",
+                  style: TextStyle(
+                      fontWeight:
+                          state == 1 ? FontWeight.bold : FontWeight.normal),
+                ))
           ],
           selectedItemColor: Colors.black,
           unselectedItemColor: Colors.black,
@@ -238,8 +324,13 @@ class _MainChatState extends State<MainChat> {
       return Scaffold(
         body: Container(
           child: RefreshIndicator(
-            onRefresh: ()async{
-              await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>widget.isTeacher?MyAppTeacher(widget.schoolCode, widget.docId):MyAppStudent(widget.schoolCode, widget.docId)));
+            onRefresh: () async {
+              await Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => widget.isTeacher
+                          ? MyAppTeacher(widget.schoolCode, widget.docId)
+                          : MyAppStudent(widget.schoolCode, widget.docId)));
             },
             child: StreamBuilder(
                 stream: stream2,
@@ -249,7 +340,11 @@ class _MainChatState extends State<MainChat> {
                       child: CircularProgressIndicator(),
                     );
                   }
-                  return GroupChat(snapshot.data.docs, docId, schoolCode, isTeacher);
+                  snapshot.data.docs.forEach((d) async {
+                    await _firebaseMessaging.subscribeToTopic(d.id);
+                  });
+                  return GroupChat(
+                      snapshot.data.docs, docId, schoolCode, isTeacher);
                 }),
           ),
         ),
@@ -266,12 +361,12 @@ class _MainChatState extends State<MainChat> {
                   MaterialPageRoute(
                       builder: (context) =>
                           CreateGroup(schoolCode, docId, isTeacher)));
-              
+
               if (results != null) {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                      settings: RouteSettings(name: 'GroupChatBox'),
+                        settings: RouteSettings(name: 'GroupChatBox'),
                         builder: (context) => GroupChatBox(
                             results[0], results[1], results[2], results[3])));
               }
@@ -279,9 +374,21 @@ class _MainChatState extends State<MainChat> {
         bottomNavigationBar: BottomNavigationBar(
           items: [
             BottomNavigationBarItem(
-                icon: Icon(state==0?Icons.person:Icons.person_outline), title: Text("Personal", style: TextStyle(fontWeight: state==0?FontWeight.bold:FontWeight.normal),)),
+                icon: Icon(state == 0 ? Icons.person : Icons.person_outline),
+                title: Text(
+                  "Personal",
+                  style: TextStyle(
+                      fontWeight:
+                          state == 0 ? FontWeight.bold : FontWeight.normal),
+                )),
             BottomNavigationBarItem(
-                icon: Icon(state == 1?Icons.people:Icons.people_outline), title: Text("Groups", style: TextStyle(fontWeight: state==1?FontWeight.bold:FontWeight.normal),))
+                icon: Icon(state == 1 ? Icons.people : Icons.people_outline),
+                title: Text(
+                  "Groups",
+                  style: TextStyle(
+                      fontWeight:
+                          state == 1 ? FontWeight.bold : FontWeight.normal),
+                ))
           ],
           selectedItemColor: Colors.black,
           unselectedItemColor: Colors.black,

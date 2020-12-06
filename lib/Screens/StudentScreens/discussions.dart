@@ -2,11 +2,14 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:Schools/plugins/url_launcher/url_launcher.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart' as flm;
 
 import '../../ChatNecessary/UploadFile.dart';
 import '../../ChatNecessary/MessageBubble.dart';
@@ -58,8 +61,7 @@ class _DiscussionsState extends State<Discussions> {
   Future<void> callback(String type, String text, {String fileURL = ''}) async {
     limitOfMessages++;
     messageController.clear();
-    await cr
-        .add({
+    await cr.add({
       'text': text,
       'from': user.userName,
       'fromId': user.userId,
@@ -75,15 +77,51 @@ class _DiscussionsState extends State<Discussions> {
     );
   }
 
+  FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  _getToken() {
+    _firebaseMessaging.getToken().then((token) {
+      print('Token : ' + token);
+      return token;
+    }).then((token) {
+      FirebaseFirestore.instance
+          .collection('School')
+          .doc(schoolCode)
+          .collection('Student')
+          .doc(studentId)
+          .set({
+        'deviceToken': token,
+      }, SetOptions(merge: true));
+    });
+  }
+
+  _configureFirebaseListeners() {
+    _firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        print("message " + message.toString());
+      },
+      onLaunch: (Map<String, dynamic> message) async {
+        print("message " + message.toString());
+      },
+      onResume: (Map<String, dynamic> message) async {
+        print("message " + message.toString());
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
+    _getToken();
+    _configureFirebaseListeners();
+
     cr = _firestore
         .collection('School')
         .doc(schoolCode)
         .collection('Classes')
         .doc(classNumber + '_' + section + '_' + subject)
         .collection('Discussions');
+    _firebaseMessaging.subscribeToTopic(
+        schoolCode + '_' + classNumber + '_' + section + '_' + subject);
     setState(() {
       FirebaseFirestore.instance
           .collection('School')
@@ -98,6 +136,42 @@ class _DiscussionsState extends State<Discussions> {
             section, subject, false);
       });
     });
+    try {
+      AwesomeNotifications().createdStream.listen((event) async {
+        if (event.payload['senderId'].toString().compareTo(studentId) == 0 &&
+            event.payload['isTeacher'] == false) {
+          await AwesomeNotifications().cancel(event.id);
+          // AndroidFlutterLocalNotificationsPlugin().cancel(event.id).then((value) => print("done"));
+        }
+      });
+    } catch (e) {
+      print(e);
+    }
+    try {
+      AwesomeNotifications().actionStream.listen((event) async {
+        print(event.toMap());
+        if (event.payload['type']
+                    .toString()
+                    .compareTo('DiscussionChatMessage') ==
+                0 &&
+            event.buttonKeyInput != null &&
+            event.buttonKeyInput.length > 0) {
+          await _firestore.collection(event.payload['collectionId']).add({
+            'text': event.buttonKeyInput,
+            'from': user.userName,
+            'fromId': studentId,
+            'type': 'text',
+            'isTeacher': false,
+            'fileURL': '',
+            'date': DateTime.now().toIso8601String().toString(),
+          });
+
+          limitOfMessages++;
+        }
+      });
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -197,32 +271,34 @@ class _DiscussionsState extends State<Discussions> {
                       width: 1,
                     ),
                     FloatingActionButton(
-                      elevation: 0,
-                      tooltip: 'Start Meeting',
-                      child: Icon(Icons.attach_file),
-                      heroTag: null,
-                      onPressed: () async {
-                        final result = await FilePicker.platform
-                            .pickFiles(allowMultiple: true, withData: true);
-                        if (result != null) {
-                          
-                          result.files.forEach((file) async {
-                                      await UrlUtils.uploadFileToFirebase(
-                                    file,
-                                    '$schoolCode/$classNumber/$section/$subject/',
-                                    context, cr, {
+                        elevation: 0,
+                        tooltip: 'Start Meeting',
+                        child: Icon(Icons.attach_file),
+                        heroTag: null,
+                        onPressed: () async {
+                          final result = await FilePicker.platform
+                              .pickFiles(allowMultiple: true, withData: true);
+                          if (result != null) {
+                            result.files.forEach((file) async {
+                              await UrlUtils.uploadFileToFirebase(
+                                  file,
+                                  '$schoolCode/$classNumber/$section/$subject/',
+                                  context,
+                                  cr,
+                                  {
                                     'from': user.userName,
                                     'fromId': user.userId,
                                     'type': "File",
                                     'isTeacher': user.isTeacher,
-                                    'date': DateTime.now().toIso8601String().toString()},
-                                    'fileURL', 
-                                    'text'
-                                  );
-                                });
-                      }
-                      }),
-                    
+                                    'date': DateTime.now()
+                                        .toIso8601String()
+                                        .toString()
+                                  },
+                                  'fileURL',
+                                  'text');
+                            });
+                          }
+                        }),
                     SizedBox(
                       width: 1,
                     ),

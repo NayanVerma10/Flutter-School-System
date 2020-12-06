@@ -1,3 +1,4 @@
+import 'package:Schools/widgets/notificationsinit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -25,13 +26,13 @@ void main() async {
       .last
       .id;
   print(latest);
-  if (latest.compareTo(ver) != 0 && ver.compareTo('0')!=0) {
+  if (latest.compareTo(ver) != 0 && ver.compareTo('0') != 0) {
     Cache.clear();
     print(await prefs.setString('version', latest));
   } else {
     print(await prefs.setString('version', latest));
   }
-
+  notificationsInit();
   if (prefs.getString('type') == 'School')
     runApp(MyAppSchool(prefs.getString('schoolCode')));
   else if (prefs.getString('type') == 'Student')
@@ -48,7 +49,6 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
       // darkTheme: ThemeData.dark(),
       title: 'Aatmanirbhar Institutions',

@@ -1,18 +1,4 @@
 {
-  "hosting": {
-    "public": "build/web",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
-    "rewrites": [
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
-    ]
-  },
   "functions": {
     "predeploy": [
       "npm --prefix \"$RESOURCE_DIR\" run lint",
