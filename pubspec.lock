@@ -197,6 +197,7 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "7.3.2"
+<<<<<<< HEAD
   firebase_analytics:
     dependency: "direct main"
     description:
@@ -218,6 +219,8 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.1"
+=======
+>>>>>>> dbaef9a57b239d1773c9fc6912808da7b15337f4
   firebase_auth:
     dependency: "direct main"
     description:
@@ -260,6 +263,7 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.1"
+<<<<<<< HEAD
   firebase_database:
     dependency: "direct main"
     description:
@@ -267,6 +271,8 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.3.0"
+=======
+>>>>>>> dbaef9a57b239d1773c9fc6912808da7b15337f4
   firebase_helpers:
     dependency: "direct main"
     description:
@@ -280,7 +286,11 @@ packages:
       name: firebase_messaging
       url: "https://pub.dartlang.org"
     source: hosted
+<<<<<<< HEAD
     version: "7.0.3"
+=======
+    version: "6.0.16"
+>>>>>>> dbaef9a57b239d1773c9fc6912808da7b15337f4
   firebase_storage:
     dependency: "direct main"
     description:
@@ -335,6 +345,7 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.8.1"
+<<<<<<< HEAD
   flutter_local_notifications:
     dependency: "direct main"
     description:
@@ -349,6 +360,8 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0+1"
+=======
+>>>>>>> dbaef9a57b239d1773c9fc6912808da7b15337f4
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -826,6 +839,7 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.19-nullsafety.2"
+<<<<<<< HEAD
   timezone:
     dependency: transitive
     description:
@@ -833,6 +847,8 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.5.9"
+=======
+>>>>>>> dbaef9a57b239d1773c9fc6912808da7b15337f4
   toast:
     dependency: "direct main"
     description:

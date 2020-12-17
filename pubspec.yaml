@@ -33,10 +33,14 @@ dependencies:
   google_sign_in: #Added by Nayan for Sign in
   firebase_core: ^0.5.2
   firebase: ^7.3.2 
+<<<<<<< HEAD
   firebase_database: ^4.3.0
   firebase_analytics: ^6.2.0
   firebase_messaging: ^7.0.3 #Added By Nayan for Push Notifications
   flutter_local_notifications: ^3.0.1+7
+=======
+  firebase_messaging: #Added By Nayan for Push Notifications
+>>>>>>> dbaef9a57b239d1773c9fc6912808da7b15337f4
 
   # Other Dependencies
   grouped_buttons:

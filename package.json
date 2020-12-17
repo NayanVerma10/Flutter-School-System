@@ -1,9 +1,14 @@
 {
   "name": "Flutter-School-System-bottomnavigationbar - Copy (2)",
   "dependencies": {
+<<<<<<< HEAD
     "@types/node-gcm": "^1.0.0",
     "firebase-admin": "^9.4.1",
     "firebase-functions": "^3.12.0",
     "node-gcm": "^1.0.3"
+=======
+    "firebase-admin": "^9.4.1",
+    "firebase-functions": "^3.12.0"
+>>>>>>> dbaef9a57b239d1773c9fc6912808da7b15337f4
   }
 }
